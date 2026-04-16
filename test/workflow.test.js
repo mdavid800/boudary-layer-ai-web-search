@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import test from 'node:test';
 import { formatHelp, parseCliArgs } from '../src/lib/args.js';
 import {
@@ -106,6 +107,27 @@ test('formatHelp includes the main usage line', () => {
   });
 
   assert.match(helpText, /npm run research -- "<wind farm name>" \[options\]/);
+});
+
+test('runtime-config loads OPENROUTER_MODEL from .env before exporting defaults', () => {
+  const childEnv = { ...process.env };
+  delete childEnv.OPENROUTER_MODEL;
+
+  const output = execFileSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '--eval',
+      "import { DEFAULT_MODEL } from './src/lib/runtime-config.js'; console.log(DEFAULT_MODEL);",
+    ],
+    {
+      cwd: process.cwd(),
+      env: childEnv,
+      encoding: 'utf8',
+    },
+  );
+
+  assert.equal(output.trim(), 'openai/gpt-5.4');
 });
 
 test('extractTextContent returns plain string content', () => {

@@ -40,10 +40,13 @@ async function main() {
   const promptPath = path.resolve(process.cwd(), args.promptPath || DEFAULT_PROMPT_PATH);
   const promptTemplate = await loadPromptTemplate(promptPath);
   const finalPrompt = buildResearchPrompt(promptTemplate, windFarmName);
+  const model = args.model || DEFAULT_MODEL;
+
+  console.error(`Using OpenRouter model: ${model}`);
 
   const report = await requestResearchReport({
     apiKey,
-    model: args.model || DEFAULT_MODEL,
+    model,
     prompt: finalPrompt,
     searchEngine: args.engine || DEFAULT_SEARCH_ENGINE,
     searchMode: args.searchMode || DEFAULT_SEARCH_MODE,

@@ -45,6 +45,7 @@ async function main() {
     let completedCount = 0;
 
     console.error(`Starting database-backed research run for ${windFarmRows.length} rows.`);
+    console.error(`Using OpenRouter model: ${DEFAULT_MODEL}`);
     console.error(`Source table: ${sourceTableName}`);
     console.error(`Reports directory: ${reportsDirectory}`);
 
