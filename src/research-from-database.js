@@ -25,9 +25,12 @@ import {
   saveTextFile,
   slugifyFileSegment,
 } from './lib/report-output.js';
+import { storeResearchReport } from './lib/report-storage.js';
 
 dotenv.config();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+const publishFlag = process.argv.includes('--publish');
 
 async function main() {
   const apiKey = requireValue(process.env.OPENROUTER_API_KEY, 'OPENROUTER_API_KEY');
@@ -36,6 +39,7 @@ async function main() {
   const reportsDirectory = path.join(getWindFarmReportsDirectory(), sourceTableName);
   const promptTraceEnabled = isPromptTraceEnabled();
   const promptTraceDirectory = path.join(getPromptTraceDirectory(), sourceTableName);
+  const reviewStatus = publishFlag ? 'published' : 'draft';
   const client = createDatabaseClient();
 
   await client.connect();
@@ -54,6 +58,8 @@ async function main() {
     } else {
       console.error('Prompt trace: disabled');
     }
+
+    console.error(`Review status: ${reviewStatus}`);
 
     for (const [index, windFarmRow] of windFarmRows.entries()) {
       console.error(
@@ -104,6 +110,19 @@ async function main() {
       console.error(
         `[${index + 1}/${windFarmRows.length}] Saved ${windFarmRow.name} from ${sourceTableName} to ${savedPath}`,
       );
+
+      const { reportId, factsInserted } = await storeResearchReport(client, {
+        windFarmId: windFarmRow.id,
+        reportMarkdown: report,
+        modelUsed: DEFAULT_MODEL,
+        finalPrompt,
+        reviewStatus,
+      });
+
+      console.error(
+        `[${index + 1}/${windFarmRows.length}] Stored report #${reportId} with ${factsInserted} facts for ${windFarmRow.name}`,
+      );
+
       completedCount += 1;
     }
 
