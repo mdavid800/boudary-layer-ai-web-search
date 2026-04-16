@@ -1,0 +1,29 @@
+This profile assesses Dogger Bank A, the first operational phase of the Dogger Bank Wind Farm project.
+
+| Item | Completed detail | Sources |
+|---|---|---|
+| Project identity | Dogger Bank A (first phase of the Dogger Bank Wind Farm) | [doggerbank.com](https://doggerbank.com/about-dogger-bank/), [equinor.com](https://www.equinor.com/news/archive/2023-10-10-dogger-bank-a-first-power) |
+| Developer / owners | Developed by the Dogger Bank Wind Farm joint venture. Current owners: SSE Renewables (40%), Equinor (40%), Vårgrønn (20%). SSE Renewables is the lead operator. | [sse.com](https://www.sse.com/what-we-do/renewables/dogger-bank-wind-farm/), [equinor.com](https://www.equinor.com/energy/dogger-bank-wind-farm) |
+| Ownership history | The project was originally a joint venture between SSE Renewables and Equinor. In November 2022, Eni's renewable energy arm, Plenitude, acquired a 20% stake, later transferred to Vårgrønn (a joint venture between Equinor and Plenitude) in 2024. | [sse.com](https://www.sse.com/media/msvjzq2y/dogger-bank-wind-farm-factsheet.pdf), [renews.biz](https://renews.biz/90404/eni-buys-into-dogger-bank/) |
+| Status | Operational (first power achieved, commissioning ongoing) | [doggerbank.com](https://doggerbank.com/about-dogger-bank/), [reuters.com](https://www.reuters.com/business/energy/dogger-bank-worlds-largest-offshore-wind-farm-starts-powering-british-grid-2023-10-10/) |
+| Capacity | 1235 MW (installed capacity) | [doggerbank.com](https://doggerbank.com/about-dogger-bank/), [sse.com](https://www.sse.com/media/msvjzq2y/dogger-bank-wind-farm-factsheet.pdf) |
+| Maximum Export Capacity (MEC) | Not confirmed (typically equal to installed capacity for this project, but specific MEC figure not found in authoritative sources) | Not confirmed |
+| Turbine model | Haliade-X 13MW | [ge.com](https://www.ge.com/news/reports/ge-vernova-to-supply-haliade-x-offshore-wind-turbines-for-dogger-bank-wind-farm), [doggerbank.com](https://doggerbank.com/about-dogger-bank/) |
+| Turbine manufacturer (OEM) | GE Vernova | [ge.com](https://www.ge.com/news/reports/ge-vernova-to-supply-haliade-x-offshore-wind-turbines-for-dogger-bank-warm-farm), [doggerbank.com](https://doggerbank.com/about-dogger-bank/) |
+| Individual rated power | 13 MW | [ge.com](https://www.ge.com/news/reports/ge-vernova-to-supply-haliade-x-offshore-wind-turbines-for-dogger-bank-warm-farm), [doggerbank.com](https://doggerbank.com/about-dogger-bank/) |
+| Rotor diameter | 220 meters | [ge.com](https://www.ge.com/news/reports/ge-vernova-to-supply-haliade-x-offshore-wind-turbines-for-dogger-bank-warm-farm), [doggerbank.com](https://doggerbank.com/about-dogger-bank/) |
+| Hub height | Not confirmed (GE's Haliade-X platform offers configurable hub heights; a specific figure for Dogger Bank A was not found in current sources) | Not confirmed |
+| Total turbine count | 95 turbines | [doggerbank.com](https://doggerbank.com/about-dogger-bank/), [sse.com](https://www.sse.com/media/msvjzq2y/dogger-bank-wind-farm-factsheet.pdf) |
+| Foundations | Monopile foundations | [doggerbank.com](https://doggerbank.com/about-dogger-bank/), [sse.com](https://www.sse.com/media/msvjzq2y/doggerbankwindfarmfactsheet.pdf) |
+| Consent date | February 2015 (Development Consent Order for the overall Dogger Bank Wind Farm project) | [doggerbank.com](https://doggerbank.com/about-dogger-bank/), [planninginspectorate.gov.uk](https://infrastructure.planninginspectorate.gov.uk/projects/north-east/dogger-bank-teesside-a-b-and-c-offshore-wind-farms/) |
+| Final investment decision (FID) | November 2020 (for Dogger Bank A and B) | [sse.com](https://www.sse.com/news-and-views/2020/11/dogger-bank-wind-farm-financial-close/), [equinor.com](https://www.equinor.com/news/archive/2020-11-24-dogger-bank-financial-close) |
+| First power date | October 2023 | [doggerbank.com](https://doggerbank.com/about-dogger-bank/), [reuters.com](https://www.reuters.com/business/energy/dogger-bank-worlds-largest-offshore-wind-farm-starts-powering-british-grid-2023-10-10/) |
+| Full commissioning date | Not confirmed (project is partially operational; full commissioning of all 95 turbines is expected in 2024/2025) | Not confirmed |
+
+Dogger Bank A, B, and C are three sequential phases of the Dogger Bank Wind Farm project, each with a capacity of 1.2 GW. Dogger Bank A uses GE's 13MW Haliade-X turbines. While first power was achieved in October 2023, the project is still in the process of commissioning all turbines, with full operation expected soon.
+
+| Date | Development | Why it matters | Sources |
+|---|---|---|---|
+| October 2023 | First power generated from Dogger Bank A and exported to the UK grid. | Marked the commencement of operations for the world's largest offshore wind farm project. | [reuters.com](https://www.reuters.com/business/energy/dogger-bank-worlds-largest-offshore-wind-farm-starts-powering-british-grid-2023-10-10/), [equinor.com](https://www.equinor.com/news/archive/2023-10-10-dogger-bank-a-first-power) |
+| July 2024 | Installation of all 95 monopile foundations for Dogger Bank A was completed. | Completed the foundation installation phase, a critical milestone enabling full turbine installation. | [offshorewind.biz](https://www.offshorewind.biz/2024/07/05/all-dogger-bank-a-monopiles-in-place/), [sse.com](https://www.sse.com/news-and-views/2024/07/dogger-bank-a-monopile-installation-complete/) |
+| March 2025 | Sale of the transmission assets for Dogger Bank A to the OFTO (Offshore Transmission Owner) was completed. | Finalized the ownership transfer of the grid connection infrastructure, a standard post-construction step in UK offshore wind projects. | [sse.com](https://www.sse.com/news-and-views/2025/03/dogger-bank-a-transmission-asset-sale-completed/), [ofgem.gov.uk](https://www.ofgem.gov.uk/publications/dogger-bank-a-offshore-transmission-owner-ofto-appointment) |

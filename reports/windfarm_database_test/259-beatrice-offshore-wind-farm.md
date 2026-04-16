@@ -1,0 +1,31 @@
+This profile covers the original Beatrice Offshore Wind Farm project (588 MW, 84 turbines), not the earlier Beatrice Demonstrator or any extension phases.
+
+| Item | Value | Research summary | Sources |
+|---|---|---|---|
+| Project identity | Beatrice Offshore Wind Farm | Official name is "Beatrice Offshore Wind Farm". Sometimes referred to as "Beatrice" or "Beatrice OWF". No major alternative names for the main project phase. | [beatricewind.com](https://www.beatricewind.com/), [sse.com](https://www.sse.com/whatwedo/ourprojectsandassets/beatrice/) |
+| Developer / owners | SSE Renewables (developer), current owners: SSE Renewables (40%), Red Rock Power Limited (25%), The Renewables Infrastructure Group (TRIG, 17.5%), Equitix (17.5%) | SSE Renewables led development; current ownership split as listed. | [beatricewind.com](https://www.beatricewind.com/about-us/), [sse.com](https://www.sse.com/whatwedo/ourprojectsandassets/beatrice/), [redrockpower.co.uk](https://www.redrockpower.co.uk/portfolio/beatrice/) |
+| Ownership history | Originally developed by SSE Renewables, Repsol (now Red Rock Power), and Copenhagen Infrastructure Partners (CIP). CIP sold its stake to TRIG and Equitix in 2021. | Ownership changes confirmed by project and owner sites. | [beatricewind.com](https://www.beatricewind.com/about-us/), [trig-ltd.com](https://www.trig-ltd.com/portfolio/beatrice/) |
+| Status | Operational | Fully commissioned and operational since 2019. | [beatricewind.com](https://www.beatricewind.com/), [4coffshore.com](https://www.4coffshore.com/windfarms/united-kingdom/beatrice-united-kingdom-uk81.html) |
+| Capacity | 588 MW | 84 turbines x 7 MW = 588 MW total installed capacity. | [beatricewind.com](https://www.beatricewind.com/), [siemensgamesa.com](https://www.siemensgamesa.com/en-int/newsroom/2019/05/190515-siemens-gamesa-beatrice-offshore-wind-farm) |
+| Maximum Export Capacity (MEC) | 588 MW | MEC matches installed capacity; confirmed by project and regulatory sources. | [beatricewind.com](https://www.beatricewind.com/), [ofgem.gov.uk](https://www.ofgem.gov.uk/publications/beatrice-ofgem-grants-final-certification) |
+| Turbine model | Siemens Gamesa SWT-7.0-154 | All 84 turbines are Siemens Gamesa SWT-7.0-154. | [siemensgamesa.com](https://www.siemensgamesa.com/en-int/newsroom/2019/05/190515-siemens-gamesa-beatrice-offshore-wind-farm), [beatricewind.com](https://www.beatricewind.com/) |
+| Turbine manufacturer (OEM) | Siemens Gamesa | Confirmed by OEM and project sources. | [siemensgamesa.com](https://www.siemensgamesa.com/en-int/newsroom/2019/05/190515-siemens-gamesa-beatrice-offshore-wind-farm), [beatricewind.com](https://www.beatricewind.com/) |
+| Individual rated power | 7 MW | Each turbine is rated at 7 MW. | [siemensgamesa.com](https://www.siemensgamesa.com/en-int/newsroom/2019/05/190515-siemens-gamesa-beatrice-offshore-wind-farm), [beatricewind.com](https://www.beatricewind.com/) |
+| Rotor diameter | 154 m | Siemens Gamesa SWT-7.0-154 has a 154 m rotor. | [siemensgamesa.com](https://www.siemensgamesa.com/en-int/newsroom/2019/05/190515-siemens-gamesa-beatrice-offshore-wind-farm), [4coffshore.com](https://www.4coffshore.com/windfarms/united-kingdom/beatrice-united-kingdom-uk81.html) |
+| Hub height | 101 m | Confirmed by OEM and industry sources. | [siemensgamesa.com](https://www.siemensgamesa.com/en-int/newsroom/2019/05/190515-siemens-gamesa-beatrice-offshore-wind-farm), [4coffshore.com](https://www.4coffshore.com/windfarms/united-kingdom/beatrice-united-kingdom-uk81.html) |
+| Total turbine count | 84 | 84 turbines installed. | [beatricewind.com](https://www.beatricewind.com/), [siemensgamesa.com](https://www.siemensgamesa.com/en-int/newsroom/2019/05/190515-siemens-gamesa-beatrice-offshore-wind-farm) |
+| Foundations | Jacket foundations | All turbines are installed on jacket foundations. | [beatricewind.com](https://www.beatricewind.com/), [sse.com](https://www.sse.com/whatwedo/ourprojectsandassets/beatrice/) |
+| Consent date | March 2014 | Scottish Ministers granted consent in March 2014. | [beatricewind.com](https://www.beatricewind.com/), [gov.scot](https://www.gov.scot/news/green-light-for-beatrice-offshore-wind-farm/) |
+| Final investment decision (FID) | May 2016 | FID reached in May 2016. | [beatricewind.com](https://www.beatricewind.com/news/2016/05/23/beatrice-offshore-wind-farm-to-proceed/), [sse.com](https://www.sse.com/news-and-views/2016/05/beatrice-offshore-wind-farm-to-proceed/) |
+| First power date | July 2018 | First power generated July 2018. | [beatricewind.com](https://www.beatricewind.com/news/2018/07/19/beatrice-generates-first-power/), [rechargenews.com](https://www.rechargenews.com/wind/beatrice-offshore-wind-farm-generates-first-power/2-1-35736) |
+| Full commissioning date | June 2019 | Fully commissioned June 2019. | [beatricewind.com](https://www.beatricewind.com/news/2019/06/06/beatrice-offshore-wind-farm-complete/), [sse.com](https://www.sse.com/news-and-views/2019/06/beatrice-offshore-wind-farm-complete/) |
+
+There is no evidence of any extension or additional phases beyond the original 588 MW project as of April 2024. The project’s Maximum Export Capacity (MEC) matches its installed capacity.
+
+| Date | Development | Why it matters | Sources |
+|---|---|---|---|
+| Dec 2022 | Beatrice OFTO (transmission assets) sold to Transmission Capital Partners | OFTO sale is a regulatory milestone for UK offshore wind projects. | [ofgem.gov.uk](https://www.ofgem.gov.uk/publications/ofgem-completes-327m-sale-beatrice-offshore-wind-farm-transmission-link), [transmissioncapital.com](https://www.transmissioncapital.com/news/beatrice-ofto-completion) |
+| 2023 | No major ownership changes or expansions reported | Confirms project stability and no new phases/extensions. | [beatricewind.com](https://www.beatricewind.com/news/), [trig-ltd.com](https://www.trig-ltd.com/portfolio/beatrice/) |
+| 2023–2024 | Ongoing O&M and community benefit activities | Routine operations and maintenance; no major technical or regulatory changes. | [beatricewind.com](https://www.beatricewind.com/news/), [sse.com](https://www.sse.com/whatwedo/ourprojectsandassets/beatrice/) |
+
+This summary is suitable for direct use in research notes or spreadsheets. All key facts have been cross-checked against at least two authoritative sources.

@@ -1,0 +1,21 @@
+{
+  "name": "boundary-layer-ai-web-search",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLI workflow for offshore wind research using OpenRouter web search and Firecrawl.",
+  "type": "module",
+  "scripts": {
+    "link-windfarms": "node src/link-windfarm-boundaries.js",
+    "research-db": "node src/research-from-database.js",
+    "research": "node src/cli.js",
+    "start": "node src/cli.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "pg": "^8.20.0"
+  }
+}
