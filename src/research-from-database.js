@@ -33,6 +33,33 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const publishFlag = process.argv.includes('--publish');
 
+/**
+ * Parse --ids and --country from process.argv.
+ *   --ids 259,272,345       → [259, 272, 345]
+ *   --country "United Kingdom"  → "United Kingdom"
+ */
+function parseFilterArgs(argv) {
+  let ids = null;
+  let country = null;
+
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--ids' && argv[i + 1]) {
+      ids = argv[i + 1].split(',').map((s) => {
+        const n = Number.parseInt(s.trim(), 10);
+        if (Number.isNaN(n)) throw new Error(`Invalid ID in --ids: ${s}`);
+        return n;
+      });
+      i += 1;
+    }
+    if (argv[i] === '--country' && argv[i + 1]) {
+      country = argv[i + 1].trim();
+      i += 1;
+    }
+  }
+
+  return { ids, country };
+}
+
 async function main() {
   const apiKey = requireValue(process.env.OPENROUTER_API_KEY, 'OPENROUTER_API_KEY');
   const promptTemplate = await loadPromptTemplate(DEFAULT_PROMPT_PATH);
@@ -41,16 +68,19 @@ async function main() {
   const promptTraceEnabled = isPromptTraceEnabled();
   const promptTraceDirectory = path.join(getPromptTraceDirectory(), sourceTableName);
   const reviewStatus = publishFlag ? 'published' : 'draft';
+  const { ids, country } = parseFilterArgs(process.argv);
   const client = createDatabaseClient();
 
   await client.connect();
 
   try {
-    const windFarmRows = await listWindFarmRows(client, sourceTableName);
+    const windFarmRows = await listWindFarmRows(client, sourceTableName, { ids, country });
     let completedCount = 0;
 
     console.error(`Starting database-backed research run for ${windFarmRows.length} rows.`);
     console.error(`Using OpenRouter model: ${DEFAULT_MODEL}`);
+    if (ids) console.error(`Filtering by IDs: ${ids.join(', ')}`);
+    if (country) console.error(`Filtering by country: ${country}`);
     console.error(`Source table: ${sourceTableName}`);
     console.error(`Reports directory: ${reportsDirectory}`);
 

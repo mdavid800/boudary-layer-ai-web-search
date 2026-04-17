@@ -100,7 +100,7 @@ export function extractFactsFromReport(markdown) {
 
       const citationUrl = extractFirstCitationUrl(sourcesCell);
 
-      facts.push({ fieldName, value: rawValue, citationUrl });
+      facts.push({ fieldName, value: stripMarkdownFormatting(rawValue), citationUrl });
     }
 
     // Stop at the end of the first table (non-table line after we started)
@@ -121,4 +121,19 @@ function splitTableRow(row) {
     .split('|')
     .slice(1, -1) // drop leading/trailing empty strings from split
     .map((cell) => cell.trim());
+}
+
+/**
+ * Strip markdown inline formatting from a value.
+ * Removes bold, italic, inline code, and link syntax.
+ */
+function stripMarkdownFormatting(text) {
+  return text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [text](url) → text
+    .replace(/\*\*(.+?)\*\*/g, '$1')          // **bold** → bold
+    .replace(/__(.+?)__/g, '$1')               // __bold__ → bold
+    .replace(/\*(.+?)\*/g, '$1')               // *italic* → italic
+    .replace(/_(.+?)_/g, '$1')                 // _italic_ → italic
+    .replace(/`(.+?)`/g, '$1')                 // `code` → code
+    .trim();
 }

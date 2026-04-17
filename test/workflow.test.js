@@ -43,7 +43,7 @@ test('buildResearchPrompt rejects templates without a supported placeholder', ()
 
 test('buildProjectContext formats wind farm and linked turbine metadata', () => {
   const result = buildProjectContext({
-    sourceTableName: 'windfarm_database_test',
+    sourceTableName: 'core_wind_farms',
     windFarmMetadata: {
       name: 'Seagreen Phase 1 Windfarm',
       nTurbines: 75,
@@ -60,7 +60,7 @@ test('buildProjectContext formats wind farm and linked turbine metadata', () => 
     },
   });
 
-  assert.match(result, /Emodnet wind farm database metadata \(windfarm_database_test\):/);
+  assert.match(result, /Emodnet wind farm database metadata \(core_wind_farms\):/);
   assert.match(result, /- Name: Seagreen Phase 1 Windfarm/);
   assert.match(result, /EuroWindWakes European Offshore Dataset \(2025\) turbine database metadata:/);
   assert.match(result, /- OEM manufacturer: Vestas/);
@@ -270,8 +270,8 @@ test('getWindFarmSourceTableName defaults to the live table', () => {
   assert.equal(getWindFarmSourceTableName(), 'core_wind_farms');
 });
 
-test('getWindFarmSourceTableName allows the test table', () => {
-  assert.equal(getWindFarmSourceTableName('windfarm_database_test'), 'windfarm_database_test');
+test('getWindFarmSourceTableName allows the legacy table', () => {
+  assert.equal(getWindFarmSourceTableName('windfarm_database'), 'windfarm_database');
 });
 
 test('getWindFarmSourceTableName rejects unsupported tables', () => {

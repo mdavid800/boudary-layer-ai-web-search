@@ -1,13 +1,13 @@
 import path from 'node:path';
 
-const ALLOWED_SOURCE_TABLES = new Set(['core_wind_farms', 'windfarm_database', 'windfarm_database_test']);
+const ALLOWED_SOURCE_TABLES = new Set(['core_wind_farms', 'windfarm_database']);
 
 export function getWindFarmSourceTableName(value = process.env.WIND_FARM_SOURCE_TABLE) {
   const tableName = value?.trim() || 'core_wind_farms';
 
   if (!ALLOWED_SOURCE_TABLES.has(tableName)) {
     throw new Error(
-      `Unsupported WIND_FARM_SOURCE_TABLE: ${tableName}. Use core_wind_farms, windfarm_database, or windfarm_database_test.`,
+      `Unsupported WIND_FARM_SOURCE_TABLE: ${tableName}. Use core_wind_farms or windfarm_database.`,
     );
   }
 
@@ -19,7 +19,7 @@ export function getWindFarmReportsDirectory(value = process.env.WIND_FARM_REPORT
   return path.resolve(process.cwd(), configuredPath);
 }
 
-export async function listWindFarmRows(client, sourceTableName) {
+export async function listWindFarmRows(client, sourceTableName, { ids, country } = {}) {
   const validatedTableName = getWindFarmSourceTableName(sourceTableName);
 
   // core_wind_farms uses different column names than windfarm_database
@@ -27,7 +27,23 @@ export async function listWindFarmRows(client, sourceTableName) {
   const turbineCol = isCore ? 'turbine_count' : 'n_turbines';
   const powerCol = 'power_mw';
 
-  const result = await client.query(`
+  const conditions = ['name is not null'];
+  const params = [];
+
+  if (ids && ids.length > 0) {
+    params.push(ids);
+    conditions.push(`id = ANY($${params.length})`);
+  }
+
+  if (country && isCore) {
+    params.push(country);
+    conditions.push(`LOWER(country) = LOWER($${params.length})`);
+  }
+
+  const whereClause = conditions.join(' AND ');
+
+  const result = await client.query(
+    `
     select
       id,
       name,
@@ -35,9 +51,11 @@ export async function listWindFarmRows(client, sourceTableName) {
       ${powerCol} as power_mw,
       status
     from public.${validatedTableName}
-    where name is not null
+    where ${whereClause}
     order by id
-  `);
+  `,
+    params,
+  );
 
   return result.rows;
 }

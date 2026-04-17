@@ -7,6 +7,7 @@
   "scripts": {
     "link-windfarms": "node src/link-windfarm-boundaries.js",
     "research-db": "node src/research-from-database.js",
+    "publish-reports": "node src/publish-reports.js",
     "research": "node src/cli.js",
     "start": "node src/cli.js",
     "test": "node --test"

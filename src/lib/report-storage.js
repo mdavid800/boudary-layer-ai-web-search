@@ -50,19 +50,24 @@ export async function storeResearchReport(client, {
   // Extract facts from the markdown table
   const facts = extractFactsFromReport(reportMarkdown);
 
+  // Draft reports produce draft facts; published reports produce active facts.
+  // Draft facts are invisible to the app resolver until promoted.
+  const factStatus = reviewStatus === 'published' ? 'active' : 'draft';
+
   let factsInserted = 0;
 
   for (const fact of facts) {
     await client.query(
       `INSERT INTO wind_farm_facts
          (wind_farm_id, field_name, value, source_type, source_detail, citation_url, report_id, status)
-       VALUES ($1, $2, $3, 'research', $4, $5, $6, 'active')
+       VALUES ($1, $2, $3, 'research', $4, $5, $6, $7)
        ON CONFLICT ON CONSTRAINT uq_wind_farm_facts_emodnet
        DO UPDATE SET
          value         = EXCLUDED.value,
          source_detail = EXCLUDED.source_detail,
          citation_url  = EXCLUDED.citation_url,
-         report_id     = EXCLUDED.report_id`,
+         report_id     = EXCLUDED.report_id,
+         status        = EXCLUDED.status`,
       [
         windFarmId,
         fact.fieldName,
@@ -70,6 +75,7 @@ export async function storeResearchReport(client, {
         `AI research ${new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`,
         fact.citationUrl,
         reportId,
+        factStatus,
       ],
     );
     factsInserted += 1;
