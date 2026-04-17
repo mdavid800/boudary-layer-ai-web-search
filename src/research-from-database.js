@@ -15,6 +15,7 @@ import {
   getWindFarmReportsDirectory,
   getWindFarmSourceTableName,
   listWindFarmRows,
+  resolveCoreWindFarmId,
 } from './lib/windfarm-database.js';
 import { requestResearchReport } from './lib/openrouter.js';
 import { buildProjectContext, buildResearchPrompt, loadPromptTemplate } from './lib/prompt.js';
@@ -61,6 +62,8 @@ async function main() {
 
     console.error(`Review status: ${reviewStatus}`);
 
+    const isCore = sourceTableName === 'core_wind_farms';
+
     for (const [index, windFarmRow] of windFarmRows.entries()) {
       console.error(
         `[${index + 1}/${windFarmRows.length}] Running research for ${windFarmRow.name} (ID ${windFarmRow.id})`,
@@ -69,7 +72,7 @@ async function main() {
       const fileStem = `${windFarmRow.id}-${slugifyFileSegment(
         windFarmRow.name || `windfarm-${windFarmRow.id}`,
       )}`;
-      const turbineMetadata = await getLinkedTurbineMetadata(client, windFarmRow.id);
+      const turbineMetadata = await getLinkedTurbineMetadata(client, windFarmRow.id, sourceTableName);
       const projectContext = buildProjectContext({
         sourceTableName,
         turbineMetadata,
@@ -111,8 +114,22 @@ async function main() {
         `[${index + 1}/${windFarmRows.length}] Saved ${windFarmRow.name} from ${sourceTableName} to ${savedPath}`,
       );
 
+      // Resolve the core_wind_farms.id for FK-constrained tables
+      let coreWindFarmId = windFarmRow.id;
+      if (!isCore) {
+        const resolved = await resolveCoreWindFarmId(client, windFarmRow.name);
+        if (!resolved) {
+          console.error(
+            `[${index + 1}/${windFarmRows.length}] ⚠ Skipping DB storage for ${windFarmRow.name} — no matching core_wind_farms row`,
+          );
+          completedCount += 1;
+          continue;
+        }
+        coreWindFarmId = resolved;
+      }
+
       const { reportId, factsInserted } = await storeResearchReport(client, {
-        windFarmId: windFarmRow.id,
+        windFarmId: coreWindFarmId,
         reportMarkdown: report,
         modelUsed: DEFAULT_MODEL,
         finalPrompt,

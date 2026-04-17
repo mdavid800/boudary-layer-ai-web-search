@@ -1,13 +1,13 @@
 import path from 'node:path';
 
-const ALLOWED_SOURCE_TABLES = new Set(['windfarm_database', 'windfarm_database_test']);
+const ALLOWED_SOURCE_TABLES = new Set(['core_wind_farms', 'windfarm_database', 'windfarm_database_test']);
 
 export function getWindFarmSourceTableName(value = process.env.WIND_FARM_SOURCE_TABLE) {
-  const tableName = value?.trim() || 'windfarm_database';
+  const tableName = value?.trim() || 'core_wind_farms';
 
   if (!ALLOWED_SOURCE_TABLES.has(tableName)) {
     throw new Error(
-      `Unsupported WIND_FARM_SOURCE_TABLE: ${tableName}. Use windfarm_database or windfarm_database_test.`,
+      `Unsupported WIND_FARM_SOURCE_TABLE: ${tableName}. Use core_wind_farms, windfarm_database, or windfarm_database_test.`,
     );
   }
 
@@ -21,12 +21,18 @@ export function getWindFarmReportsDirectory(value = process.env.WIND_FARM_REPORT
 
 export async function listWindFarmRows(client, sourceTableName) {
   const validatedTableName = getWindFarmSourceTableName(sourceTableName);
+
+  // core_wind_farms uses different column names than windfarm_database
+  const isCore = validatedTableName === 'core_wind_farms';
+  const turbineCol = isCore ? 'turbine_count' : 'n_turbines';
+  const powerCol = 'power_mw';
+
   const result = await client.query(`
     select
       id,
       name,
-      n_turbines,
-      power_mw,
+      ${turbineCol} as n_turbines,
+      ${powerCol} as power_mw,
       status
     from public.${validatedTableName}
     where name is not null
@@ -36,7 +42,46 @@ export async function listWindFarmRows(client, sourceTableName) {
   return result.rows;
 }
 
-export async function getLinkedTurbineMetadata(client, windfarmId) {
+export async function getLinkedTurbineMetadata(client, windfarmId, sourceTableName) {
+  const isCore = getWindFarmSourceTableName(sourceTableName) === 'core_wind_farms';
+
+  if (isCore) {
+    // Use core tables: join through source_key-based links
+    const result = await client.query(
+      `
+        select
+          t.manufacturer as "oemManufacturer",
+          t.rated_power_mw as "ratedPower",
+          t.rotor_diameter_m as "rotorDiameter",
+          t.hub_height_m as "hubHeight",
+          t.turbine_type as "turbineType",
+          t.commissioning_date as "commissioningDate",
+          count(*)::integer as "matchCount"
+        from public.core_turbines t
+        join public.core_wind_farm_turbine_links l
+          on l.turbine_source_key = t.source_key
+        join public.core_wind_farms wf
+          on wf.source_key = l.wind_farm_source_key
+        where wf.id = $1
+        group by
+          t.manufacturer,
+          t.rated_power_mw,
+          t.rotor_diameter_m,
+          t.hub_height_m,
+          t.turbine_type,
+          t.commissioning_date
+        order by
+          count(*) desc,
+          t.manufacturer nulls last,
+          t.turbine_type nulls last
+        limit 1
+      `,
+      [windfarmId],
+    );
+    return result.rows[0] || null;
+  }
+
+  // Legacy: use windfarm_database + turbine_windfarm_boundary_links
   const result = await client.query(
     `
       select
@@ -68,4 +113,17 @@ export async function getLinkedTurbineMetadata(client, windfarmId) {
   );
 
   return result.rows[0] || null;
+}
+
+/**
+ * Resolve the core_wind_farms.id for a wind farm by name.
+ * When the source table is not core_wind_farms, reports/facts must still
+ * reference core_wind_farms.id (FK constraint). Returns null if no match.
+ */
+export async function resolveCoreWindFarmId(client, name) {
+  const result = await client.query(
+    `SELECT id FROM public.core_wind_farms WHERE LOWER(TRIM(name)) = LOWER(TRIM($1)) LIMIT 1`,
+    [name],
+  );
+  return result.rows[0]?.id ?? null;
 }

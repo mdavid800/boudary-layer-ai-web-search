@@ -267,7 +267,7 @@ test('createDatabaseClient throws when DATABASE_URL is missing', () => {
 });
 
 test('getWindFarmSourceTableName defaults to the live table', () => {
-  assert.equal(getWindFarmSourceTableName(), 'windfarm_database');
+  assert.equal(getWindFarmSourceTableName(), 'core_wind_farms');
 });
 
 test('getWindFarmSourceTableName allows the test table', () => {
@@ -277,7 +277,7 @@ test('getWindFarmSourceTableName allows the test table', () => {
 test('getWindFarmSourceTableName rejects unsupported tables', () => {
   assert.throws(
     () => getWindFarmSourceTableName('windfarm_database_archive'),
-    /Unsupported WIND_FARM_SOURCE_TABLE: windfarm_database_archive\. Use windfarm_database or windfarm_database_test\./,
+    /Unsupported WIND_FARM_SOURCE_TABLE: windfarm_database_archive/,
   );
 });
 
