@@ -97,6 +97,24 @@ test('buildOfficialSourceContext injects official ownership hints for Beatrice',
   assert.match(result, /Equitix \(17\.5% share\)/);
 });
 
+test('buildOfficialSourceContext matches project aliases for UK ownership hints', async () => {
+  const html = [
+    '<html><body>',
+    '<div>The Dogger Bank offshore wind farm is a joint venture partnership between SSE (40%), Equinor (40%) and Vårgrønn (20%).</div>',
+    '</body></html>',
+  ].join('');
+
+  const result = await buildOfficialSourceContext('Dogger Bank A', {
+    fetchImpl: async () => ({
+      ok: true,
+      text: async () => html,
+    }),
+  });
+
+  assert.match(result, /High-priority official source hints/);
+  assert.match(result, /SSE \(40%\), Equinor \(40%\) and Vårgrønn \(20%\)/);
+});
+
 test('normalizeCanonicalWindFarmStatus maps legacy and planning aliases into canonical statuses', () => {
   assert.equal(normalizeCanonicalWindFarmStatus('Production'), 'Operational');
   assert.equal(normalizeCanonicalWindFarmStatus('consented'), 'Consent Authorised');

@@ -47,6 +47,7 @@ export async function listWindFarmRows(client, sourceTableName, { ids, country }
     select
       id,
       name,
+      type,
       ${turbineCol} as n_turbines,
       ${powerCol} as power_mw,
       status

@@ -1,6 +1,6 @@
 const OFFICIAL_SOURCE_HINTS = [
   {
-    normalizedProjectName: 'beatriceoffshorewindfarm',
+    normalizedProjectNames: ['beatriceoffshorewindfarm', 'beatrice'],
     sources: [
       {
         label: 'Official Beatrice project about page',
@@ -12,6 +12,95 @@ const OFFICIAL_SOURCE_HINTS = [
           { name: 'TRIG', aliases: ['The Renewables Infrastructure Group'] },
           { name: 'Equitix' },
         ],
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: ['seagreen', 'seagreenphase1', 'seagreenphase1windfarm'],
+    sources: [
+      {
+        label: 'Official Seagreen project page',
+        url: 'https://www.seagreenwindenergy.com/',
+        anchorText: 'Seagreen is a joint venture between SSE Renewables (49%), TotalEnergies (25.5%) and PTTEP (25.5%).',
+      },
+      {
+        label: 'SSE Renewables Seagreen project page',
+        url: 'https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/',
+        anchorText: 'It is located around 27km off the coast of Angus in the North Sea and is a £3bn joint venture between SSE Renewables (49%), TotalEnergies (25.5%) and PTTEP (25.5%).',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: [
+      'doggerbank',
+      'doggerbankwindfarm',
+      'doggerbanka',
+      'doggerbankb',
+      'doggerbankc',
+      'doggerbankawindfarm',
+      'doggerbankbwindfarm',
+      'doggerbankcwindfarm',
+    ],
+    sources: [
+      {
+        label: 'Official Dogger Bank project page',
+        url: 'https://doggerbank.com/',
+        anchorText: 'The Dogger Bank offshore wind farm is a joint venture partnership between SSE (40%), Equinor (40%) and Vårgrønn (20%).',
+      },
+      {
+        label: 'SSE Renewables Dogger Bank project page',
+        url: 'https://www.sserenewables.com/offshore-wind/projects/dogger-bank/',
+        anchorText: 'The world-leading project under construction in the North Sea more than 130km off the North East coast of England is a joint venture between SSE (40%), Equinor (40%) and Vårgrønn (20%).',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: ['morayeast', 'morayeastwindfarm', 'morayeastoffshorewindfarm'],
+    sources: [
+      {
+        label: 'Official Moray East sponsors page',
+        url: 'https://www.morayeast.com/project/sponsors',
+        anchorText: 'The shareholder structure of Moray East includes Ocean Winds (40%), Diamond Green Limited (33.4%), and Equitix (26.6%).',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: ['moraywest', 'moraywestwindfarm', 'moraywestoffshorewindfarm'],
+    sources: [
+      {
+        label: 'Official Moray West sponsors page',
+        url: 'https://www.moraywest.com/project/sponsors',
+        anchorText: 'Moray West is principally owned by Ocean Winds (OW), a 50:50 joint venture between ENGIE and EDP Renewables. A small minority stake is held by UAB Ignitis renewables.',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: ['eastangliaone', 'eastanglia1', 'eastangliaonewindfarm'],
+    sources: [
+      {
+        label: 'ScottishPower Renewables East Anglia ONE page',
+        url: 'https://www.scottishpowerrenewables.com/east-anglia-one',
+        anchorText: 'East Anglia ONE, a joint venture between ScottishPower Renewables and Bilbao Offshore Holding Limited.',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: ['eastangliatwo', 'eastanglia2', 'eastangliatwowindfarm'],
+    sources: [
+      {
+        label: 'ScottishPower Renewables East Anglia TWO page',
+        url: 'https://www.scottishpowerrenewables.com/east-anglia-two',
+        anchorText: 'The East Anglia TWO project, which is wholly owned by ScottishPower Renewables, alongside East Anglia ONE North will be the last of our four East Anglia projects to be developed.',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: ['eastangliathree', 'eastanglia3', 'eastangliathreewindfarm'],
+    sources: [
+      {
+        label: 'ScottishPower Renewables East Anglia THREE page',
+        url: 'https://www.scottishpowerrenewables.com/east-anglia-three',
+        anchorText: 'The East Anglia THREE project is the second of our four East Anglia projects to be developed. It is being delivered as part of a 50/50 joint venture with our strategic investment partner, Masdar.',
       },
     ],
   },
@@ -63,7 +152,11 @@ export async function buildOfficialSourceContext(projectName, { fetchImpl = fetc
 
 function getOfficialSourceHint(projectName) {
   const normalizedProjectName = normalizeProjectName(projectName);
-  return OFFICIAL_SOURCE_HINTS.find((entry) => entry.normalizedProjectName === normalizedProjectName) ?? null;
+  return (
+    OFFICIAL_SOURCE_HINTS.find((entry) =>
+      (entry.normalizedProjectNames ?? [entry.normalizedProjectName]).includes(normalizedProjectName),
+    ) ?? null
+  );
 }
 
 function normalizeProjectName(projectName) {

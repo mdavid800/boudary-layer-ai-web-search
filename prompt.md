@@ -35,12 +35,13 @@ Important rules:
    - gross installed capacity vs export capacity / MEC
    - project company vs operator vs equity owners
    - planned turbine specs vs as-built turbine specs
-15. For “Recent developments”, only include items from the last 24 months from the date of the search.
-16. Use concise wording, but include enough detail to be useful.
-17. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
-18. Include citations directly in the “Sources” column using markdown links.
-19. If an item cannot be confirmed, write “Not confirmed” rather than inventing an answer.
-20. Treat the output tables as a downstream parser contract:
+15. If the project context says the dataset `Type` is not `Offshore wind farm`, do not force the asset into a commercial wind-farm interpretation. Preserve the indicated type, state clearly if it is a demo zone, wave site, tidal site, or development zone, and use `Not confirmed` for fields that do not apply cleanly.
+16. For “Recent developments”, only include items from the last 24 months from the date of the search.
+17. Use concise wording, but include enough detail to be useful.
+18. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
+19. Include citations directly in the “Sources” column using markdown links.
+20. If an item cannot be confirmed, write “Not confirmed” rather than inventing an answer.
+21. Treat the output tables as a downstream parser contract:
    - keep the first table row order exactly as specified below
    - keep the second table heading as “Recent developments” and the second table headers exactly as specified below
    - do not rename the table headers

@@ -47,6 +47,7 @@ export function buildProjectContext({
     '',
     `Emodnet wind farm database metadata (${sourceTableName}):`,
     `- Name: ${windFarmName}`,
+    `- Type: ${formatValue(windFarmMetadata?.type)}`,
     `- Total turbine count: ${formatValue(windFarmMetadata?.nTurbines)}`,
     `- Capacity (MW): ${formatValue(windFarmMetadata?.powerMw)}`,
     `- Status: ${formatValue(windFarmMetadata?.status)}`,

@@ -109,6 +109,7 @@ async function main() {
         turbineMetadata,
         windFarmMetadata: {
           name: windFarmRow.name,
+          type: windFarmRow.type,
           nTurbines: windFarmRow.n_turbines,
           powerMw: windFarmRow.power_mw,
           status: windFarmRow.status,
