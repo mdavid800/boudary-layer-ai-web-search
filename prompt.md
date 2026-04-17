@@ -17,20 +17,34 @@ Important rules:
    - grid / transmission authority documents
    - reputable industry news
 3. For every item, provide at least 2 web sources wherever possible.
-4. Where sources conflict, do not guess:
+4. For facts that can change over time, especially current owners, operator, ownership split, and status, prioritise sources that themselves show a visible published date or last-updated date.
+5. The important freshness signal is the source page's own published / updated date, not the date you performed the search.
+6. If an official project page is clearly old or undated, treat it as background only and confirm current ownership / operator / status with a newer dated authoritative source such as a current owner portfolio page, investor results page, regulator page, or recent company update.
+7. In the Research summary for both `Developer / owners` and `Ownership history`, explicitly mention the freshest source date relied on, for example `SSE portfolio page updated November 2024 confirms ...`.
+8. Do not use access dates or phrases like `current as accessed 2026` as freshness evidence. Only use a visible source-page published date or last-updated date.
+9. For current ownership and ownership percentages, prefer the official project website, official JV website, or official operator page over third-party databases and over a single partner's asset page.
+10. Do not infer the full current ownership structure from one investor or partner page on its own. Those pages often list only that investor's stake and may lag later transfers.
+11. If an official project/JV/operator page explicitly lists the partnership and percentage shares, treat that as the primary source for the current ownership split unless a newer official source clearly supersedes it.
+12. For multi-owner projects, verify that the current ownership percentages reconcile to the full partnership before answering. If a source only shows one partner or the percentages do not reconcile, keep searching.
+13. Where sources conflict, do not guess:
    - state the conflict briefly
    - explain which value is most likely correct
    - prefer project-specific official or regulatory sources over secondary summaries
-5. Be careful to distinguish:
+14. Be careful to distinguish:
    - the built project vs extensions / later phases
    - gross installed capacity vs export capacity / MEC
    - project company vs operator vs equity owners
    - planned turbine specs vs as-built turbine specs
-6. For “Recent developments”, only include items from the last 24 months from the date of the search.
-7. Use concise wording, but include enough detail to be useful.
-8. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
-9. Include citations directly in the “Sources” column using markdown links.
-10. If an item cannot be confirmed, write “Not confirmed” rather than inventing an answer.
+15. For “Recent developments”, only include items from the last 24 months from the date of the search.
+16. Use concise wording, but include enough detail to be useful.
+17. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
+18. Include citations directly in the “Sources” column using markdown links.
+19. If an item cannot be confirmed, write “Not confirmed” rather than inventing an answer.
+20. Treat the output tables as a downstream parser contract:
+   - keep the first table row order exactly as specified below
+   - keep the second table heading as “Recent developments” and the second table headers exactly as specified below
+   - do not rename the table headers
+   - do not add extra columns, bullet lists, or prose between the table header and table rows
 
 Research and complete the following items:
 
@@ -46,8 +60,15 @@ Research and complete the following items:
 
 3. Status
    - current development stage
-   - classify as one of:
-     operational, under construction, consented, in planning, concept
+   - classify using exactly one of these Boundary Layer statuses:
+     - `Operational`
+     - `Under Construction`
+     - `Consent Authorised`
+     - `FID Taken, Pre-Construction` — consented and preparing for construction; FID taken and major contracts awarded
+     - `Consent Application Submitted` — planning / consent application submitted and awaiting decision
+     - `Development Zone / lease area` — lease / seabed zone awarded but no specific project consent application yet
+     - `Concept` — early-stage project with no formal application yet
+   - when evidence is ambiguous, choose the closest exact label above and explain the nuance briefly in the research summary
 
 4. Capacity
    - total installed or planned capacity in MW
@@ -86,7 +107,7 @@ Then produce this first table:
 | Project identity | ... | ... | [Source 1](url), [Source 2](url) |
 | Developer / owners | ... | ... | [Source 1](url), [Source 2](url) |
 | Ownership history | ... | ... | [Source 1](url), [Source 2](url) |
-| Status | ... | ... | [Source 1](url), [Source 2](url) |
+| Status | One of the exact Boundary Layer statuses above | ... | [Source 1](url), [Source 2](url) |
 | Capacity | ... | ... | [Source 1](url), [Source 2](url) |
 | Maximum Export Capacity (MEC) | ... | ... | [Source 1](url), [Source 2](url) |
 | Turbine model | ... | ... | [Source 1](url), [Source 2](url) |
@@ -108,6 +129,8 @@ After that, include one short paragraph only if needed to explain an important n
 - project renamed over time
 
 Then produce this second table:
+
+Recent developments
 
 | Date | Development | Why it matters | Sources |
 |---|---|---|---|

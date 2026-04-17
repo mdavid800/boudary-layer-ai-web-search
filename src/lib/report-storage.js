@@ -1,5 +1,7 @@
 import { createHash } from 'node:crypto';
 import { extractFactsFromReport } from './fact-extraction.js';
+import { parseStructuredReport } from './report-structure.js';
+import { normalizeCanonicalWindFarmStatus } from './status.js';
 
 /**
  * Compute SHA-256 hex digest of a string.
@@ -28,21 +30,32 @@ export async function storeResearchReport(client, {
   reviewStatus = 'draft',
 }) {
   const promptHash = sha256(finalPrompt);
+  const { profileRows, recentDevelopments } = parseStructuredReport(reportMarkdown);
 
   // Upsert report — on conflict update the markdown and metadata
   const reportResult = await client.query(
     `INSERT INTO research_wind_farm_reports
-       (wind_farm_id, report_markdown, model_used, prompt_hash, researched_at, review_status)
-     VALUES ($1, $2, $3, $4, now(), $5)
+       (wind_farm_id, report_markdown, profile_rows_json, recent_developments_json, model_used, prompt_hash, researched_at, review_status)
+     VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, now(), $7)
      ON CONFLICT (wind_farm_id, prompt_hash)
      DO UPDATE SET
-       report_markdown = EXCLUDED.report_markdown,
-       model_used      = EXCLUDED.model_used,
-       researched_at   = EXCLUDED.researched_at,
-       review_status   = EXCLUDED.review_status,
-       updated_at      = now()
+        report_markdown = EXCLUDED.report_markdown,
+        profile_rows_json = EXCLUDED.profile_rows_json,
+        recent_developments_json = EXCLUDED.recent_developments_json,
+        model_used      = EXCLUDED.model_used,
+        researched_at   = EXCLUDED.researched_at,
+        review_status   = EXCLUDED.review_status,
+        updated_at      = now()
      RETURNING id`,
-    [windFarmId, reportMarkdown, modelUsed, promptHash, reviewStatus],
+    [
+      windFarmId,
+      reportMarkdown,
+      JSON.stringify(profileRows),
+      JSON.stringify(recentDevelopments),
+      modelUsed,
+      promptHash,
+      reviewStatus,
+    ],
   );
 
   const reportId = reportResult.rows[0].id;
@@ -57,6 +70,16 @@ export async function storeResearchReport(client, {
   let factsInserted = 0;
 
   for (const fact of facts) {
+    const normalizedValue =
+      fact.fieldName === 'status'
+        ? normalizeCanonicalWindFarmStatus(fact.value)
+        : fact.value;
+
+    if (fact.fieldName === 'status' && normalizedValue === null) {
+      console.warn(`Skipping non-canonical research status "${fact.value}" for wind farm ${windFarmId}.`);
+      continue;
+    }
+
     await client.query(
       `INSERT INTO wind_farm_facts
          (wind_farm_id, field_name, value, source_type, source_detail, citation_url, report_id, status)
@@ -71,7 +94,7 @@ export async function storeResearchReport(client, {
       [
         windFarmId,
         fact.fieldName,
-        fact.value,
+        normalizedValue,
         `AI research ${new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`,
         fact.citationUrl,
         reportId,

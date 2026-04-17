@@ -1,8 +1,22 @@
+import { parseStructuredReport } from './report-structure.js';
+
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const REPORT_TABLE_HEADERS = [
-  '| Item | Completed detail | Sources |',
+  '| Item | Value | Research summary | Sources |',
   '| Date | Development | Why it matters | Sources |',
 ];
+const OWNERSHIP_ITEM_LABELS = ['Developer / owners', 'Ownership history'];
+const FRESHNESS_RETRY_NOTE = [
+  '',
+  'Critical correction for this retry:',
+  '- For current owners, operator, ownership split, and status, the important freshness signal is the source page\'s own published or last-updated date, not the date of search.',
+  '- Re-check those fields using the newest dated authoritative sources you can find.',
+  '- If an official project page is old or undated and a newer authoritative source exists, prefer the newer dated source for current facts.',
+  '- For current ownership, prefer the official project website, official JV website, or official operator page over a single partner or investor asset page.',
+  '- Do not infer the full ownership split from one partner page alone; verify the full partnership and that percentages reconcile.',
+  '- In the Research summary for Developer / owners and Ownership history, explicitly state the freshest source date relied on.',
+  '- Do not use access dates or phrasing like "as accessed 2026" as freshness evidence.',
+].join('\n');
 const SYSTEM_MESSAGE = [
   'You are an offshore wind research analyst.',
   'You must use current web sources via the available web search tool before answering.',
@@ -34,57 +48,88 @@ export async function requestResearchReport({
   };
 
   if (normalizedSearchMode === 'plugin') {
-    return requestWithWebPlugin({
-      ...sharedOptions,
-      maxResults,
+    const pluginResult = await requestWithRetry({
+      requestFn: requestWithWebPlugin,
+      requestOptions: {
+        ...sharedOptions,
+        maxResults,
+      },
     });
+
+    if (pluginResult.qualityIssues.length === 0) {
+      return pluginResult.report;
+    }
+
+    throw new Error(
+      buildIncompleteReportError({
+        pluginReport: pluginResult.report,
+        qualityIssues: pluginResult.qualityIssues,
+      }),
+    );
   }
 
   if (normalizedSearchMode === 'server-tool') {
-    const report = await requestWithServerTool({
-      ...sharedOptions,
-      maxResults,
-      maxTotalResults,
+    const serverToolResult = await requestWithRetry({
+      requestFn: requestWithServerTool,
+      requestOptions: {
+        ...sharedOptions,
+        maxResults,
+        maxTotalResults,
+      },
     });
 
-    if (!isCompletedResearchReport(report)) {
+    if (serverToolResult.qualityIssues.length > 0) {
       throw new Error(
-        'OpenRouter server-tool mode returned an incomplete response. Switch to OPENROUTER_SEARCH_MODE=plugin or --search-mode plugin for reliable report output.',
+        buildIncompleteReportError({
+          serverToolReport: serverToolResult.report,
+          qualityIssues: serverToolResult.qualityIssues,
+        }),
       );
     }
 
-    return report;
+    return serverToolResult.report;
   }
 
   let serverToolReport = '';
+  let serverToolQualityIssues = [];
 
   try {
-    serverToolReport = await requestWithServerTool({
-      ...sharedOptions,
-      maxResults,
-      maxTotalResults,
+    const serverToolResult = await requestWithRetry({
+      requestFn: requestWithServerTool,
+      requestOptions: {
+        ...sharedOptions,
+        maxResults,
+        maxTotalResults,
+      },
     });
+    serverToolReport = serverToolResult.report;
+    serverToolQualityIssues = serverToolResult.qualityIssues;
 
-    if (isCompletedResearchReport(serverToolReport)) {
+    if (serverToolQualityIssues.length === 0) {
       return serverToolReport;
     }
   } catch {
     serverToolReport = '';
+    serverToolQualityIssues = [];
   }
 
-  const pluginReport = await requestWithWebPlugin({
-    ...sharedOptions,
-    maxResults,
+  const pluginResult = await requestWithRetry({
+    requestFn: requestWithWebPlugin,
+    requestOptions: {
+      ...sharedOptions,
+      maxResults,
+    },
   });
 
-  if (isCompletedResearchReport(pluginReport)) {
-    return pluginReport;
+  if (pluginResult.qualityIssues.length === 0) {
+    return pluginResult.report;
   }
 
   throw new Error(
     buildIncompleteReportError({
-      pluginReport,
+      pluginReport: pluginResult.report,
       serverToolReport,
+      qualityIssues: [...new Set([...serverToolQualityIssues, ...pluginResult.qualityIssues])],
     }),
   );
 }
@@ -97,6 +142,65 @@ export function isCompletedResearchReport(content) {
   const normalizedContent = content.replace(/\r\n/g, '\n');
 
   return REPORT_TABLE_HEADERS.every((header) => normalizedContent.includes(header));
+}
+
+export function getResearchReportQualityIssues(content, referenceDate = new Date()) {
+  if (!isCompletedResearchReport(content)) {
+    return ['missing-required-tables'];
+  }
+
+  const { profileRows, recentDevelopments } = parseStructuredReport(content);
+  const qualityIssues = [];
+
+  if (recentDevelopments.length === 0) {
+    qualityIssues.push('missing-recent-developments');
+  }
+
+  if (!hasFreshOwnershipEvidence(profileRows, recentDevelopments, referenceDate)) {
+    qualityIssues.push('stale-ownership-evidence');
+  }
+
+  return qualityIssues;
+}
+
+export function hasFreshOwnershipEvidence(
+  profileRows,
+  recentDevelopments = [],
+  referenceDate = new Date(),
+) {
+  if (!Array.isArray(profileRows) || profileRows.length === 0) {
+    return false;
+  }
+
+  const recentYears = getRecentYearStrings(referenceDate);
+  const hasRequiredOwnershipRows = OWNERSHIP_ITEM_LABELS.every((itemLabel) => {
+    const row = profileRows.find((candidate) => candidate.item_label === itemLabel);
+
+    return row && row.sources.length >= 2;
+  });
+
+  if (!hasRequiredOwnershipRows) {
+    return false;
+  }
+
+  const hasDatedOwnershipSummaries = OWNERSHIP_ITEM_LABELS.every((itemLabel) => {
+    const row = profileRows.find((candidate) => candidate.item_label === itemLabel);
+
+    return rowHasUsableFreshnessDate(row.research_summary, recentYears);
+  });
+
+  if (hasDatedOwnershipSummaries) {
+    return true;
+  }
+
+  return recentDevelopments.some((row) => {
+    const datedRecently = recentYears.some((year) => row.date.includes(year));
+    const mentionsOwnership = /(owner|ownership|operator|equity|stake)/i.test(
+      `${row.development} ${row.why_it_matters}`,
+    );
+
+    return datedRecently && mentionsOwnership;
+  });
 }
 
 export function normalizeSearchMode(searchMode = 'plugin') {
@@ -113,6 +217,32 @@ export function normalizeSearchMode(searchMode = 'plugin') {
   }
 
   return normalizedSearchMode;
+}
+
+async function requestWithRetry({ requestFn, requestOptions }) {
+  const initialReport = await requestFn(requestOptions);
+  const initialQualityIssues = getResearchReportQualityIssues(initialReport);
+
+  if (initialQualityIssues.length === 0) {
+    return {
+      report: initialReport,
+      qualityIssues: [],
+    };
+  }
+
+  const retryReport = await requestFn({
+    ...requestOptions,
+    prompt: buildFreshnessRetryPrompt(requestOptions.prompt),
+  });
+
+  return {
+    report: retryReport,
+    qualityIssues: getResearchReportQualityIssues(retryReport),
+  };
+}
+
+function buildFreshnessRetryPrompt(prompt) {
+  return `${prompt.trim()}\n\n${FRESHNESS_RETRY_NOTE}`;
 }
 
 async function requestWithServerTool({
@@ -275,12 +405,13 @@ export function buildOpenRouterError(status, parsedBody, rawBody) {
   return `OpenRouter request failed (${status}): ${message}`;
 }
 
-function buildIncompleteReportError({ serverToolReport, pluginReport }) {
+function buildIncompleteReportError({ serverToolReport, pluginReport, qualityIssues = [] }) {
   const serverToolPreview = summarizeContent(serverToolReport);
   const pluginPreview = summarizeContent(pluginReport);
 
   return [
-    'OpenRouter returned an incomplete research response.',
+    'OpenRouter returned a research response that did not satisfy the report quality checks.',
+    qualityIssues.length > 0 ? `Quality issues: ${qualityIssues.join(', ')}.` : '',
     `Server-tool preview: ${serverToolPreview}`,
     `Plugin preview: ${pluginPreview}`,
   ].join(' ');
@@ -292,6 +423,19 @@ function summarizeContent(content) {
   }
 
   return content.replace(/\s+/g, ' ').trim().slice(0, 180);
+}
+
+function getRecentYearStrings(referenceDate) {
+  const currentYear = referenceDate.getUTCFullYear();
+  return [currentYear, currentYear - 1, currentYear - 2].map(String);
+}
+
+function rowHasUsableFreshnessDate(summary, recentYears) {
+  if (typeof summary !== 'string' || /as accessed/i.test(summary)) {
+    return false;
+  }
+
+  return recentYears.some((year) => summary.includes(year));
 }
 
 async function readBody(response) {

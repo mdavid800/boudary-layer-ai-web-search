@@ -3,6 +3,7 @@ import process from 'node:process';
 import { createInterface } from 'node:readline/promises';
 import dotenv from 'dotenv';
 import { formatHelp, parseCliArgs } from './lib/args.js';
+import { buildOfficialSourceContext } from './lib/official-source-hints.js';
 import { requestResearchReport } from './lib/openrouter.js';
 import { buildResearchPrompt, loadPromptTemplate } from './lib/prompt.js';
 import {
@@ -39,7 +40,11 @@ async function main() {
   const windFarmName = await resolveWindFarmName(args.windFarmName);
   const promptPath = path.resolve(process.cwd(), args.promptPath || DEFAULT_PROMPT_PATH);
   const promptTemplate = await loadPromptTemplate(promptPath);
-  const finalPrompt = buildResearchPrompt(promptTemplate, windFarmName);
+  const officialSourceContext = await buildOfficialSourceContext(windFarmName);
+  const finalPrompt = buildResearchPrompt(
+    promptTemplate,
+    [windFarmName, officialSourceContext].filter(Boolean).join('\n'),
+  );
   const model = args.model || DEFAULT_MODEL;
 
   console.error(`Using OpenRouter model: ${model}`);

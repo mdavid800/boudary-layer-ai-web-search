@@ -18,6 +18,7 @@ import {
   resolveCoreWindFarmId,
 } from './lib/windfarm-database.js';
 import { requestResearchReport } from './lib/openrouter.js';
+import { buildOfficialSourceContext } from './lib/official-source-hints.js';
 import { buildProjectContext, buildResearchPrompt, loadPromptTemplate } from './lib/prompt.js';
 import {
   getPromptTraceDirectory,
@@ -113,7 +114,11 @@ async function main() {
           status: windFarmRow.status,
         },
       });
-      const finalPrompt = buildResearchPrompt(promptTemplate, projectContext);
+      const officialSourceContext = await buildOfficialSourceContext(windFarmRow.name);
+      const finalPrompt = buildResearchPrompt(
+        promptTemplate,
+        [projectContext, officialSourceContext].filter(Boolean).join('\n'),
+      );
 
       if (promptTraceEnabled) {
         const promptTracePath = path.join(promptTraceDirectory, `${fileStem}.prompt.md`);

@@ -5,6 +5,7 @@
   "description": "CLI workflow for offshore wind research using OpenRouter web search and Firecrawl.",
   "type": "module",
   "scripts": {
+    "backfill-report-structure": "node src/backfill-report-structure.js",
     "link-windfarms": "node src/link-windfarm-boundaries.js",
     "research-db": "node src/research-from-database.js",
     "publish-reports": "node src/publish-reports.js",
