@@ -93,7 +93,7 @@ eligible_boundaries as (
     wf.geometry,
     public.normalize_windfarm_name(wf.name) as normalized_name
   from public.windfarm_database wf
-  where wf.status in ('Production', 'Construction')
+  where wf.status in ('Production', 'Construction', 'Operational', 'Under Construction')
 ),
 spatial_candidates as (
   select

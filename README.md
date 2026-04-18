@@ -109,8 +109,8 @@ That command creates or refreshes:
 | `OPENROUTER_MODEL` | `openai/gpt-4.1` | Model used to synthesize the report |
 | `OPENROUTER_SEARCH_ENGINE` | `firecrawl` | Web search engine passed to `openrouter:web_search` |
 | `OPENROUTER_SEARCH_MODE` | `plugin` | Search path: `plugin`, `server-tool`, or `auto` |
-| `OPENROUTER_MAX_RESULTS` | `6` | Maximum results per search call |
-| `OPENROUTER_MAX_TOTAL_RESULTS` | `18` | Maximum total results across the full request |
+| `OPENROUTER_MAX_RESULTS` | `8` | Maximum results per search call |
+| `OPENROUTER_MAX_TOTAL_RESULTS` | `24` | Maximum total results across the full request |
 | `OPENROUTER_SITE_URL` | empty | Optional `HTTP-Referer` header for OpenRouter |
 | `OPENROUTER_SITE_NAME` | `boundary-layer-ai-web-search` | Optional `X-Title` header for OpenRouter |
 | `DATABASE_URL` | - | Required for `npm run link-windfarms` and `npm run research-db`; Supabase Postgres connection string |
@@ -123,7 +123,7 @@ That command creates or refreshes:
 
 The linkage workflow is designed for the two Supabase tables you described:
 
-1. It considers `windfarm_database` rows where `status` is `Production` or `Construction`, because some turbine locations are already available for wind farms in advanced construction.
+1. It considers `windfarm_database` rows where `status` is either the legacy raw values (`Production`, `Construction`) or the normalized Boundary Layer values (`Operational`, `Under Construction`), because some turbine locations are already available for wind farms in advanced construction.
 2. It combines normalized-name matching with spatial containment from turbine points to wind farm polygons.
 3. It stores candidate mappings in a persistent table so you can manually mark rows as `selected` or `rejected` without losing those decisions on refresh.
 4. It exposes a resolved view that downstream SQL can join on `turbine_database.id`.
@@ -137,7 +137,61 @@ The linkage workflow is designed for the two Supabase tables you described:
 
 The prompt still asks the model to validate everything with current web sources and supporting links. The database values are treated as moderately confident validation inputs, not final truth.
 
+For fields that can drift over time, especially owners, operator, ownership split, and status, the workflow should prioritise sources that show a visible published date or last-updated date. The important freshness signal is the source page's own date, not the date the search was run.
+
+If an official project page is older or undated, use it as background only and confirm the current fact with a newer dated authoritative source such as a current owner portfolio page, investor reporting page, regulator page, or recent company announcement.
+
+For the project `Status` field, the research output should use Boundary Layer's canonical vocabulary:
+
+- `Operational`
+- `Under Construction`
+- `Consent Authorised`
+- `FID Taken, Pre-Construction`
+- `Consent Application Submitted`
+- `Development Zone / lease area`
+- `Concept`
+
 If you want to inspect the exact rendered prompt for debugging, set `PROMPT_TRACE_ENABLED=true`. Each run will save prompt traces under `prompt-traces\<source-table>\`.
+
+## Official source hints
+
+For wind farms where ownership changes regularly, search alone is not reliable enough. The repeatable pattern is to add a small official-source hint entry so the prompt is seeded with the current project/JV/operator source before the model begins web research.
+
+The registry currently lives in `src/lib/official-source-hints.js`.
+
+To add support for another wind farm:
+
+1. Find the official project, JV, or operator page that shows the current ownership structure.
+2. Add a new `normalizedProjectName` entry to `OFFICIAL_SOURCE_HINTS`.
+3. Add one or more `sources` with:
+	 - `url`: the official page to fetch
+	 - `label`: short description for the prompt
+	 - `anchorText`: a phrase near the relevant section when general snippet extraction is enough
+	 - `ownershipPartners`: partner names and aliases when the page renders ownership cards or logos with nearby percentages
+4. Re-run `npm test`.
+5. Re-run `npm run research-db -- --ids <id>` for the affected wind farm.
+
+Example pattern:
+
+```js
+{
+	normalizedProjectName: 'examplewindfarm',
+	sources: [
+		{
+			label: 'Official Example project ownership page',
+			url: 'https://example.com/about',
+			anchorText: 'joint venture partnership between',
+			ownershipPartners: [
+				{ name: 'Example Energy' },
+				{ name: 'Partner B' },
+				{ name: 'Partner C', aliases: ['Partner C Holdings'] },
+			],
+		},
+	],
+}
+```
+
+Use `ownershipPartners` when the official page contains partner cards or logos with nearby share percentages. Use `anchorText` when a plain text snippet is enough. If ownership is dynamic, prefer the official project/JV/operator page over individual investor pages.
 
 ## Prompt workflow
 

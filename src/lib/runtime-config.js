@@ -10,12 +10,12 @@ export const DEFAULT_SEARCH_ENGINE = readEnvValue('OPENROUTER_SEARCH_ENGINE') ||
 export const DEFAULT_SEARCH_MODE = readEnvValue('OPENROUTER_SEARCH_MODE') || 'plugin';
 export const DEFAULT_MAX_RESULTS = getPositiveInteger(
   readEnvValue('OPENROUTER_MAX_RESULTS'),
-  6,
+  8,
   'OPENROUTER_MAX_RESULTS',
 );
 export const DEFAULT_MAX_TOTAL_RESULTS = getPositiveInteger(
   readEnvValue('OPENROUTER_MAX_TOTAL_RESULTS'),
-  18,
+  24,
   'OPENROUTER_MAX_TOTAL_RESULTS',
 );
 
