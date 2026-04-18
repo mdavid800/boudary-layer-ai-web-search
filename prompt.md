@@ -35,13 +35,18 @@ Important rules:
    - gross installed capacity vs export capacity / MEC
    - project company vs operator vs equity owners
    - planned turbine specs vs as-built turbine specs
-15. If the project context says the dataset `Type` is not `Offshore wind farm`, do not force the asset into a commercial wind-farm interpretation. Preserve the indicated type, state clearly if it is a demo zone, wave site, tidal site, or development zone, and use `Not confirmed` for fields that do not apply cleanly.
-16. For “Recent developments”, only include items from the last 24 months from the date of the search.
-17. Use concise wording, but include enough detail to be useful.
-18. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
-19. Include citations directly in the “Sources” column using markdown links.
-20. If an item cannot be confirmed, write “Not confirmed” rather than inventing an answer.
-21. Treat the output tables as a downstream parser contract:
+15. If the project context includes both EMODnet wind farm metadata and EuroWindWakes turbine metadata, treat EuroWindWakes as the higher-priority database hint for turbine model, OEM, individual rated power, rotor diameter, hub height, and other turbine-specific fields.
+16. If EMODnet and EuroWindWakes disagree on turbine information or hub height, prefer EuroWindWakes unless newer authoritative web sources clearly support EMODnet instead.
+17. Treat EMODnet turbine technical fields as lower-confidence background only. Do not let EMODnet override stronger EuroWindWakes evidence or better web sourcing for turbine specifications.
+18. If current web research remains inconclusive or leaves unresolved ambiguity for turbine model, OEM, individual rated power, rotor diameter, hub height, or related turbine-specific fields, use the EuroWindWakes value as the fallback value if available.
+19. When you use a EuroWindWakes fallback because web research was inconclusive, say so explicitly in the relevant `Research summary` cell, for example by stating that web sources remained ambiguous and the EuroWindWakes dataset value was used as the best available fallback.
+20. If the project context says the dataset `Type` is not `Offshore wind farm`, do not force the asset into a commercial wind-farm interpretation. Preserve the indicated type, state clearly if it is a demo zone, wave site, tidal site, or development zone, and use `Not confirmed` for fields that do not apply cleanly.
+21. For “Recent developments”, only include items from the last 24 months from the date of the search.
+22. Use concise wording, but include enough detail to be useful.
+23. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
+24. Include citations directly in the “Sources” column using markdown links.
+25. If an item cannot be confirmed, write “Not confirmed” rather than inventing an answer.
+26. Treat the output tables as a downstream parser contract:
    - keep the first table row order exactly as specified below
    - keep the second table heading as “Recent developments” and the second table headers exactly as specified below
    - do not rename the table headers

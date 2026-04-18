@@ -45,7 +45,7 @@ export function buildProjectContext({
     '',
     'Moderately confident database validation context to cross-check against current web sources and support with citations:',
     '',
-    `Emodnet wind farm database metadata (${sourceTableName}):`,
+    `Emodnet wind farm database metadata (${sourceTableName}, lower-confidence for turbine technical fields):`,
     `- Name: ${windFarmName}`,
     `- Type: ${formatValue(windFarmMetadata?.type)}`,
     `- Total turbine count: ${formatValue(windFarmMetadata?.nTurbines)}`,
@@ -56,7 +56,7 @@ export function buildProjectContext({
   if (turbineMetadata) {
     lines.push(
       '',
-      'EuroWindWakes European Offshore Dataset (2025) turbine database metadata:',
+      'EuroWindWakes European Offshore Dataset (2025) turbine database metadata (higher-priority for turbine specs and hub height when database hints conflict):',
       `- OEM manufacturer: ${formatValue(turbineMetadata.oemManufacturer)}`,
       `- Rated power (MW): ${formatValue(turbineMetadata.ratedPower)}`,
       `- Rotor diameter (m): ${formatValue(turbineMetadata.rotorDiameter)}`,
@@ -67,7 +67,7 @@ export function buildProjectContext({
   } else {
     lines.push(
       '',
-      'EuroWindWakes European Offshore Dataset (2025) turbine database metadata:',
+      'EuroWindWakes European Offshore Dataset (2025) turbine database metadata (higher-priority for turbine specs and hub height when available):',
       '- No linked turbine metadata was found for this wind farm boundary.',
     );
   }

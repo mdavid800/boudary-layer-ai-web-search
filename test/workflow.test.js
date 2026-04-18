@@ -66,9 +66,9 @@ test('buildProjectContext formats wind farm and linked turbine metadata', () => 
     },
   });
 
-  assert.match(result, /Emodnet wind farm database metadata \(core_wind_farms\):/);
+  assert.match(result, /Emodnet wind farm database metadata \(core_wind_farms, lower-confidence for turbine technical fields\):/);
   assert.match(result, /- Name: Seagreen Phase 1 Windfarm/);
-  assert.match(result, /EuroWindWakes European Offshore Dataset \(2025\) turbine database metadata:/);
+  assert.match(result, /EuroWindWakes European Offshore Dataset \(2025\) turbine database metadata \(higher-priority for turbine specs and hub height when database hints conflict\):/);
   assert.match(result, /- OEM manufacturer: Vestas/);
 });
 
