@@ -31,6 +31,7 @@ export function buildProjectContext({
   sourceTableName,
   turbineMetadata,
   windFarmMetadata,
+  turbineCountValidation,
 }) {
   const windFarmName = formatValue(windFarmMetadata?.name);
 
@@ -71,6 +72,43 @@ export function buildProjectContext({
       '- No linked turbine metadata was found for this wind farm boundary.',
       '- If project-specific web sources do not confirm a turbine-specific field, use Not confirmed rather than inferring from another site that uses the same turbine model.',
     );
+  }
+
+  if (turbineCountValidation) {
+    lines.push(
+      '',
+      'Structured turbine-count validation context (use as non-web cross-check context; do not cite it as a web source):',
+    );
+
+    if (turbineCountValidation.winningFact) {
+      lines.push(
+        `- Current database winner candidate: ${formatValue(turbineCountValidation.winningFact.value)}${turbineCountValidation.winningFact.sourceDetail ? ` (${turbineCountValidation.winningFact.sourceDetail})` : ''}`,
+      );
+    }
+
+    if (turbineCountValidation.calculatedFact) {
+      lines.push(
+        `- EuroWindWakes calculated linked-turbine count: ${formatValue(turbineCountValidation.calculatedFact.value)}${turbineCountValidation.calculatedFact.sourceDetail ? ` (${turbineCountValidation.calculatedFact.sourceDetail})` : ''}`,
+      );
+    }
+
+    if (turbineCountValidation.emodnetFact) {
+      lines.push(
+        `- EMODnet turbine-count hint: ${formatValue(turbineCountValidation.emodnetFact.value)}`,
+      );
+    }
+
+    if (turbineCountValidation.communitySummary) {
+      lines.push(
+        `- Approved community turbine-count notes: ${turbineCountValidation.communitySummary.approvedNoteCount} note(s), ${turbineCountValidation.communitySummary.totalUpvotes} total upvote(s)`,
+      );
+
+      for (const candidate of turbineCountValidation.communitySummary.topProposedValues) {
+        lines.push(
+          `- Community-supported turbine-count value: ${formatValue(candidate.value)} (${candidate.noteCount} note(s), ${candidate.totalUpvotes} upvote(s), ${candidate.promotedNoteCount} promoted)`
+        );
+      }
+    }
   }
 
   return lines.join('\n');

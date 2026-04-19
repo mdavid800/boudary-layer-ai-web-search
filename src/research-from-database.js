@@ -10,11 +10,11 @@ import {
 } from './lib/runtime-config.js';
 import { createDatabaseClient } from './lib/database.js';
 import {
+  getTurbineCountValidationContext,
   getLinkedTurbineMetadata,
   getWindFarmReportsDirectory,
   getWindFarmSourceTableName,
   listWindFarmRows,
-  resolveCoreWindFarmId,
 } from './lib/windfarm-database.js';
 import { requestResearchReport } from './lib/openrouter.js';
 import { buildOfficialSourceContext } from './lib/official-source-hints.js';
@@ -92,8 +92,6 @@ async function main() {
 
     console.error(`Review status: ${reviewStatus}`);
 
-    const isCore = sourceTableName === 'core_wind_farms';
-
     for (const [index, windFarmRow] of windFarmRows.entries()) {
       console.error(
         `[${index + 1}/${windFarmRows.length}] Running research for ${windFarmRow.name} (ID ${windFarmRow.id})`,
@@ -103,9 +101,15 @@ async function main() {
         windFarmRow.name || `windfarm-${windFarmRow.id}`,
       )}`;
       const turbineMetadata = await getLinkedTurbineMetadata(client, windFarmRow.id, sourceTableName);
+      const turbineCountValidation = await getTurbineCountValidationContext(
+        client,
+        windFarmRow.id,
+        sourceTableName,
+      );
       const projectContext = buildProjectContext({
         sourceTableName,
         turbineMetadata,
+        turbineCountValidation,
         windFarmMetadata: {
           name: windFarmRow.name,
           type: windFarmRow.type,
@@ -148,22 +152,8 @@ async function main() {
         `[${index + 1}/${windFarmRows.length}] Saved ${windFarmRow.name} from ${sourceTableName} to ${savedPath}`,
       );
 
-      // Resolve the core_wind_farms.id for FK-constrained tables
-      let coreWindFarmId = windFarmRow.id;
-      if (!isCore) {
-        const resolved = await resolveCoreWindFarmId(client, windFarmRow.name);
-        if (!resolved) {
-          console.error(
-            `[${index + 1}/${windFarmRows.length}] ⚠ Skipping DB storage for ${windFarmRow.name} — no matching core_wind_farms row`,
-          );
-          completedCount += 1;
-          continue;
-        }
-        coreWindFarmId = resolved;
-      }
-
       const { reportId, factsInserted } = await storeResearchReport(client, {
-        windFarmId: coreWindFarmId,
+        windFarmId: windFarmRow.id,
         reportMarkdown: report,
         modelUsed: DEFAULT_MODEL,
         finalPrompt,

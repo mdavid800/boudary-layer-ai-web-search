@@ -71,6 +71,50 @@ test('buildProjectContext formats wind farm and linked turbine metadata', () => 
   assert.match(result, /- OEM manufacturer: Vestas/);
 });
 
+test('buildProjectContext includes turbine-count validation and approved community signals when available', () => {
+  const result = buildProjectContext({
+    sourceTableName: 'core_wind_farms',
+    windFarmMetadata: {
+      name: 'Seagreen Phase 1 Windfarm',
+      nTurbines: 75,
+      powerMw: 1140,
+      status: 'Operational',
+    },
+    turbineMetadata: null,
+    turbineCountValidation: {
+      winningFact: {
+        value: '114',
+        sourceDetail: 'community note #12',
+      },
+      calculatedFact: {
+        value: '114',
+        sourceDetail: 'Calculated from 114 linked EuroWindWakes turbine locations',
+      },
+      emodnetFact: {
+        value: '75',
+      },
+      communitySummary: {
+        approvedNoteCount: 2,
+        totalUpvotes: 9,
+        topProposedValues: [
+          {
+            value: '114',
+            noteCount: 2,
+            totalUpvotes: 9,
+            promotedNoteCount: 1,
+          },
+        ],
+      },
+    },
+  });
+
+  assert.match(result, /Structured turbine-count validation context/);
+  assert.match(result, /Current database winner candidate: 114 \(community note #12\)/);
+  assert.match(result, /EuroWindWakes calculated linked-turbine count: 114/);
+  assert.match(result, /EMODnet turbine-count hint: 75/);
+  assert.match(result, /Approved community turbine-count notes: 2 note\(s\), 9 total upvote\(s\)/);
+});
+
 test('buildProjectContext warns against generic turbine-model inference when no linked turbine metadata exists', () => {
   const result = buildProjectContext({
     sourceTableName: 'core_wind_farms',
@@ -544,8 +588,11 @@ test('getWindFarmSourceTableName defaults to the live table', () => {
   assert.equal(getWindFarmSourceTableName(), 'core_wind_farms');
 });
 
-test('getWindFarmSourceTableName allows the legacy table', () => {
-  assert.equal(getWindFarmSourceTableName('windfarm_database'), 'windfarm_database');
+test('getWindFarmSourceTableName rejects the legacy table', () => {
+  assert.throws(
+    () => getWindFarmSourceTableName('windfarm_database'),
+    /Unsupported WIND_FARM_SOURCE_TABLE: windfarm_database\. Use core_wind_farms\./,
+  );
 });
 
 test('getWindFarmSourceTableName rejects unsupported tables', () => {

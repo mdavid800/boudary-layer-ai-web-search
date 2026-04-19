@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
     "backfill-report-structure": "node src/backfill-report-structure.js",
-    "link-windfarms": "node src/link-windfarm-boundaries.js",
     "research-db": "node src/research-from-database.js",
     "publish-reports": "node src/publish-reports.js",
     "research": "node src/cli.js",

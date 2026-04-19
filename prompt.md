@@ -46,6 +46,8 @@ Important rules:
 23. When a linked EuroWindWakes turbine row is present, do not leave those turbine-specific fields as `Not confirmed` unless the EuroWindWakes row itself is missing that specific value.
 24. When you use a EuroWindWakes fallback because project-specific web research was inconclusive, say so explicitly in the relevant `Research summary` cell, for example by stating that project-specific web sources remained ambiguous and the linked EuroWindWakes dataset value was used as the required fallback.
 25. Do not claim that the EuroWindWakes value was unavailable if the project context includes a linked EuroWindWakes row for that field. Use the provided value and state that you used it.
+26. If the project context includes a calculated linked turbine count, an EMODnet turbine-count hint, or approved community turbine-count notes, treat them as non-web validation signals for `Total turbine count` only.
+27. In the `Research summary` for `Total turbine count`, explicitly say whether the web-sourced figure aligns with or differs from those validation signals, and briefly explain likely reasons such as phase scope, overlapping geometries, outdated dataset values, or community dispute when relevant.
 26. If the project context says the dataset `Type` is not `Offshore wind farm`, do not force the asset into a commercial wind-farm interpretation. Preserve the indicated type, state clearly if it is a demo zone, wave site, tidal site, or development zone, and use `Not confirmed` for fields that do not apply cleanly.
 27. For “Recent developments”, only include items from the last 24 months from the date of the search.
 28. Use concise wording, but include enough detail to be useful.
