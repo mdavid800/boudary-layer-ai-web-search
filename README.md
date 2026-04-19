@@ -10,32 +10,21 @@ When you provide a wind farm name, the CLI:
 
 1. Loads `prompt.md`
 2. Replaces `{WIND_FARM_NAME}` with the name you pass in
-3. Calls OpenRouter web search with Firecrawl
-4. Defaults to the web plugin path for reliable final-report output and also supports the newer server-tool path
+3. Calls OpenRouter web search through the `openrouter:web_search` server tool
+4. Passes search engine `auto` by default
 5. Prints the markdown report to stdout and can also save it to a file
 
 ## Prerequisites
 
 1. Node.js 20+
 2. An OpenRouter API key
-3. Firecrawl enabled in your OpenRouter plugin settings
+3. OpenRouter server tools enabled for your account
 
-For Firecrawl on OpenRouter, complete the setup described here:
+For OpenRouter web search server tools, use the official setup described here:
 
 - <https://openrouter.ai/docs/guides/features/server-tools/web-search>
-- <https://openrouter.ai/settings/plugins>
 
-OpenRouter's Firecrawl path is BYOK, so you need to enable the Firecrawl plugin in OpenRouter and accept the Firecrawl terms before this workflow will succeed.
-
-## Search modes
-
-The CLI supports three search modes:
-
-| Mode | Behavior |
-|---|---|
-| `plugin` | Uses OpenRouter's web plugin directly. This is the default because it returned complete markdown reports reliably in local testing. |
-| `server-tool` | Uses the `openrouter:web_search` server tool only. |
-| `auto` | Tries the server tool first and falls back to the plugin if the response is only intermediate search narration. |
+The CLI always uses the `openrouter:web_search` server tool.
 
 ## Setup
 
@@ -50,7 +39,11 @@ Then edit `.env` and set at least:
 OPENROUTER_API_KEY=your_openrouter_key
 ```
 
-You can keep the default search engine as `firecrawl`, or temporarily switch to `exa` in `.env` if your Firecrawl plugin setup is not ready yet.
+The default runtime now uses:
+
+```dotenv
+OPENROUTER_SEARCH_ENGINE=auto
+```
 
 ## Usage
 
@@ -69,19 +62,13 @@ npm run research -- "Dogger Bank A" --output reports\dogger-bank-a.md
 Use a different model for a single run:
 
 ```powershell
-npm run research -- "East Anglia Three" --model openai/gpt-4.1-mini
+npm run research -- "East Anglia Three" --model openai/gpt-5.4-mini
 ```
 
 Show CLI help:
 
 ```powershell
 npm run research -- --help
-```
-
-Try the beta server-tool path explicitly:
-
-```powershell
-npm run research -- "Dogger Bank A" --search-mode server-tool
 ```
 
 Build or refresh the turbine-to-boundary linkage objects in Supabase:
@@ -96,6 +83,8 @@ Run research sequentially for every row in the configured wind farm source table
 npm run research-db
 ```
 
+Operational note: `openai/gpt-5.4` can take materially longer than `openai/gpt-5.4-mini` before any visible payload arrives. In local investigation against the production Beatrice prompt, OpenRouter returned `200` quickly but streamed whitespace keepalive chunks for about 59 seconds before the first real GPT-5.4 payload, versus about 23 seconds for GPT-5.4-mini.
+
 That command creates or refreshes:
 
 1. `public.turbine_windfarm_boundary_matches` - persistent farm-to-boundary candidate matches, including auto-selection flags and room for manual overrides.
@@ -106,9 +95,8 @@ That command creates or refreshes:
 | Variable | Default | Purpose |
 |---|---|---|
 | `OPENROUTER_API_KEY` | - | Required API key for OpenRouter |
-| `OPENROUTER_MODEL` | `openai/gpt-4.1` | Model used to synthesize the report |
-| `OPENROUTER_SEARCH_ENGINE` | `firecrawl` | Web search engine passed to `openrouter:web_search` |
-| `OPENROUTER_SEARCH_MODE` | `plugin` | Search path: `plugin`, `server-tool`, or `auto` |
+| `OPENROUTER_MODEL` | `openai/gpt-5.4` | Model used to synthesize the report |
+| `OPENROUTER_SEARCH_ENGINE` | `auto` | Web search engine passed to `openrouter:web_search` |
 | `OPENROUTER_MAX_RESULTS` | `8` | Maximum results per search call |
 | `OPENROUTER_MAX_TOTAL_RESULTS` | `24` | Maximum total results across the full request |
 | `OPENROUTER_SITE_URL` | empty | Optional `HTTP-Referer` header for OpenRouter |
@@ -137,6 +125,17 @@ The linkage workflow is designed for the two Supabase tables you described:
 
 The prompt still asks the model to validate everything with current web sources and supporting links. The database values are treated as moderately confident validation inputs, not final truth.
 
+### Request timing note
+
+When `OPENROUTER_MODEL=openai/gpt-5.4`, some research runs can look hung even when they are still active. The current OpenRouter endpoint behavior observed in this repo is:
+
+1. HTTP response headers can arrive quickly.
+2. The response body may then emit only whitespace keepalive chunks for a long period before the first real JSON payload arrives.
+3. The current code buffers the full body before logging anything useful, so the CLI and `research-db` runner stay silent during that period.
+4. If the first completed report fails the quality checks, the workflow can issue one full retry request, which increases total runtime again.
+
+Practical implication: do not assume a GPT-5.4 run is dead just because there is no progress output for the first minute. In the current implementation, silence does not distinguish a slow-but-active request from a truly stuck one.
+
 For fields that can drift over time, especially owners, operator, ownership split, and status, the workflow should prioritise sources that show a visible published date or last-updated date. The important freshness signal is the source page's own date, not the date the search was run.
 
 If an official project page is older or undated, use it as background only and confirm the current fact with a newer dated authoritative source such as a current owner portfolio page, investor reporting page, regulator page, or recent company announcement.
@@ -152,6 +151,8 @@ For the project `Status` field, the research output should use Boundary Layer's 
 - `Concept`
 
 If you want to inspect the exact rendered prompt for debugging, set `PROMPT_TRACE_ENABLED=true`. Each run will save prompt traces under `prompt-traces\<source-table>\`.
+
+Current limitation: the request path does not yet set an explicit OpenRouter timeout, and it waits for the full response body before surfacing progress. If GPT-5.4 remains on the default path, adding timeout and timing logs is the next hardening step.
 
 ## Official source hints
 

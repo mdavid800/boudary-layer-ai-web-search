@@ -5,7 +5,6 @@ const VALUE_FLAGS = new Set([
   '--model',
   '--output',
   '--prompt',
-  '--search-mode',
 ]);
 
 export function parseCliArgs(argv) {
@@ -17,7 +16,6 @@ export function parseCliArgs(argv) {
     model: null,
     outputPath: null,
     promptPath: null,
-    searchMode: null,
     windFarmName: '',
   };
   const nameParts = [];
@@ -68,7 +66,6 @@ export function formatHelp({
   defaultPromptPath,
   defaultModel,
   defaultSearchEngine,
-  defaultSearchMode,
   defaultMaxResults,
   defaultMaxTotalResults,
 }) {
@@ -80,7 +77,6 @@ export function formatHelp({
     `  --prompt <path>               Prompt file path (default: ${defaultPromptPath})`,
     `  --model <model>               OpenRouter model (default: ${defaultModel})`,
     `  --engine <engine>             Search engine (default: ${defaultSearchEngine})`,
-    `  --search-mode <mode>         Search mode: plugin, server-tool, auto (default: ${defaultSearchMode})`,
     `  --max-results <number>        Max results per search call (default: ${defaultMaxResults})`,
     `  --max-total-results <number>  Max total results across the request (default: ${defaultMaxTotalResults})`,
     '  --output, -o <path>          Save the markdown report to a file',
@@ -121,9 +117,6 @@ function assignValue(options, flag, rawValue) {
       return;
     case '--output':
       options.outputPath = rawValue;
-      return;
-    case '--search-mode':
-      options.searchMode = rawValue;
       return;
     case '--max-results':
       options.maxResults = parsePositiveInteger(rawValue, '--max-results');

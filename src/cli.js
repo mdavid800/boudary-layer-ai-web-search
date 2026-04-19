@@ -12,7 +12,6 @@ import {
   DEFAULT_MODEL,
   DEFAULT_PROMPT_PATH,
   DEFAULT_SEARCH_ENGINE,
-  DEFAULT_SEARCH_MODE,
   requireValue,
 } from './lib/runtime-config.js';
 import { saveReport as saveReportToFile } from './lib/report-output.js';
@@ -28,7 +27,6 @@ async function main() {
         defaultPromptPath: DEFAULT_PROMPT_PATH,
         defaultModel: DEFAULT_MODEL,
         defaultSearchEngine: DEFAULT_SEARCH_ENGINE,
-        defaultSearchMode: DEFAULT_SEARCH_MODE,
         defaultMaxResults: DEFAULT_MAX_RESULTS,
         defaultMaxTotalResults: DEFAULT_MAX_TOTAL_RESULTS,
       }),
@@ -46,6 +44,7 @@ async function main() {
     [windFarmName, officialSourceContext].filter(Boolean).join('\n'),
   );
   const model = args.model || DEFAULT_MODEL;
+  const searchEngine = args.engine || DEFAULT_SEARCH_ENGINE;
 
   console.error(`Using OpenRouter model: ${model}`);
 
@@ -53,8 +52,7 @@ async function main() {
     apiKey,
     model,
     prompt: finalPrompt,
-    searchEngine: args.engine || DEFAULT_SEARCH_ENGINE,
-    searchMode: args.searchMode || DEFAULT_SEARCH_MODE,
+    searchEngine,
     maxResults: args.maxResults || DEFAULT_MAX_RESULTS,
     maxTotalResults: args.maxTotalResults || DEFAULT_MAX_TOTAL_RESULTS,
     referer: process.env.OPENROUTER_SITE_URL,

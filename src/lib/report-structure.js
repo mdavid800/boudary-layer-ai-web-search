@@ -50,16 +50,24 @@ function stripMarkdownFormatting(text) {
     .trim();
 }
 
-function extractSources(cell) {
+function extractMarkdownLinks(cell) {
   if (!cell) {
     return [];
   }
 
-  const matches = [...cell.matchAll(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g)];
+  const matches = [...cell.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)];
   return matches.map((match) => ({
     label: stripMarkdownFormatting(match[1]),
-    url: match[2],
+    url: match[2].trim(),
   }));
+}
+
+function extractSources(cell) {
+  return extractMarkdownLinks(cell).filter((link) => /^https?:\/\//i.test(link.url));
+}
+
+function extractInvalidSourceLinks(cell) {
+  return extractMarkdownLinks(cell).filter((link) => !/^https?:\/\//i.test(link.url));
 }
 
 function parseTables(markdown) {
@@ -102,6 +110,7 @@ function normalizeProfileRows(tableRows) {
       const value = stripMarkdownFormatting(row[1]);
       const researchSummary = stripMarkdownFormatting(row[2]);
       const sources = extractSources(row[row.length - 1]);
+      const invalidSourceLinks = extractInvalidSourceLinks(row[row.length - 1]);
       const normalizedValue = value.toLowerCase();
       const isNotConfirmed = NOT_CONFIRMED_VALUES.has(normalizedValue);
 
@@ -111,6 +120,7 @@ function normalizeProfileRows(tableRows) {
         value,
         research_summary: researchSummary,
         sources,
+        invalid_source_links: invalidSourceLinks,
         is_not_confirmed: isNotConfirmed,
       };
     });
@@ -130,6 +140,7 @@ function normalizeRecentDevelopments(tableRows) {
       development: stripMarkdownFormatting(row[1]),
       why_it_matters: stripMarkdownFormatting(row[2]),
       sources: extractSources(row[row.length - 1]),
+      invalid_source_links: extractInvalidSourceLinks(row[row.length - 1]),
     }));
 }
 

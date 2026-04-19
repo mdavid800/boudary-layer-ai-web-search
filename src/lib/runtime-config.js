@@ -5,9 +5,8 @@ import process from 'node:process';
 dotenv.config();
 
 export const DEFAULT_PROMPT_PATH = path.resolve(process.cwd(), 'prompt.md');
-export const DEFAULT_MODEL = readEnvValue('OPENROUTER_MODEL') || 'openai/gpt-4.1';
-export const DEFAULT_SEARCH_ENGINE = readEnvValue('OPENROUTER_SEARCH_ENGINE') || 'firecrawl';
-export const DEFAULT_SEARCH_MODE = readEnvValue('OPENROUTER_SEARCH_MODE') || 'plugin';
+export const DEFAULT_MODEL = readEnvValue('OPENROUTER_MODEL') || 'openai/gpt-5.4';
+export const DEFAULT_SEARCH_ENGINE = readEnvValue('OPENROUTER_SEARCH_ENGINE') || 'auto';
 export const DEFAULT_MAX_RESULTS = getPositiveInteger(
   readEnvValue('OPENROUTER_MAX_RESULTS'),
   8,

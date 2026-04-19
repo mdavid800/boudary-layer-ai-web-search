@@ -17,7 +17,6 @@ import {
   getResearchReportQualityIssues,
   hasFreshOwnershipEvidence,
   isCompletedResearchReport,
-  normalizeSearchMode,
   requestResearchReport,
 } from '../src/lib/openrouter.js';
 import { buildProjectContext, buildResearchPrompt } from '../src/lib/prompt.js';
@@ -68,8 +67,24 @@ test('buildProjectContext formats wind farm and linked turbine metadata', () => 
 
   assert.match(result, /Emodnet wind farm database metadata \(core_wind_farms, lower-confidence for turbine technical fields\):/);
   assert.match(result, /- Name: Seagreen Phase 1 Windfarm/);
-  assert.match(result, /EuroWindWakes European Offshore Dataset \(2025\) turbine database metadata \(higher-priority for turbine specs and hub height when database hints conflict\):/);
+  assert.match(result, /EuroWindWakes European Offshore Dataset \(2025\) linked project turbine metadata \(required fallback for turbine specs and hub height when project-specific web evidence is inconclusive; do not replace it with generic turbine-model pages or specs from other sites\):/);
   assert.match(result, /- OEM manufacturer: Vestas/);
+});
+
+test('buildProjectContext warns against generic turbine-model inference when no linked turbine metadata exists', () => {
+  const result = buildProjectContext({
+    sourceTableName: 'core_wind_farms',
+    windFarmMetadata: {
+      name: 'Morven',
+      nTurbines: 0,
+      powerMw: 2907,
+      status: 'Planned',
+    },
+    turbineMetadata: null,
+  });
+
+  assert.match(result, /No linked turbine metadata was found for this wind farm boundary\./);
+  assert.match(result, /use Not confirmed rather than inferring from another site that uses the same turbine model\./);
 });
 
 test('buildOfficialSourceContext injects official ownership hints for Beatrice', async () => {
@@ -132,8 +147,6 @@ test('parseCliArgs supports positional names and flags', () => {
     'reports\\dogger-bank-a.md',
     '--model=openai/gpt-4.1-mini',
     '--engine',
-    'firecrawl',
-    '--search-mode',
     'auto',
     '--max-results',
     '7',
@@ -141,14 +154,13 @@ test('parseCliArgs supports positional names and flags', () => {
   ]);
 
   assert.deepEqual(result, {
-    engine: 'firecrawl',
+    engine: 'auto',
     help: false,
     maxResults: 7,
     maxTotalResults: 21,
     model: 'openai/gpt-4.1-mini',
     outputPath: 'reports\\dogger-bank-a.md',
     promptPath: null,
-    searchMode: 'auto',
     windFarmName: 'Dogger Bank A',
   });
 });
@@ -157,13 +169,61 @@ test('formatHelp includes the main usage line', () => {
   const helpText = formatHelp({
     defaultPromptPath: 'C:\\repo\\prompt.md',
     defaultModel: 'openai/gpt-4.1',
-    defaultSearchEngine: 'firecrawl',
-    defaultSearchMode: 'plugin',
+    defaultSearchEngine: 'auto',
     defaultMaxResults: 6,
     defaultMaxTotalResults: 18,
   });
 
   assert.match(helpText, /npm run research -- "<wind farm name>" \[options\]/);
+  assert.match(helpText, /Search engine \(default: auto\)/);
+});
+
+test('requestResearchReport explicitly passes auto engine when no search engine is configured', async () => {
+  const payload = {
+    choices: [
+      {
+        message: {
+          content: [
+            'This profile assesses Dogger Bank A.\n\n',
+            '| Item | Value | Research summary | Sources |\n',
+            '|---|---|---|---|\n',
+            '| Developer / owners | SSE Renewables 50%, Equinor 50% | SSE portfolio page updated November 2024 and Equinor asset page updated January 2025 confirm the current ownership split. | [Source 1](https://example.com/source-0), [Source 2](https://example.com/source-0b) |\n',
+            '| Ownership history | SSE and Equinor remain the project owners. | Owner pages updated November 2024 and January 2025 do not indicate a later ownership change. | [Source 1](https://example.com/source-0c), [Source 2](https://example.com/source-0d) |\n',
+            '| Status | Operational | Confirmed by owner and regulator materials. | [Source 1](https://example.com/source-1), [Source 2](https://example.com/source-2) |\n',
+            'Recent developments\n\n',
+            '| Date | Development | Why it matters | Sources |\n',
+            '|---|---|---|---|\n',
+            '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/source-3), [Source 2](https://example.com/source-4) |\n',
+          ],
+        },
+      },
+    ],
+  };
+  const calls = [];
+
+  const fetchImpl = async (_url, options) => {
+    calls.push(JSON.parse(options.body));
+
+    return {
+      ok: true,
+      text: async () => JSON.stringify(payload),
+    };
+  };
+
+  await requestResearchReport({
+    apiKey: 'test-key',
+    fetchImpl,
+    model: 'openai/gpt-4.1',
+    prompt: 'Prompt',
+    referer: '',
+    title: '',
+    searchEngine: null,
+    maxResults: 6,
+    maxTotalResults: 18,
+  });
+
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].tools[0].parameters.engine, 'auto');
 });
 
 test('runtime-config loads OPENROUTER_MODEL from .env before exporting defaults', () => {
@@ -185,6 +245,27 @@ test('runtime-config loads OPENROUTER_MODEL from .env before exporting defaults'
   );
 
   assert.equal(output.trim(), 'openai/gpt-5.4');
+});
+
+test('runtime-config defaults to auto engine with server-tool mode when unset', () => {
+  const childEnv = { ...process.env };
+  childEnv.OPENROUTER_SEARCH_ENGINE = '';
+
+  const output = execFileSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '--eval',
+      "import { DEFAULT_SEARCH_ENGINE } from './src/lib/runtime-config.js'; console.log(JSON.stringify({ engine: DEFAULT_SEARCH_ENGINE }));",
+    ],
+    {
+      cwd: process.cwd(),
+      env: childEnv,
+      encoding: 'utf8',
+    },
+  );
+
+  assert.equal(output.trim(), '{"engine":"auto"}');
 });
 
 test('extractTextContent returns plain string content', () => {
@@ -236,38 +317,12 @@ test('isCompletedResearchReport validates the expected table headers', () => {
   );
 });
 
-test('normalizeSearchMode accepts supported modes', () => {
-  assert.equal(normalizeSearchMode('PLUGIN'), 'plugin');
-  assert.equal(normalizeSearchMode('server-tool'), 'server-tool');
-  assert.equal(normalizeSearchMode('auto'), 'auto');
-});
-
-test('requestResearchReport falls back to the web plugin when server-tool output is incomplete', async () => {
+test('requestResearchReport fails when the server-tool output is incomplete', async () => {
   const serverToolPayload = {
     choices: [
       {
         message: {
-          content: "I'll search for current information about Dogger Bank A",
-        },
-      },
-    ],
-  };
-  const pluginPayload = {
-    choices: [
-      {
-        message: {
-          content: [
-            'This profile assesses Dogger Bank A.\n\n',
-            '| Item | Value | Research summary | Sources |\n',
-            '|---|---|---|---|\n',
-            '| Developer / owners | SSE Renewables 50%, Equinor 50% | SSE portfolio page updated November 2024 and Equinor asset page updated January 2025 confirm the current ownership split. | [Source 1](https://example.com/source-0), [Source 2](https://example.com/source-0b) |\n',
-            '| Ownership history | SSE and Equinor remain the project owners. | Owner pages updated November 2024 and January 2025 do not indicate a later ownership change. | [Source 1](https://example.com/source-0c), [Source 2](https://example.com/source-0d) |\n',
-            '| Status | Operational | Confirmed by owner and regulator materials. | [Source 1](https://example.com/source-1), [Source 2](https://example.com/source-2) |\n',
-            'Recent developments\n\n',
-            '| Date | Development | Why it matters | Sources |\n',
-            '|---|---|---|---|\n',
-            '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/source-3), [Source 2](https://example.com/source-4) |\n',
-          ],
+          content: "I'll search for current information about Dogger Bank A.",
         },
       },
     ],
@@ -278,32 +333,31 @@ test('requestResearchReport falls back to the web plugin when server-tool output
 
     calls.push(parsedBody);
 
-    const payload = parsedBody.tools ? serverToolPayload : pluginPayload;
-
     return {
       ok: true,
-      text: async () => JSON.stringify(payload),
+      text: async () => JSON.stringify(serverToolPayload),
     };
   };
 
-  const result = await requestResearchReport({
-    apiKey: 'test-key',
-    fetchImpl,
-    model: 'openai/gpt-4.1',
-    prompt: 'Prompt',
-    referer: '',
-    title: '',
-    searchEngine: 'firecrawl',
-    searchMode: 'auto',
-    maxResults: 6,
-    maxTotalResults: 18,
-  });
+  await assert.rejects(
+    () =>
+      requestResearchReport({
+        apiKey: 'test-key',
+        fetchImpl,
+        model: 'openai/gpt-4.1',
+        prompt: 'Prompt',
+        referer: '',
+        title: '',
+        searchEngine: 'auto',
+        maxResults: 6,
+        maxTotalResults: 18,
+      }),
+    /missing-required-tables/,
+  );
 
-  assert.match(result, /Dogger Bank A/);
-  assert.equal(calls.length, 3);
+  assert.equal(calls.length, 2);
   assert.ok(calls[0].tools);
   assert.ok(calls[1].tools);
-  assert.ok(calls[2].plugins);
 });
 
 test('hasFreshOwnershipEvidence requires recent dated evidence in both ownership rows', () => {
@@ -390,8 +444,8 @@ test('getResearchReportQualityIssues flags stale ownership evidence', () => {
   );
 });
 
-test('requestResearchReport retries when the first plugin report lacks fresh ownership evidence', async () => {
-  const stalePluginPayload = {
+test('requestResearchReport retries when the first server-tool report lacks fresh ownership evidence', async () => {
+  const staleServerToolPayload = {
     choices: [
       {
         message: {
@@ -411,7 +465,7 @@ test('requestResearchReport retries when the first plugin report lacks fresh own
       },
     ],
   };
-  const freshPluginPayload = {
+  const freshServerToolPayload = {
     choices: [
       {
         message: {
@@ -441,7 +495,7 @@ test('requestResearchReport retries when the first plugin report lacks fresh own
 
     return {
       ok: true,
-      text: async () => JSON.stringify(callCount === 1 ? stalePluginPayload : freshPluginPayload),
+      text: async () => JSON.stringify(callCount === 1 ? staleServerToolPayload : freshServerToolPayload),
     };
   };
 
@@ -452,8 +506,7 @@ test('requestResearchReport retries when the first plugin report lacks fresh own
     prompt: 'Prompt',
     referer: '',
     title: '',
-    searchEngine: 'firecrawl',
-    searchMode: 'plugin',
+    searchEngine: 'auto',
     maxResults: 6,
     maxTotalResults: 18,
   });
@@ -546,6 +599,7 @@ test('parseStructuredReport extracts ordered profile rows and recent development
       { label: 'Owner', url: 'https://example.com/owner' },
       { label: 'Regulator', url: 'https://example.com/regulator' },
     ],
+    invalid_source_links: [],
     is_not_confirmed: false,
   });
   assert.equal(result.profileRows[1].field_name, 'status');
@@ -560,8 +614,32 @@ test('parseStructuredReport extracts ordered profile rows and recent development
         { label: 'Ofgem', url: 'https://example.com/event-1' },
         { label: 'Industry', url: 'https://example.com/event-2' },
       ],
+      invalid_source_links: [],
     },
   ]);
+});
+
+test('getResearchReportQualityIssues flags invalid source links', () => {
+  const markdown = [
+    'This profile assesses Beatrice Offshore Wind Farm.',
+    '',
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Developer / owners | SSE 40%, CIP 35%, Red Rock Power 25% | SSE portfolio page updated November 2024 confirms the split. | [Owner](https://example.com/owner-1), [Investor](https://example.com/owner-2) |',
+    '| Ownership history | SSE, CIP and Red Rock Power have remained owners. | Project materials updated January 2025 indicate no later change. | [Owner](https://example.com/history-1), [Investor](https://example.com/history-2) |',
+    '| Rotor diameter | 154 m | Project-specific web evidence was inconclusive so a fallback was used. | [EuroWindWakes](#), [Project](https://example.com/rotor-1) |',
+    '',
+    'Recent developments',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/event-1), [Source 2](https://example.com/event-2) |',
+  ].join('\n');
+
+  assert.deepEqual(
+    getResearchReportQualityIssues(markdown, new Date('2026-04-17T00:00:00Z')),
+    ['invalid-source-links'],
+  );
 });
 
 test('extractFactsFromReport skips not confirmed rows and keeps mapped rows', () => {

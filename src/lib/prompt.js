@@ -56,7 +56,7 @@ export function buildProjectContext({
   if (turbineMetadata) {
     lines.push(
       '',
-      'EuroWindWakes European Offshore Dataset (2025) turbine database metadata (higher-priority for turbine specs and hub height when database hints conflict):',
+      'EuroWindWakes European Offshore Dataset (2025) linked project turbine metadata (required fallback for turbine specs and hub height when project-specific web evidence is inconclusive; do not replace it with generic turbine-model pages or specs from other sites):',
       `- OEM manufacturer: ${formatValue(turbineMetadata.oemManufacturer)}`,
       `- Rated power (MW): ${formatValue(turbineMetadata.ratedPower)}`,
       `- Rotor diameter (m): ${formatValue(turbineMetadata.rotorDiameter)}`,
@@ -67,8 +67,9 @@ export function buildProjectContext({
   } else {
     lines.push(
       '',
-      'EuroWindWakes European Offshore Dataset (2025) turbine database metadata (higher-priority for turbine specs and hub height when available):',
+      'EuroWindWakes European Offshore Dataset (2025) linked project turbine metadata (higher-priority for turbine specs and hub height when available):',
       '- No linked turbine metadata was found for this wind farm boundary.',
+      '- If project-specific web sources do not confirm a turbine-specific field, use Not confirmed rather than inferring from another site that uses the same turbine model.',
     );
   }
 
