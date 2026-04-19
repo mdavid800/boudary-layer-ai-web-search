@@ -2,7 +2,7 @@
   "name": "boundary-layer-ai-web-search",
   "version": "0.1.0",
   "private": true,
-  "description": "CLI workflow for offshore wind research using OpenRouter web search and Firecrawl.",
+  "description": "CLI workflow for offshore wind research using OpenRouter web search server tools.",
   "type": "module",
   "scripts": {
     "backfill-report-structure": "node src/backfill-report-structure.js",

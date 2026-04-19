@@ -20,6 +20,7 @@ const FRESHNESS_RETRY_NOTE = [
 const SYSTEM_MESSAGE = [
   'You are an offshore wind research analyst.',
   'You must use current web sources via the available web search tool before answering.',
+  'Never infer site-specific turbine specifications from a generic turbine product page or from another wind farm that uses the same turbine model.',
   'Follow the user prompt exactly and keep the final answer in markdown.',
   'Return only the final completed report, not search-planning narration or intermediate search steps.',
 ].join(' ');
@@ -29,107 +30,35 @@ export async function requestResearchReport({
   model,
   prompt,
   searchEngine,
-  searchMode,
   maxResults,
   maxTotalResults,
   referer,
   title,
   fetchImpl = fetch,
 }) {
-  const normalizedSearchMode = normalizeSearchMode(searchMode);
-  const sharedOptions = {
-    apiKey,
-    fetchImpl,
-    model,
-    prompt,
-    referer,
-    searchEngine,
-    title,
-  };
-
-  if (normalizedSearchMode === 'plugin') {
-    const pluginResult = await requestWithRetry({
-      requestFn: requestWithWebPlugin,
-      requestOptions: {
-        ...sharedOptions,
-        maxResults,
-      },
-    });
-
-    if (pluginResult.qualityIssues.length === 0) {
-      return pluginResult.report;
-    }
-
-    throw new Error(
-      buildIncompleteReportError({
-        pluginReport: pluginResult.report,
-        qualityIssues: pluginResult.qualityIssues,
-      }),
-    );
-  }
-
-  if (normalizedSearchMode === 'server-tool') {
-    const serverToolResult = await requestWithRetry({
-      requestFn: requestWithServerTool,
-      requestOptions: {
-        ...sharedOptions,
-        maxResults,
-        maxTotalResults,
-      },
-    });
-
-    if (serverToolResult.qualityIssues.length > 0) {
-      throw new Error(
-        buildIncompleteReportError({
-          serverToolReport: serverToolResult.report,
-          qualityIssues: serverToolResult.qualityIssues,
-        }),
-      );
-    }
-
-    return serverToolResult.report;
-  }
-
-  let serverToolReport = '';
-  let serverToolQualityIssues = [];
-
-  try {
-    const serverToolResult = await requestWithRetry({
-      requestFn: requestWithServerTool,
-      requestOptions: {
-        ...sharedOptions,
-        maxResults,
-        maxTotalResults,
-      },
-    });
-    serverToolReport = serverToolResult.report;
-    serverToolQualityIssues = serverToolResult.qualityIssues;
-
-    if (serverToolQualityIssues.length === 0) {
-      return serverToolReport;
-    }
-  } catch {
-    serverToolReport = '';
-    serverToolQualityIssues = [];
-  }
-
-  const pluginResult = await requestWithRetry({
-    requestFn: requestWithWebPlugin,
+  const serverToolResult = await requestWithRetry({
+    requestFn: requestWithServerTool,
     requestOptions: {
-      ...sharedOptions,
+      apiKey,
+      fetchImpl,
+      model,
+      prompt,
+      referer,
+      searchEngine,
+      title,
       maxResults,
+      maxTotalResults,
     },
   });
 
-  if (pluginResult.qualityIssues.length === 0) {
-    return pluginResult.report;
+  if (serverToolResult.qualityIssues.length === 0) {
+    return serverToolResult.report;
   }
 
   throw new Error(
     buildIncompleteReportError({
-      pluginReport: pluginResult.report,
-      serverToolReport,
-      qualityIssues: [...new Set([...serverToolQualityIssues, ...pluginResult.qualityIssues])],
+      serverToolReport: serverToolResult.report,
+      qualityIssues: serverToolResult.qualityIssues,
     }),
   );
 }
@@ -152,6 +81,10 @@ export function getResearchReportQualityIssues(content, referenceDate = new Date
   const { profileRows, recentDevelopments } = parseStructuredReport(content);
   const qualityIssues = [];
 
+  if (hasInvalidSourceLinks(profileRows, recentDevelopments)) {
+    qualityIssues.push('invalid-source-links');
+  }
+
   if (recentDevelopments.length === 0) {
     qualityIssues.push('missing-recent-developments');
   }
@@ -161,6 +94,12 @@ export function getResearchReportQualityIssues(content, referenceDate = new Date
   }
 
   return qualityIssues;
+}
+
+function hasInvalidSourceLinks(profileRows = [], recentDevelopments = []) {
+  return [...profileRows, ...recentDevelopments].some((row) =>
+    Array.isArray(row.invalid_source_links) && row.invalid_source_links.length > 0,
+  );
 }
 
 export function hasFreshOwnershipEvidence(
@@ -201,22 +140,6 @@ export function hasFreshOwnershipEvidence(
 
     return datedRecently && mentionsOwnership;
   });
-}
-
-export function normalizeSearchMode(searchMode = 'plugin') {
-  const normalizedSearchMode = searchMode.trim().toLowerCase();
-
-  if (
-    normalizedSearchMode !== 'plugin' &&
-    normalizedSearchMode !== 'server-tool' &&
-    normalizedSearchMode !== 'auto'
-  ) {
-    throw new Error(
-      `Unsupported search mode: ${searchMode}. Use plugin, server-tool, or auto.`,
-    );
-  }
-
-  return normalizedSearchMode;
 }
 
 async function requestWithRetry({ requestFn, requestOptions }) {
@@ -271,48 +194,23 @@ async function requestWithServerTool({
       tools: [
         {
           type: 'openrouter:web_search',
-          parameters: {
-            engine: searchEngine,
-            max_results: maxResults,
-            max_total_results: maxTotalResults,
-          },
+          parameters: buildWebSearchParameters({
+            searchEngine,
+            maxResults,
+            maxTotalResults,
+          }),
         },
       ],
     },
   });
 }
 
-async function requestWithWebPlugin({
-  apiKey,
-  fetchImpl,
-  model,
-  prompt,
-  referer,
-  searchEngine,
-  title,
-  maxResults,
-}) {
-  return requestChatCompletion({
-    apiKey,
-    fetchImpl,
-    referer,
-    title,
-    body: {
-      model,
-      temperature: 0.1,
-      messages: [
-        { role: 'system', content: SYSTEM_MESSAGE },
-        { role: 'user', content: prompt },
-      ],
-      plugins: [
-        {
-          id: 'web',
-          engine: searchEngine,
-          max_results: maxResults,
-        },
-      ],
-    },
-  });
+function buildWebSearchParameters({ searchEngine, maxResults, maxTotalResults }) {
+  return {
+    engine: searchEngine || 'auto',
+    max_results: maxResults,
+    max_total_results: maxTotalResults,
+  };
 }
 
 async function requestChatCompletion({
@@ -405,15 +303,13 @@ export function buildOpenRouterError(status, parsedBody, rawBody) {
   return `OpenRouter request failed (${status}): ${message}`;
 }
 
-function buildIncompleteReportError({ serverToolReport, pluginReport, qualityIssues = [] }) {
+function buildIncompleteReportError({ serverToolReport, qualityIssues = [] }) {
   const serverToolPreview = summarizeContent(serverToolReport);
-  const pluginPreview = summarizeContent(pluginReport);
 
   return [
     'OpenRouter returned a research response that did not satisfy the report quality checks.',
     qualityIssues.length > 0 ? `Quality issues: ${qualityIssues.join(', ')}.` : '',
     `Server-tool preview: ${serverToolPreview}`,
-    `Plugin preview: ${pluginPreview}`,
   ].join(' ');
 }
 

@@ -6,7 +6,6 @@ import {
   DEFAULT_MODEL,
   DEFAULT_PROMPT_PATH,
   DEFAULT_SEARCH_ENGINE,
-  DEFAULT_SEARCH_MODE,
   requireValue,
 } from './lib/runtime-config.js';
 import { createDatabaseClient } from './lib/database.js';
@@ -134,7 +133,6 @@ async function main() {
         model: DEFAULT_MODEL,
         prompt: finalPrompt,
         searchEngine: DEFAULT_SEARCH_ENGINE,
-        searchMode: DEFAULT_SEARCH_MODE,
         maxResults: DEFAULT_MAX_RESULTS,
         maxTotalResults: DEFAULT_MAX_TOTAL_RESULTS,
         referer: process.env.OPENROUTER_SITE_URL,

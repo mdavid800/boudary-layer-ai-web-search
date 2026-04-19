@@ -1,7 +1,29 @@
 You are conducting a web-based research task on an offshore wind farm project.
 
 Research this project:
-{PROJECT_CONTEXT}
+Seagreen Phase 1 Windfarm
+
+Moderately confident database validation context to cross-check against current web sources and support with citations:
+
+Emodnet wind farm database metadata (core_wind_farms, lower-confidence for turbine technical fields):
+- Name: Seagreen Phase 1 Windfarm
+- Type: Offshore wind farm
+- Total turbine count: 75
+- Capacity (MW): 1140
+- Status: Operational
+
+EuroWindWakes European Offshore Dataset (2025) linked project turbine metadata (required fallback for turbine specs and hub height when project-specific web evidence is inconclusive; do not replace it with generic turbine-model pages or specs from other sites):
+- OEM manufacturer: Vestas
+- Rated power (MW): 10
+- Rotor diameter (m): 164
+- Hub height (m): 120
+- Turbine type: V164-10.0 MW
+- Commissioning date: Sun Oct 01 2023 00:00:00 GMT+0100 (British Summer Time)
+
+High-priority official source hints for current facts:
+Use these official project/operator hints before relying on secondary databases or a single partner asset page, especially for ownership and operator details.
+- Official Seagreen project page (https://www.seagreenwindenergy.com/): Seagreen is a joint venture between SSE Renewables (49%), TotalEnergies (25.5%) and PTTEP (25.5%). SSE Renewables led on the development and construction of the windfarm, supported by TotalEnergies, and is the operator. First power was achieved in August 2022 and Seagreen became fully operational in October 2023. PTTEP joined the consortium in 2024. ​ Seagreen has 114 turbines with a total generating capacity of 1,075MW. Power is exported via around 19km of underground cables from landfall at Carnoustie to a new substation at Tealing near Dundee. The 114 turbines can provide enough green energ
+- SSE Renewables Seagreen project page (https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/): It is located around 27km off the coast of Angus in the North Sea and is a £3bn joint venture between SSE Renewables (49%), TotalEnergies (25.5%) and PTTEP (25.5%). SSE Renewables led on the development and construction of the windfarm, supported by TotalEnergies, and is the operator. First power was achieved in August 2022 and Seagreen became fully operational in October 2023. PTTEP joined the consortium in 2024. Seagreen is capable of generating enough green energy to power more than 1.7 million homes , equivalent to two-thirds of all Scottish homes. Seagreen is able to displace over 2 milli
 
 Your job is to search the web and produce a source-backed project profile in a clean tabular format.
 
@@ -51,9 +73,8 @@ Important rules:
 28. Use concise wording, but include enough detail to be useful.
 29. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
 30. Include citations directly in the “Sources” column using markdown links.
-31. Every citation link in the `Sources` column must be a direct absolute `https://` or `http://` URL. Never use placeholder links such as `(#)` or non-web links.
-32. If an item cannot be confirmed, write `Not confirmed` rather than inventing an answer, but only after applying the required linked EuroWindWakes fallback rules above when a linked turbine row exists.
-33. Treat the output tables as a downstream parser contract:
+31. If an item cannot be confirmed, write `Not confirmed` rather than inventing an answer, but only after applying the required linked EuroWindWakes fallback rules above when a linked turbine row exists.
+32. Treat the output tables as a downstream parser contract:
    - keep the first table row order exactly as specified below
    - keep the second table heading as “Recent developments” and the second table headers exactly as specified below
    - do not rename the table headers

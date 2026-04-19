@@ -1,7 +1,28 @@
 You are conducting a web-based research task on an offshore wind farm project.
 
 Research this project:
-{PROJECT_CONTEXT}
+Beatrice Offshore Wind Farm
+
+Moderately confident database validation context to cross-check against current web sources and support with citations:
+
+Emodnet wind farm database metadata (core_wind_farms, lower-confidence for turbine technical fields):
+- Name: Beatrice Offshore Wind Farm
+- Type: Offshore wind farm
+- Total turbine count: 84
+- Capacity (MW): 588
+- Status: Operational
+
+EuroWindWakes European Offshore Dataset (2025) linked project turbine metadata (required fallback for turbine specs and hub height when project-specific web evidence is inconclusive; do not replace it with generic turbine-model pages or specs from other sites):
+- OEM manufacturer: Siemens Gamesa
+- Rated power (MW): 7
+- Rotor diameter (m): 154
+- Hub height (m): 101
+- Turbine type: SWT-7.0-154
+- Commissioning date: Fri May 01 2009 00:00:00 GMT+0100 (British Summer Time)
+
+High-priority official source hints for current facts:
+Use these official project/operator hints before relying on secondary databases or a single partner asset page, especially for ownership and operator details.
+- Official Beatrice project about page (https://www.beatricewind.com/about/): Official project page ownership cards indicate SSE Renewables (40% share); Red Rock Renewables (25% share); TRIG (17.5% share); Equitix (17.5% share).
 
 Your job is to search the web and produce a source-backed project profile in a clean tabular format.
 
@@ -51,9 +72,8 @@ Important rules:
 28. Use concise wording, but include enough detail to be useful.
 29. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
 30. Include citations directly in the “Sources” column using markdown links.
-31. Every citation link in the `Sources` column must be a direct absolute `https://` or `http://` URL. Never use placeholder links such as `(#)` or non-web links.
-32. If an item cannot be confirmed, write `Not confirmed` rather than inventing an answer, but only after applying the required linked EuroWindWakes fallback rules above when a linked turbine row exists.
-33. Treat the output tables as a downstream parser contract:
+31. If an item cannot be confirmed, write `Not confirmed` rather than inventing an answer, but only after applying the required linked EuroWindWakes fallback rules above when a linked turbine row exists.
+32. Treat the output tables as a downstream parser contract:
    - keep the first table row order exactly as specified below
    - keep the second table heading as “Recent developments” and the second table headers exactly as specified below
    - do not rename the table headers
