@@ -22,7 +22,7 @@ export function getWindFarmReportsDirectory(value = process.env.WIND_FARM_REPORT
 export async function listWindFarmRows(client, sourceTableName, { ids, country } = {}) {
   const validatedTableName = getWindFarmSourceTableName(sourceTableName);
 
-  const conditions = ['name is not null'];
+  const conditions = ["name is not null", "record_status = 'active'"];
   const params = [];
 
   if (ids && ids.length > 0) {
@@ -74,6 +74,7 @@ export async function getLinkedTurbineMetadata(client, windfarmId, sourceTableNa
       join public.core_wind_farms wf
         on wf.source_key = l.wind_farm_source_key
       where wf.id = $1
+        and wf.record_status = 'active'
       group by
         t.manufacturer,
         t.rated_power_mw,

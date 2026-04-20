@@ -60,6 +60,9 @@ Important rules:
    - keep the second table heading as “Recent developments” and the second table headers exactly as specified below
    - do not rename the table headers
    - do not add extra columns, bullet lists, or prose between the table header and table rows
+34. Normalize all dates in both tables to `DD/MM/YYYY`.
+35. If a source only confirms a month and year, use the first day of that month in the table, for example `01/10/2023`, and explain that month-level wording briefly in the `Research summary` when it matters.
+36. If a source only confirms a year, use `01/01/YYYY`.
 
 Research and complete the following items:
 
@@ -159,7 +162,7 @@ Style requirements:
 - Do not write a long narrative report.
 - Keep the format close to an analyst-ready project summary.
 - Use “Not confirmed” where evidence is weak.
-- Use exact dates where available.
+- Use exact dates where available, otherwise normalize partial dates using the rules above.
 - Use percentages for ownership where available.
 - Make sure the final result is suitable for copying into a research note or spreadsheet workflow.
 
