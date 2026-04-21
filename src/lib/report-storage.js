@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { extractFactsFromReport } from './fact-extraction.js';
+import { buildReportEvidenceRows } from './report-evidence.js';
 import { parseStructuredReport } from './report-structure.js';
 import { normalizeCanonicalWindFarmStatus } from './status.js';
 
@@ -68,6 +69,7 @@ export async function storeResearchReport(client, {
   const factStatus = reviewStatus === 'published' ? 'active' : 'draft';
 
   let factsInserted = 0;
+  const factIdsByFieldName = new Map();
 
   for (const fact of facts) {
     const normalizedValue =
@@ -80,7 +82,7 @@ export async function storeResearchReport(client, {
       continue;
     }
 
-    await client.query(
+    const factResult = await client.query(
       `INSERT INTO wind_farm_facts
          (wind_farm_id, field_name, value, source_type, source_detail, citation_url, report_id, status)
        VALUES ($1, $2, $3, 'research', $4, $5, $6, $7)
@@ -90,7 +92,8 @@ export async function storeResearchReport(client, {
          source_detail = EXCLUDED.source_detail,
          citation_url  = EXCLUDED.citation_url,
          report_id     = EXCLUDED.report_id,
-         status        = EXCLUDED.status`,
+         status        = EXCLUDED.status
+       RETURNING id`,
       [
         windFarmId,
         fact.fieldName,
@@ -101,7 +104,56 @@ export async function storeResearchReport(client, {
         factStatus,
       ],
     );
+    factIdsByFieldName.set(fact.fieldName, factResult.rows[0].id);
     factsInserted += 1;
+  }
+
+  await client.query(
+    `DELETE FROM research_report_evidence
+     WHERE report_id = $1`,
+    [reportId],
+  );
+
+  const evidenceRows = buildReportEvidenceRows({
+    reportId,
+    profileRows,
+    recentDevelopments,
+    factIdsByFieldName,
+  });
+
+  for (const evidenceRow of evidenceRows) {
+    await client.query(
+      `INSERT INTO research_report_evidence
+         (report_id, fact_id, report_section, report_item_label, report_field_name, report_date,
+          report_development, reported_value, evidence_role, provenance_mode, source_url, source_name,
+          source_type, licence, retrieved_at, evidence_quote, confidence, derived_by_ai,
+          human_verified, verification_status, metadata_json, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
+               $16, $17, $18, $19, $20, $21::jsonb, now(), now())`,
+      [
+        evidenceRow.report_id,
+        evidenceRow.fact_id,
+        evidenceRow.report_section,
+        evidenceRow.report_item_label,
+        evidenceRow.report_field_name,
+        evidenceRow.report_date,
+        evidenceRow.report_development,
+        evidenceRow.reported_value,
+        evidenceRow.evidence_role,
+        evidenceRow.provenance_mode,
+        evidenceRow.source_url,
+        evidenceRow.source_name,
+        evidenceRow.source_type,
+        evidenceRow.licence,
+        evidenceRow.retrieved_at,
+        evidenceRow.evidence_quote,
+        evidenceRow.confidence,
+        evidenceRow.derived_by_ai,
+        evidenceRow.human_verified,
+        evidenceRow.verification_status,
+        JSON.stringify(evidenceRow.metadata_json ?? {}),
+      ],
+    );
   }
 
   return { reportId, factsInserted };

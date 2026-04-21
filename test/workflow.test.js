@@ -23,7 +23,39 @@ import { buildProjectContext, buildResearchPrompt } from '../src/lib/prompt.js';
 import { buildOfficialSourceContext } from '../src/lib/official-source-hints.js';
 import { normalizeCanonicalWindFarmStatus } from '../src/lib/status.js';
 import { extractFactsFromReport } from '../src/lib/fact-extraction.js';
+import { buildReportEvidenceRows } from '../src/lib/report-evidence.js';
 import { parseStructuredReport } from '../src/lib/report-structure.js';
+import { EUROWINDWAKES_ZENODO_RECORD_URL } from '../src/lib/source-of-record.js';
+import { verifyEvidenceRecord, verifyReportEvidence } from '../src/lib/evidence-verifier.js';
+
+function createSourceOfRecord(overrides = {}) {
+  return {
+    source_url: 'https://example.com/source-of-record',
+    source_name: 'Example source',
+    source_type: 'official project',
+    licence: 'unknown',
+    retrieved_at: '2026-04-21T00:00:00Z',
+    evidence_quote: 'Example evidence quote.',
+    confidence: 'high',
+    derived_by_ai: true,
+    human_verified: false,
+    verification_status: 'unverified',
+    ...overrides,
+  };
+}
+
+function createProvenanceAppendix({ profileRows = [], recentDevelopments = [] } = {}) {
+  return [
+    '',
+    'Provenance appendix',
+    '```json',
+    JSON.stringify({
+      profile_rows: profileRows,
+      recent_developments: recentDevelopments,
+    }, null, 2),
+    '```',
+  ].join('\n');
+}
 
 test('buildResearchPrompt replaces the project context placeholder', () => {
   const template = 'Research this project:\n{PROJECT_CONTEXT}\n';
@@ -238,6 +270,51 @@ test('requestResearchReport explicitly passes auto engine when no search engine 
             '| Date | Development | Why it matters | Sources |\n',
             '|---|---|---|---|\n',
             '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/source-3), [Source 2](https://example.com/source-4) |\n',
+            createProvenanceAppendix({
+              profileRows: [
+                {
+                  item_label: 'Developer / owners',
+                  field_name: 'developer',
+                  value: 'SSE Renewables 50%, Equinor 50%',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({
+                    source_url: 'https://example.com/source-0',
+                  }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-0b' }],
+                },
+                {
+                  item_label: 'Ownership history',
+                  field_name: null,
+                  value: 'SSE and Equinor remain the project owners.',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({
+                    source_url: 'https://example.com/source-0c',
+                  }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-0d' }],
+                },
+                {
+                  item_label: 'Status',
+                  field_name: 'status',
+                  value: 'Operational',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({
+                    source_url: 'https://example.com/source-1',
+                  }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-2' }],
+                },
+              ],
+              recentDevelopments: [
+                {
+                  date: 'April 2024',
+                  development: 'Licence granted',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({
+                    source_url: 'https://example.com/source-3',
+                  }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-4' }],
+                },
+              ],
+            }),
           ],
         },
       },
@@ -480,6 +557,43 @@ test('getResearchReportQualityIssues flags stale ownership evidence', () => {
     '| Date | Development | Why it matters | Sources |',
     '|---|---|---|---|',
     '| November 2024 | Portfolio reporting update | Confirms the project remains operational. | [Owner](https://example.com/event-1), [Investor](https://example.com/event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Developer / owners',
+          field_name: 'developer',
+          value: 'SSE 40%, CIP 35%, Red Rock Power 25%',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/owner-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/owner-2' }],
+        },
+        {
+          item_label: 'Ownership history',
+          field_name: null,
+          value: 'SSE, CIP and Red Rock Power have remained owners.',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/history-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/history-2' }],
+        },
+        {
+          item_label: 'Status',
+          field_name: 'status',
+          value: 'Operational',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/status-1' }),
+          supporting_context: [{ label: 'Regulator', url: 'https://example.com/status-2' }],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: 'November 2024',
+          development: 'Portfolio reporting update',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/event-2' }],
+        },
+      ],
+    }),
   ].join('\n');
 
   assert.deepEqual(
@@ -504,6 +618,43 @@ test('requestResearchReport retries when the first server-tool report lacks fres
             '| Date | Development | Why it matters | Sources |\n',
             '|---|---|---|---|\n',
             '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/source-7), [Source 2](https://example.com/source-8) |\n',
+            createProvenanceAppendix({
+              profileRows: [
+                {
+                  item_label: 'Developer / owners',
+                  field_name: 'developer',
+                  value: 'SSE 40%, CIP 35%, Red Rock Power 25%',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-1' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-2' }],
+                },
+                {
+                  item_label: 'Ownership history',
+                  field_name: null,
+                  value: 'SSE, CIP and Red Rock Power have remained owners.',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-3' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-4' }],
+                },
+                {
+                  item_label: 'Status',
+                  field_name: 'status',
+                  value: 'Operational',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-5' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-6' }],
+                },
+              ],
+              recentDevelopments: [
+                {
+                  date: 'April 2024',
+                  development: 'Licence granted',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-7' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-8' }],
+                },
+              ],
+            }),
           ],
         },
       },
@@ -524,6 +675,43 @@ test('requestResearchReport retries when the first server-tool report lacks fres
             '| Date | Development | Why it matters | Sources |\n',
             '|---|---|---|---|\n',
             '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/source-7), [Source 2](https://example.com/source-8) |\n',
+            createProvenanceAppendix({
+              profileRows: [
+                {
+                  item_label: 'Developer / owners',
+                  field_name: 'developer',
+                  value: 'SSE 40%, CIP 35%, Red Rock Power 25%',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-1' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-2' }],
+                },
+                {
+                  item_label: 'Ownership history',
+                  field_name: null,
+                  value: 'SSE, CIP and Red Rock Power have remained owners.',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-3' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-4' }],
+                },
+                {
+                  item_label: 'Status',
+                  field_name: 'status',
+                  value: 'Operational',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-5' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-6' }],
+                },
+              ],
+              recentDevelopments: [
+                {
+                  date: 'April 2024',
+                  development: 'Licence granted',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-7' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-8' }],
+                },
+              ],
+            }),
           ],
         },
       },
@@ -632,6 +820,46 @@ test('parseStructuredReport extracts ordered profile rows and recent development
     '| Date | Development | Why it matters | Sources |',
     '|---|---|---|---|',
     '| April 2024 | OFTO licences granted | Confirms a post-COD regulatory milestone. | [Ofgem](https://example.com/event-1), [Industry](https://example.com/event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Project identity',
+          field_name: null,
+          value: 'Seagreen Phase 1 Wind Farm',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/owner' }),
+          supporting_context: [{ label: 'Regulator', url: 'https://example.com/regulator' }],
+        },
+        {
+          item_label: 'Status',
+          field_name: 'status',
+          value: 'Operational',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/status-1' }),
+          supporting_context: [{ label: 'Regulator', url: 'https://example.com/status-2' }],
+        },
+        {
+          item_label: 'Maximum Export Capacity (MEC)',
+          field_name: 'mec_mw',
+          value: 'Not confirmed',
+          provenance_mode: 'web_source',
+          source_of_record: null,
+          supporting_context: [
+            { label: 'Owner', url: 'https://example.com/mec-1' },
+            { label: 'Regulator', url: 'https://example.com/mec-2' },
+          ],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: 'April 2024',
+          development: 'OFTO licences granted',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+          supporting_context: [{ label: 'Industry', url: 'https://example.com/event-2' }],
+        },
+      ],
+    }),
   ].join('\n');
 
   const result = parseStructuredReport(markdown);
@@ -648,10 +876,19 @@ test('parseStructuredReport extracts ordered profile rows and recent development
     ],
     invalid_source_links: [],
     is_not_confirmed: false,
+    provenance: {
+      item_label: 'Project identity',
+      field_name: null,
+      value: 'Seagreen Phase 1 Wind Farm',
+      provenance_mode: 'web_source',
+      source_of_record: createSourceOfRecord({ source_url: 'https://example.com/owner' }),
+      supporting_context: [{ label: 'Regulator', url: 'https://example.com/regulator' }],
+    },
   });
   assert.equal(result.profileRows[1].field_name, 'status');
   assert.equal(result.profileRows[2].field_name, 'mec_mw');
   assert.equal(result.profileRows[2].is_not_confirmed, true);
+  assert.equal(result.provenanceAppendix.profile_rows.length, 3);
   assert.deepEqual(result.recentDevelopments, [
     {
       date: 'April 2024',
@@ -662,6 +899,13 @@ test('parseStructuredReport extracts ordered profile rows and recent development
         { label: 'Industry', url: 'https://example.com/event-2' },
       ],
       invalid_source_links: [],
+      provenance: {
+        date: 'April 2024',
+        development: 'OFTO licences granted',
+        provenance_mode: 'web_source',
+        source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+        supporting_context: [{ label: 'Industry', url: 'https://example.com/event-2' }],
+      },
     },
   ]);
 });
@@ -681,11 +925,136 @@ test('getResearchReportQualityIssues flags invalid source links', () => {
     '| Date | Development | Why it matters | Sources |',
     '|---|---|---|---|',
     '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/event-1), [Source 2](https://example.com/event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Developer / owners',
+          field_name: 'developer',
+          value: 'SSE 40%, CIP 35%, Red Rock Power 25%',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/owner-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/owner-2' }],
+        },
+        {
+          item_label: 'Ownership history',
+          field_name: null,
+          value: 'SSE, CIP and Red Rock Power have remained owners.',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/history-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/history-2' }],
+        },
+        {
+          item_label: 'Rotor diameter',
+          field_name: 'rotor_diameter_m',
+          value: '154 m',
+          provenance_mode: 'dataset_fallback',
+          source_of_record: createSourceOfRecord({
+            source_url: 'https://example.com/dataset/rotor-diameter',
+            source_type: 'open dataset',
+            source_name: 'EuroWindWakes 2025',
+            verification_status: 'dataset_fallback',
+            confidence: 'medium',
+          }),
+          supporting_context: [{ label: 'Project', url: 'https://example.com/rotor-1' }],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: 'April 2024',
+          development: 'Licence granted',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+          supporting_context: [{ label: 'Source 2', url: 'https://example.com/event-2' }],
+        },
+      ],
+    }),
   ].join('\n');
 
   assert.deepEqual(
     getResearchReportQualityIssues(markdown, new Date('2026-04-17T00:00:00Z')),
     ['invalid-source-links'],
+  );
+});
+
+test('getResearchReportQualityIssues flags missing provenance appendix', () => {
+  const markdown = [
+    'This profile assesses Beatrice Offshore Wind Farm.',
+    '',
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Developer / owners | SSE 40%, CIP 35%, Red Rock Power 25% | SSE portfolio page updated November 2024 confirms the split. | [Owner](https://example.com/owner-1), [Investor](https://example.com/owner-2) |',
+    '| Ownership history | SSE, CIP and Red Rock Power have remained owners. | Project materials updated January 2025 indicate no later change. | [Owner](https://example.com/history-1), [Investor](https://example.com/history-2) |',
+    '',
+    'Recent developments',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/event-1), [Source 2](https://example.com/event-2) |',
+  ].join('\n');
+
+  assert.deepEqual(
+    getResearchReportQualityIssues(markdown, new Date('2026-04-17T00:00:00Z')),
+    ['missing-provenance-appendix'],
+  );
+});
+
+test('getResearchReportQualityIssues flags a missing source of record for confirmed values', () => {
+  const markdown = [
+    'This profile assesses Beatrice Offshore Wind Farm.',
+    '',
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Developer / owners | SSE 40%, CIP 35%, Red Rock Power 25% | SSE portfolio page updated November 2024 confirms the split. | [Owner](https://example.com/owner-1), [Investor](https://example.com/owner-2) |',
+    '| Ownership history | SSE, CIP and Red Rock Power have remained owners. | Project materials updated January 2025 indicate no later change. | [Owner](https://example.com/history-1), [Investor](https://example.com/history-2) |',
+    '| Status | Operational | Owner and regulator pages confirm the project is operational. | [Owner](https://example.com/status-1), [Regulator](https://example.com/status-2) |',
+    '',
+    'Recent developments',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/event-1), [Source 2](https://example.com/event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Developer / owners',
+          field_name: 'developer',
+          value: 'SSE 40%, CIP 35%, Red Rock Power 25%',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/owner-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/owner-2' }],
+        },
+        {
+          item_label: 'Ownership history',
+          field_name: null,
+          value: 'SSE, CIP and Red Rock Power have remained owners.',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/history-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/history-2' }],
+        },
+        {
+          item_label: 'Status',
+          field_name: 'status',
+          value: 'Operational',
+          provenance_mode: 'web_source',
+          source_of_record: null,
+          supporting_context: [{ label: 'Regulator', url: 'https://example.com/status-2' }],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: 'April 2024',
+          development: 'Licence granted',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+          supporting_context: [{ label: 'Source 2', url: 'https://example.com/event-2' }],
+        },
+      ],
+    }),
+  ].join('\n');
+
+  assert.deepEqual(
+    getResearchReportQualityIssues(markdown, new Date('2026-04-17T00:00:00Z')),
+    ['missing-source-of-record'],
   );
 });
 
@@ -699,13 +1068,362 @@ test('extractFactsFromReport skips not confirmed rows and keeps mapped rows', ()
     '| Date | Development | Why it matters | Sources |',
     '|---|---|---|---|',
     '| April 2024 | OFTO licences granted | Confirms a milestone. | [Ofgem](https://example.com/event-1), [Industry](https://example.com/event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Status',
+          field_name: 'status',
+          value: 'Operational',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/status-primary' }),
+          supporting_context: [
+            { label: 'Owner', url: 'https://example.com/status-1' },
+            { label: 'Regulator', url: 'https://example.com/status-2' },
+          ],
+        },
+        {
+          item_label: 'Maximum Export Capacity (MEC)',
+          field_name: 'mec_mw',
+          value: 'Not confirmed',
+          provenance_mode: 'web_source',
+          source_of_record: null,
+          supporting_context: [
+            { label: 'Owner', url: 'https://example.com/mec-1' },
+            { label: 'Regulator', url: 'https://example.com/mec-2' },
+          ],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: 'April 2024',
+          development: 'OFTO licences granted',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+          supporting_context: [{ label: 'Industry', url: 'https://example.com/event-2' }],
+        },
+      ],
+    }),
   ].join('\n');
 
   assert.deepEqual(extractFactsFromReport(markdown), [
     {
       fieldName: 'status',
       value: 'Operational',
-      citationUrl: 'https://example.com/status-1',
+      citationUrl: 'https://example.com/status-primary',
+      sourceOfRecord: createSourceOfRecord({ source_url: 'https://example.com/status-primary' }),
     },
   ]);
+});
+
+test('extractFactsFromReport uses dataset provenance as the source of record for fallback values', () => {
+  const markdown = [
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Hub height | 101 m | Project-specific web sources were inconclusive so the linked EuroWindWakes value was used. | [Beatrice design statement](https://example.com/beatrice-design), [Beatrice history](https://example.com/beatrice-history) |',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    '| April 2024 | OFTO licences granted | Confirms a milestone. | [Ofgem](https://example.com/event-1), [Industry](https://example.com/event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Hub height',
+          field_name: 'hub_height_m',
+          value: '101 m',
+          provenance_mode: 'dataset_fallback',
+          source_of_record: createSourceOfRecord({
+            source_url: 'https://example.com/datasets/eurowindwakes/beatrice#hub_height_m',
+            source_name: 'EuroWindWakes 2025 linked turbine dataset',
+            source_type: 'open dataset',
+            licence: 'unknown',
+            confidence: 'medium',
+            verification_status: 'dataset_fallback',
+            evidence_quote: 'Linked project turbine metadata hub_height_m = 101',
+          }),
+          supporting_context: [
+            { label: 'Beatrice design statement', url: 'https://example.com/beatrice-design' },
+            { label: 'Beatrice history', url: 'https://example.com/beatrice-history' },
+          ],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: 'April 2024',
+          development: 'OFTO licences granted',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+          supporting_context: [{ label: 'Industry', url: 'https://example.com/event-2' }],
+        },
+      ],
+    }),
+  ].join('\n');
+
+  assert.deepEqual(extractFactsFromReport(markdown), [
+    {
+      fieldName: 'hub_height_m',
+      value: '101 m',
+      citationUrl: EUROWINDWAKES_ZENODO_RECORD_URL,
+      sourceOfRecord: createSourceOfRecord({
+        source_url: EUROWINDWAKES_ZENODO_RECORD_URL,
+        source_name: 'EuroWindWakes 2025 linked turbine dataset',
+        source_type: 'open dataset',
+        licence: 'ODC Open Database License v1.0',
+        confidence: 'medium',
+        verification_status: 'dataset_fallback',
+        evidence_quote: 'Linked project turbine metadata hub_height_m = 101',
+      }),
+    },
+  ]);
+});
+
+test('buildReportEvidenceRows persists source-of-record and supporting-context rows', () => {
+  const evidenceRows = buildReportEvidenceRows({
+    reportId: 42,
+    factIdsByFieldName: new Map([["hub_height_m", 7]]),
+    profileRows: [
+      {
+        item_label: 'Hub height',
+        field_name: 'hub_height_m',
+        value: '101 m',
+        research_summary: 'Dataset fallback used.',
+        provenance: {
+          provenance_mode: 'dataset_fallback',
+          source_of_record: createSourceOfRecord({
+            source_url: 'https://example.com/datasets/eurowindwakes/beatrice#hub_height_m',
+            source_name: 'EuroWindWakes 2025 linked turbine dataset',
+            source_type: 'open dataset',
+            verification_status: 'dataset_fallback',
+          }),
+          supporting_context: [{ label: 'Beatrice history', url: 'https://example.com/beatrice-history' }],
+        },
+      },
+    ],
+    recentDevelopments: [],
+  });
+
+  assert.equal(evidenceRows.length, 2);
+  assert.equal(evidenceRows[0].fact_id, 7);
+  assert.equal(evidenceRows[0].evidence_role, 'source_of_record');
+  assert.equal(evidenceRows[0].source_url, EUROWINDWAKES_ZENODO_RECORD_URL);
+  assert.equal(evidenceRows[1].evidence_role, 'supporting_context');
+});
+
+test('verifyEvidenceRecord canonicalizes EuroWindWakes dataset placeholders to the Zenodo record', async () => {
+  let requestedUrl = null;
+
+  const result = await verifyEvidenceRecord(
+    {
+      source_url: 'https://example.invalid/eurowindwakes/beatrice-linked-turbine-metadata',
+      source_name: 'EuroWindWakes 2025 linked turbine dataset',
+      source_type: 'open dataset',
+      evidence_quote: 'Linked project turbine metadata hub_height_m = 101',
+      provenance_mode: 'dataset_fallback',
+      human_verified: false,
+    },
+    {
+      fetchImpl: async (url) => {
+        requestedUrl = url;
+
+        return {
+          ok: true,
+          status: 200,
+          headers: {
+            get: () => 'text/html; charset=utf-8',
+          },
+          arrayBuffer: async () => Buffer.from('<html><body>Open European offshore wind turbine database. EuroWindWakes dataset.</body></html>', 'utf8'),
+        };
+      },
+    },
+  );
+
+  assert.equal(requestedUrl, EUROWINDWAKES_ZENODO_RECORD_URL);
+  assert.equal(result.status, 'passed');
+  assert.equal(result.normalizedRecord.source_url, EUROWINDWAKES_ZENODO_RECORD_URL);
+  assert.equal(result.normalizedRecord.licence, 'ODC Open Database License v1.0');
+});
+
+test('verifyEvidenceRecord passes when the source page contains the evidence quote', async () => {
+  const result = await verifyEvidenceRecord(
+    {
+      source_url: 'https://example.com/source',
+      source_name: 'Example source',
+      source_type: 'official project',
+      evidence_quote: 'The installed capacity is 588 MW.',
+      provenance_mode: 'web_source',
+      human_verified: false,
+    },
+    {
+      fetchImpl: async () => ({
+        ok: true,
+        status: 200,
+        headers: {
+          get: () => 'text/html; charset=utf-8',
+        },
+        arrayBuffer: async () => Buffer.from('<html><body>The installed capacity is 588 MW.</body></html>', 'utf8'),
+      }),
+    },
+  );
+
+  assert.deepEqual(result, {
+    status: 'passed',
+    httpStatus: 200,
+    error: null,
+    normalizedRecord: {
+      source_url: 'https://example.com/source',
+      source_name: 'Example source',
+      source_type: 'official project',
+      evidence_quote: 'The installed capacity is 588 MW.',
+      provenance_mode: 'web_source',
+      human_verified: false,
+    },
+  });
+});
+
+test('verifyEvidenceRecord fails when the source page does not support the evidence quote', async () => {
+  const result = await verifyEvidenceRecord(
+    {
+      source_url: 'https://example.com/source',
+      source_name: 'Example source',
+      source_type: 'official project',
+      evidence_quote: 'The installed capacity is 588 MW.',
+      provenance_mode: 'web_source',
+      human_verified: false,
+    },
+    {
+      fetchImpl: async () => ({
+        ok: true,
+        status: 200,
+        headers: {
+          get: () => 'text/html; charset=utf-8',
+        },
+        arrayBuffer: async () => Buffer.from('<html><body>This page does not include the claimed figure.</body></html>', 'utf8'),
+      }),
+    },
+  );
+
+  assert.equal(result.status, 'failed');
+  assert.equal(result.httpStatus, 200);
+});
+
+test('verifyEvidenceRecord keeps not-confirmed rows publishable when the source page is reachable', async () => {
+  const result = await verifyEvidenceRecord(
+    {
+      source_url: 'https://example.com/source',
+      source_name: 'Example source',
+      source_type: 'research database',
+      evidence_quote: 'timeline lists consent and operations milestones but no FID date',
+      provenance_mode: 'web_source',
+      reported_value: 'Not confirmed',
+      human_verified: false,
+    },
+    {
+      fetchImpl: async () => ({
+        ok: true,
+        status: 200,
+        headers: {
+          get: () => 'text/html; charset=utf-8',
+        },
+        arrayBuffer: async () => Buffer.from('<html><body>Project timeline: consent authorized, construction start, operation start.</body></html>', 'utf8'),
+      }),
+    },
+  );
+
+  assert.equal(result.status, 'value_not_confirmed');
+  assert.equal(result.httpStatus, 200);
+  assert.equal(result.error, null);
+});
+
+test('verifyReportEvidence blocks reports with failed source-of-record rows', async () => {
+  const updates = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes('FROM research_report_evidence')) {
+        return {
+          rows: [
+            {
+              id: 11,
+              reported_value: '588 MW',
+              source_url: 'https://example.com/source',
+              source_name: 'Example source',
+              source_type: 'official project',
+              evidence_quote: 'The installed capacity is 588 MW.',
+              provenance_mode: 'web_source',
+              human_verified: false,
+            },
+          ],
+        };
+      }
+
+      if (text.includes('UPDATE research_report_evidence')) {
+        updates.push(values);
+        return { rows: [] };
+      }
+
+      return { rows: [] };
+    },
+  };
+
+  const result = await verifyReportEvidence(fakeClient, 99, {
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      headers: {
+        get: () => 'text/html; charset=utf-8',
+      },
+      arrayBuffer: async () => Buffer.from('<html><body>Unsupported content.</body></html>', 'utf8'),
+    }),
+  });
+
+  assert.equal(result.passed, false);
+  assert.equal(result.blockedRows.length, 1);
+  assert.equal(updates.length, 1);
+  assert.equal(updates[0][5], 'failed');
+});
+
+test('verifyReportEvidence does not block reachable not-confirmed rows', async () => {
+  const updates = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes('FROM research_report_evidence')) {
+        return {
+          rows: [
+            {
+              id: 17,
+              fact_id: null,
+              reported_value: 'Not confirmed',
+              source_url: 'https://example.com/source',
+              source_name: 'Example source',
+              source_type: 'research database',
+              evidence_quote: 'timeline lists consent and operations milestones but no FID date',
+              provenance_mode: 'web_source',
+              human_verified: false,
+            },
+          ],
+        };
+      }
+
+      if (text.includes('UPDATE research_report_evidence')) {
+        updates.push(values);
+        return { rows: [] };
+      }
+
+      return { rows: [] };
+    },
+  };
+
+  const result = await verifyReportEvidence(fakeClient, 101, {
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      headers: {
+        get: () => 'text/html; charset=utf-8',
+      },
+      arrayBuffer: async () => Buffer.from('<html><body>Project timeline: consent authorized, construction start, operation start.</body></html>', 'utf8'),
+    }),
+  });
+
+  assert.equal(result.passed, true);
+  assert.equal(result.blockedRows.length, 0);
+  assert.equal(updates.length, 1);
+  assert.equal(updates[0][5], 'value_not_confirmed');
 });

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { createDatabaseClient } from './lib/database.js';
+import { verifyReportEvidence } from './lib/evidence-verifier.js';
 
 dotenv.config();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -9,25 +10,51 @@ async function main() {
   await client.connect();
 
   try {
-    // Count drafts before promoting
-    const countResult = await client.query(
-      `SELECT COUNT(*) AS cnt FROM research_wind_farm_reports WHERE review_status = 'draft'`,
+    const draftResult = await client.query(
+      `SELECT id, wind_farm_id
+       FROM research_wind_farm_reports
+       WHERE review_status = 'draft'
+       ORDER BY researched_at ASC`,
     );
-    const draftCount = parseInt(countResult.rows[0].cnt, 10);
+    const draftReports = draftResult.rows;
+    const draftCount = draftReports.length;
 
     if (draftCount === 0) {
       console.error('No draft reports to publish.');
       return;
     }
 
-    console.error(`Found ${draftCount} draft report(s). Publishing...`);
+    console.error(`Found ${draftCount} draft report(s). Verifying evidence before publish...`);
+
+    const publishableReportIds = [];
+
+    for (const report of draftReports) {
+      const verification = await verifyReportEvidence(client, report.id);
+
+      if (verification.passed) {
+        publishableReportIds.push(report.id);
+        continue;
+      }
+
+      console.error(`Blocked report #${report.id} for wind farm ${report.wind_farm_id}:`);
+      for (const blockedRow of verification.blockedRows) {
+        console.error(`  - ${blockedRow.status}: ${blockedRow.error}`);
+      }
+    }
+
+    if (publishableReportIds.length === 0) {
+      console.error('No draft reports passed evidence verification. Nothing was published.');
+      return;
+    }
 
     // Promote reports: draft → published
     const reportResult = await client.query(
       `UPDATE research_wind_farm_reports
        SET review_status = 'published', updated_at = now()
        WHERE review_status = 'draft'
+         AND id = ANY($1)
        RETURNING id, wind_farm_id`,
+      [publishableReportIds],
     );
 
     const publishedReportIds = reportResult.rows.map((r) => r.id);
@@ -45,6 +72,7 @@ async function main() {
     );
 
     console.error(`Activated ${factResult.rowCount} research fact(s).`);
+    console.error(`Blocked ${draftCount - publishedReportIds.length} draft report(s) that failed evidence verification.`);
 
     // Summary
     const summaryResult = await client.query(
