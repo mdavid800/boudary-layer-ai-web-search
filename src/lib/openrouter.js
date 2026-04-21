@@ -78,8 +78,26 @@ export function getResearchReportQualityIssues(content, referenceDate = new Date
     return ['missing-required-tables'];
   }
 
-  const { profileRows, recentDevelopments } = parseStructuredReport(content);
+  const {
+    profileRows,
+    recentDevelopments,
+    provenanceAppendix,
+    provenanceAppendixError,
+  } = parseStructuredReport(content);
   const qualityIssues = [];
+
+  if (provenanceAppendixError) {
+    qualityIssues.push(provenanceAppendixError);
+    return qualityIssues;
+  }
+
+  if (hasInvalidProvenanceAppendix(profileRows, recentDevelopments, provenanceAppendix)) {
+    qualityIssues.push('invalid-provenance-appendix');
+  }
+
+  if (hasMissingSourceOfRecord(profileRows)) {
+    qualityIssues.push('missing-source-of-record');
+  }
 
   if (hasInvalidSourceLinks(profileRows, recentDevelopments)) {
     qualityIssues.push('invalid-source-links');
@@ -100,6 +118,43 @@ function hasInvalidSourceLinks(profileRows = [], recentDevelopments = []) {
   return [...profileRows, ...recentDevelopments].some((row) =>
     Array.isArray(row.invalid_source_links) && row.invalid_source_links.length > 0,
   );
+}
+
+function hasInvalidProvenanceAppendix(profileRows = [], recentDevelopments = [], provenanceAppendix) {
+  if (!provenanceAppendix) {
+    return true;
+  }
+
+  const hasProfileMismatch = profileRows.some((row) => {
+    if (!row.provenance) {
+      return true;
+    }
+
+    return row.provenance.item_label !== row.item_label || row.provenance.value !== row.value;
+  });
+
+  if (hasProfileMismatch) {
+    return true;
+  }
+
+  return recentDevelopments.some((row) => {
+    if (!row.provenance) {
+      return true;
+    }
+
+    return row.provenance.date !== row.date || row.provenance.development !== row.development;
+  });
+}
+
+function hasMissingSourceOfRecord(profileRows = []) {
+  return profileRows.some((row) => {
+    if (row.is_not_confirmed) {
+      return false;
+    }
+
+    const sourceOfRecord = row.provenance?.source_of_record;
+    return !sourceOfRecord?.source_url || !sourceOfRecord?.source_type;
+  });
 }
 
 export function hasFreshOwnershipEvidence(

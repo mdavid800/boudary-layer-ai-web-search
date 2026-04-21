@@ -156,6 +156,69 @@ Recent developments
 | Month Year / Date | ... | ... | [Source 1](url), [Source 2](url) |
 | Month Year / Date | ... | ... | [Source 1](url), [Source 2](url) |
 
+After the recent developments table, append a final section with the exact heading `Provenance appendix` followed by one fenced `json` code block.
+
+The JSON must be valid and machine-parseable. Use this shape:
+
+```json
+{
+   "profile_rows": [
+      {
+         "item_label": "Hub height",
+         "field_name": "hub_height_m",
+         "value": "101 m",
+         "provenance_mode": "dataset_fallback",
+         "source_of_record": {
+            "source_url": "https://zenodo.org/records/17311571",
+            "source_name": "EuroWindWakes 2025 linked turbine dataset",
+            "source_type": "open dataset",
+            "licence": "ODC Open Database License v1.0",
+            "retrieved_at": "2026-04-21T00:00:00Z",
+            "evidence_quote": "Linked project turbine metadata hub_height_m = 101",
+            "confidence": "medium",
+            "derived_by_ai": true,
+            "human_verified": false,
+            "verification_status": "dataset_fallback"
+         },
+         "supporting_context": [
+            { "label": "Beatrice history", "url": "https://..." }
+         ]
+      }
+   ],
+   "recent_developments": [
+      {
+         "date": "28/05/2024",
+         "development": "...",
+         "provenance_mode": "web_source",
+         "source_of_record": {
+            "source_url": "https://...",
+            "source_name": "Ofgem press release",
+            "source_type": "regulator",
+            "licence": "public webpage terms",
+            "retrieved_at": "2026-04-21T00:00:00Z",
+            "evidence_quote": "...",
+            "confidence": "high",
+            "derived_by_ai": true,
+            "human_verified": false,
+            "verification_status": "unverified"
+         },
+         "supporting_context": [
+            { "label": "Secondary report", "url": "https://..." }
+         ]
+      }
+   ]
+}
+```
+
+Critical provenance rules:
+- Every profile row in the visible table must have a matching entry in `profile_rows` with the same `item_label` and `value`.
+- Every recent-development row in the visible table must have a matching entry in `recent_developments` with the same `date` and `development`.
+- `source_of_record` is the origin of the chosen value, not just a page you reviewed while researching.
+- If a value uses EuroWindWakes or another dataset fallback, set `provenance_mode` accordingly and make the dataset the `source_of_record`.
+- For EuroWindWakes dataset fallbacks, use `https://zenodo.org/records/17311571` as `source_url`. Do not use placeholders such as `example.invalid`.
+- Do not use supporting web pages as the `source_of_record` when they do not explicitly contain the chosen value.
+- Keep the visible markdown tables unchanged; put provenance detail only in the appendix JSON.
+
 Style requirements:
 - Be precise and factual.
 - Do not use bullet points outside the tables.
