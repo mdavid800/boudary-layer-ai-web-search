@@ -13,10 +13,12 @@ import {
 } from '../src/lib/report-output.js';
 import { getWindFarmSourceTableName } from '../src/lib/windfarm-database.js';
 import {
+  buildBlockedRowRepairPrompt,
   extractTextContent,
   getResearchReportQualityIssues,
   hasFreshOwnershipEvidence,
   isCompletedResearchReport,
+  requestBlockedRowRepair,
   requestResearchReport,
 } from '../src/lib/openrouter.js';
 import { buildProjectContext, buildResearchPrompt } from '../src/lib/prompt.js';
@@ -25,8 +27,10 @@ import { normalizeCanonicalWindFarmStatus } from '../src/lib/status.js';
 import { extractFactsFromReport } from '../src/lib/fact-extraction.js';
 import { buildReportEvidenceRows } from '../src/lib/report-evidence.js';
 import { parseStructuredReport } from '../src/lib/report-structure.js';
+import { pruneObsoleteDraftReports } from '../src/lib/report-storage.js';
 import { EUROWINDWAKES_ZENODO_RECORD_URL } from '../src/lib/source-of-record.js';
 import { verifyEvidenceRecord, verifyReportEvidence } from '../src/lib/evidence-verifier.js';
+import { publishDraftReports } from '../src/publish-reports.js';
 
 function createSourceOfRecord(overrides = {}) {
   return {
@@ -345,6 +349,106 @@ test('requestResearchReport explicitly passes auto engine when no search engine 
 
   assert.equal(calls.length, 1);
   assert.equal(calls[0].tools[0].parameters.engine, 'auto');
+  assert.deepEqual(calls[0].tools[0].parameters.excluded_domains, [
+    'orsted.com',
+    'tgs.com',
+    '4coffshore.com',
+    'windpowermonthly.com',
+  ]);
+});
+
+test('requestResearchReport omits excluded domains for firecrawl engine', async () => {
+  const payload = {
+    choices: [
+      {
+        message: {
+          content: [
+            'This profile assesses Dogger Bank A.\n\n',
+            '| Item | Value | Research summary | Sources |\n',
+            '|---|---|---|---|\n',
+            '| Developer / owners | SSE Renewables 50%, Equinor 50% | SSE portfolio page updated November 2024 and Equinor asset page updated January 2025 confirm the current ownership split. | [Source 1](https://example.com/source-0), [Source 2](https://example.com/source-0b) |\n',
+            '| Ownership history | SSE and Equinor remain the project owners. | Owner pages updated November 2024 and January 2025 do not indicate a later ownership change. | [Source 1](https://example.com/source-0c), [Source 2](https://example.com/source-0d) |\n',
+            '| Status | Operational | Confirmed by owner and regulator materials. | [Source 1](https://example.com/source-1), [Source 2](https://example.com/source-2) |\n',
+            'Recent developments\n\n',
+            '| Date | Development | Why it matters | Sources |\n',
+            '|---|---|---|---|\n',
+            '| April 2024 | Licence granted | Marks the latest milestone. | [Source 1](https://example.com/source-3), [Source 2](https://example.com/source-4) |\n',
+            createProvenanceAppendix({
+              profileRows: [
+                {
+                  item_label: 'Developer / owners',
+                  field_name: 'developer',
+                  value: 'SSE Renewables 50%, Equinor 50%',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({
+                    source_url: 'https://example.com/source-0',
+                  }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-0b' }],
+                },
+                {
+                  item_label: 'Ownership history',
+                  field_name: null,
+                  value: 'SSE and Equinor remain the project owners.',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({
+                    source_url: 'https://example.com/source-0c',
+                  }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-0d' }],
+                },
+                {
+                  item_label: 'Status',
+                  field_name: 'status',
+                  value: 'Operational',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({
+                    source_url: 'https://example.com/source-1',
+                  }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-2' }],
+                },
+              ],
+              recentDevelopments: [
+                {
+                  date: 'April 2024',
+                  development: 'Licence granted',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({
+                    source_url: 'https://example.com/source-3',
+                  }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-4' }],
+                },
+              ],
+            }),
+          ],
+        },
+      },
+    ],
+  };
+  const calls = [];
+
+  const fetchImpl = async (_url, options) => {
+    calls.push(JSON.parse(options.body));
+
+    return {
+      ok: true,
+      text: async () => JSON.stringify(payload),
+    };
+  };
+
+  await requestResearchReport({
+    apiKey: 'test-key',
+    fetchImpl,
+    model: 'openai/gpt-4.1',
+    prompt: 'Prompt',
+    referer: '',
+    title: '',
+    searchEngine: 'firecrawl',
+    maxResults: 6,
+    maxTotalResults: 18,
+  });
+
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].tools[0].parameters.engine, 'firecrawl');
+  assert.equal('excluded_domains' in calls[0].tools[0].parameters, false);
 });
 
 test('runtime-config loads OPENROUTER_MODEL from .env before exporting defaults', () => {
@@ -748,6 +852,125 @@ test('requestResearchReport retries when the first server-tool report lacks fres
   assert.match(prompts[1], /Critical correction for this retry:/);
 });
 
+test('buildBlockedRowRepairPrompt asks for minimal row-scoped repair and verifier-friendly evidence', () => {
+  const prompt = buildBlockedRowRepairPrompt('Current report markdown', [
+    {
+      id: 847,
+      report_item_label: 'Capacity',
+      report_field_name: 'capacity_mw',
+      reported_value: '588 MW',
+      source_name: 'SSE page',
+      source_url: 'https://example.com/beatrice',
+      error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+    },
+  ]);
+
+  assert.match(prompt, /Preserve every table row, recent-development row, and appendix entry that is not listed as blocked below\./);
+  assert.match(prompt, /Use short verbatim machine-checkable evidence_quote fragments/);
+  assert.match(prompt, /"Capacity"/);
+  assert.match(prompt, /Current report markdown/);
+});
+
+test('requestBlockedRowRepair returns the repaired report when quality checks pass', async () => {
+  const repairedPayload = {
+    choices: [
+      {
+        message: {
+          content: [
+            'This profile assesses Beatrice Offshore Wind Farm.\n\n',
+            '| Item | Value | Research summary | Sources |\n',
+            '|---|---|---|---|\n',
+            '| Developer / owners | SSE 40%, CIP 35%, Red Rock Power 25% | SSE portfolio page updated November 2024 confirms the current split. | [Source 1](https://example.com/source-1), [Source 2](https://example.com/source-2) |\n',
+            '| Ownership history | SSE, CIP and Red Rock Power have remained owners. | SSE materials updated January 2025 indicate no later change. | [Source 1](https://example.com/source-3), [Source 2](https://example.com/source-4) |\n',
+            '| Status | Operational | Confirmed by owner and regulator materials. | [Source 1](https://example.com/source-5), [Source 2](https://example.com/source-6) |\n',
+            '| Capacity | 588 MW | SSE project page shows the installed capacity. | [Source 1](https://example.com/source-7), [Source 2](https://example.com/source-8) |\n',
+            'Recent developments\n\n',
+            '| Date | Development | Why it matters | Sources |\n',
+            '|---|---|---|---|\n',
+            '| 01/05/2024 | Regulatory update | Marks a current milestone. | [Source 1](https://example.com/source-9), [Source 2](https://example.com/source-10) |\n',
+            createProvenanceAppendix({
+              profileRows: [
+                {
+                  item_label: 'Developer / owners',
+                  field_name: 'developer',
+                  value: 'SSE 40%, CIP 35%, Red Rock Power 25%',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-1' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-2' }],
+                },
+                {
+                  item_label: 'Ownership history',
+                  field_name: null,
+                  value: 'SSE, CIP and Red Rock Power have remained owners.',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-3' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-4' }],
+                },
+                {
+                  item_label: 'Status',
+                  field_name: 'status',
+                  value: 'Operational',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-5' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-6' }],
+                },
+                {
+                  item_label: 'Capacity',
+                  field_name: 'capacity_mw',
+                  value: '588 MW',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({
+                    source_url: 'https://example.com/source-7',
+                    evidence_quote: 'Installed capacity 588 MW',
+                  }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-8' }],
+                },
+              ],
+              recentDevelopments: [
+                {
+                  date: '01/05/2024',
+                  development: 'Regulatory update',
+                  provenance_mode: 'web_source',
+                  source_of_record: createSourceOfRecord({ source_url: 'https://example.com/source-9' }),
+                  supporting_context: [{ label: 'Source 2', url: 'https://example.com/source-10' }],
+                },
+              ],
+            }),
+          ],
+        },
+      },
+    ],
+  };
+
+  const result = await requestBlockedRowRepair({
+    apiKey: 'test-key',
+    model: 'openai/gpt-4.1',
+    reportMarkdown: 'Current report markdown',
+    blockedRows: [
+      {
+        id: 847,
+        report_item_label: 'Capacity',
+        report_field_name: 'capacity_mw',
+        reported_value: '588 MW',
+        source_name: 'SSE page',
+        source_url: 'https://example.com/beatrice',
+        error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+      },
+    ],
+    searchEngine: 'auto',
+    maxResults: 6,
+    maxTotalResults: 18,
+    referer: '',
+    title: '',
+    fetchImpl: async () => ({
+      ok: true,
+      text: async () => JSON.stringify(repairedPayload),
+    }),
+  });
+
+  assert.match(result, /Installed capacity 588 MW/);
+});
+
 test('buildDatabaseConnectionString adds a no-verify sslmode when missing', () => {
   const result = buildDatabaseConnectionString(
     'postgresql://user:pass@example.supabase.co:5432/postgres',
@@ -1058,6 +1281,133 @@ test('getResearchReportQualityIssues flags a missing source of record for confir
   );
 });
 
+test('getResearchReportQualityIssues flags risky source-of-record domains', () => {
+  const markdown = [
+    'This profile assesses Beatrice Offshore Wind Farm.',
+    '',
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Developer / owners | SSE 40%, Red Rock Power 25%, TRIG 17.5%, Equitix 17.5% | SSE materials updated April 2026 confirm the current ownership split. | [Owner](https://example.com/owner-1), [Investor](https://example.com/owner-2) |',
+    '| Ownership history | SSE led development and later partner ownership changes were completed by 2021. | Project materials updated January 2025 summarize the current end-state and earlier ownership history. | [Owner](https://example.com/history-1), [Investor](https://example.com/history-2) |',
+    '| Turbine model | SWT-7.0-154 | Project-specific sources tie this turbine model to Beatrice. | [Open source](https://example.com/turbine-open), [Dataset](https://example.com/turbine-dataset) |',
+    '',
+    'Recent developments',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    '| 28/05/2024 | Regulatory payment agreed | Marks a material project-level regulatory development. | [Regulator](https://example.com/event-1), [Archive](https://example.com/event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Developer / owners',
+          field_name: 'developer',
+          value: 'SSE 40%, Red Rock Power 25%, TRIG 17.5%, Equitix 17.5%',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/owner-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/owner-2' }],
+        },
+        {
+          item_label: 'Ownership history',
+          field_name: null,
+          value: 'SSE led development and later partner ownership changes were completed by 2021.',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/history-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/history-2' }],
+        },
+        {
+          item_label: 'Turbine model',
+          field_name: 'turbine_model',
+          value: 'SWT-7.0-154',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({
+            source_url: 'https://www.windpowermonthly.com/article/1487890/first-turbine-installed-first-power-beatrice',
+            source_name: 'Windpower Monthly',
+            source_type: 'industry news',
+          }),
+          supporting_context: [{ label: 'Open source', url: 'https://example.com/turbine-open' }],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: '28/05/2024',
+          development: 'Regulatory payment agreed',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+          supporting_context: [{ label: 'Archive', url: 'https://example.com/event-2' }],
+        },
+      ],
+    }),
+  ].join('\n');
+
+  assert.deepEqual(
+    getResearchReportQualityIssues(markdown, new Date('2026-04-17T00:00:00Z')),
+    ['blocked-source-domain', 'risky-source-of-record'],
+  );
+});
+
+test('getResearchReportQualityIssues flags hard-blocked domains anywhere in report sources', () => {
+  const markdown = [
+    'This profile assesses Horns Rev I.',
+    '',
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Developer / owners | Vattenfall 60%, Orsted 40% | Owner pages updated 2025 confirm the current ownership split. | [Owner](https://example.com/owner-1), [Investor](https://example.com/owner-2) |',
+    '| Ownership history | Partnership interests were later rebalanced into the current split. | Project materials updated January 2025 summarize the later ownership structure. | [Owner](https://example.com/history-1), [Investor](https://example.com/history-2) |',
+    '| Status | Operational | Owner and regulator pages confirm the project is operational. | [Owner](https://example.com/status-1), [Regulator](https://example.com/status-2) |',
+    '',
+    'Recent developments',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    '| 01/03/2024 | Ownership page still listed the asset at a 40% share. | A current project-level ownership update. | [Blocked](https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms), [Archive](https://example.com/event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Developer / owners',
+          field_name: 'developer',
+          value: 'Vattenfall 60%, Orsted 40%',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/owner-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/owner-2' }],
+        },
+        {
+          item_label: 'Ownership history',
+          field_name: null,
+          value: 'Partnership interests were later rebalanced into the current split.',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/history-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/history-2' }],
+        },
+        {
+          item_label: 'Status',
+          field_name: 'status',
+          value: 'Operational',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/status-1' }),
+          supporting_context: [{ label: 'Regulator', url: 'https://example.com/status-2' }],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: '01/03/2024',
+          development: 'Ownership page still listed the asset at a 40% share.',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+          supporting_context: [
+            { label: 'Blocked', url: 'https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms' },
+            { label: 'Archive', url: 'https://example.com/event-2' },
+          ],
+        },
+      ],
+    }),
+  ].join('\n');
+
+  assert.deepEqual(
+    getResearchReportQualityIssues(markdown, new Date('2026-04-17T00:00:00Z')),
+    ['blocked-source-domain'],
+  );
+});
+
 test('extractFactsFromReport skips not confirmed rows and keeps mapped rows', () => {
   const markdown = [
     '| Item | Value | Research summary | Sources |',
@@ -1208,6 +1558,71 @@ test('buildReportEvidenceRows persists source-of-record and supporting-context r
   assert.equal(evidenceRows[1].evidence_role, 'supporting_context');
 });
 
+test('parseStructuredReport normalizes unsupported verification_status values', () => {
+  const markdown = [
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Total turbine count | 46 | Regulator filing and layout plan support this value. | [Regulator](https://example.com/macoll-count-1), [Supporting](https://example.com/macoll-count-2) |',
+    '',
+    'Recent developments',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Total turbine count',
+          field_name: 'turbine_count',
+          value: '46',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({
+            source_url: 'https://example.com/macoll-count-1',
+            verification_status: 'derived_from_authoritative_source',
+          }),
+          supporting_context: [{ label: 'Supporting', url: 'https://example.com/macoll-count-2' }],
+        },
+      ],
+      recentDevelopments: [],
+    }),
+  ].join('\n');
+
+  const { profileRows } = parseStructuredReport(markdown);
+
+  assert.equal(profileRows[0].provenance.source_of_record.verification_status, 'unverified');
+});
+
+test('parseStructuredReport normalizes unsupported provenance_mode values', () => {
+  const markdown = [
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Capacity | 323 MW | Combined-project evidence and context were used. | [Primary](https://example.com/stevenson-capacity-1), [Supporting](https://example.com/stevenson-capacity-2) |',
+    '',
+    'Recent developments',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Capacity',
+          field_name: 'capacity_mw',
+          value: '323 MW',
+          provenance_mode: 'mixed_inference_from_context_and_web',
+          source_of_record: createSourceOfRecord({
+            source_url: 'https://example.com/stevenson-capacity-1',
+          }),
+          supporting_context: [{ label: 'Supporting', url: 'https://example.com/stevenson-capacity-2' }],
+        },
+      ],
+      recentDevelopments: [],
+    }),
+  ].join('\n');
+
+  const { profileRows } = parseStructuredReport(markdown);
+
+  assert.equal(profileRows[0].provenance.provenance_mode, 'web_source');
+});
+
 test('verifyEvidenceRecord canonicalizes EuroWindWakes dataset placeholders to the Zenodo record', async () => {
   let requestedUrl = null;
 
@@ -1305,6 +1720,93 @@ test('verifyEvidenceRecord fails when the source page does not support the evide
   assert.equal(result.httpStatus, 200);
 });
 
+test('verifyEvidenceRecord passes numeric fields when page supports the labeled value', async () => {
+  const result = await verifyEvidenceRecord(
+    {
+      report_item_label: 'Capacity',
+      report_field_name: 'capacity_mw',
+      reported_value: '588 MW',
+      source_url: 'https://example.com/source',
+      source_name: 'Example source',
+      source_type: 'official project',
+      evidence_quote: 'The project has a net generating capacity of five hundred and eighty-eight megawatts.',
+      provenance_mode: 'web_source',
+      human_verified: false,
+    },
+    {
+      fetchImpl: async () => ({
+        ok: true,
+        status: 200,
+        headers: {
+          get: () => 'text/html; charset=utf-8',
+        },
+        arrayBuffer: async () => Buffer.from('<html><body><dt>Installed capacity</dt><dd>588MW</dd></body></html>', 'utf8'),
+      }),
+    },
+  );
+
+  assert.equal(result.status, 'passed');
+  assert.equal(result.httpStatus, 200);
+});
+
+test('verifyEvidenceRecord passes date fields when page supports the labeled date', async () => {
+  const result = await verifyEvidenceRecord(
+    {
+      report_item_label: 'Final investment decision (FID)',
+      report_field_name: 'fid_date',
+      reported_value: '01/06/2018',
+      source_url: 'https://example.com/source',
+      source_name: 'Example source',
+      source_type: 'official project',
+      evidence_quote: 'The project reached FID in early summer 2018.',
+      provenance_mode: 'web_source',
+      human_verified: false,
+    },
+    {
+      fetchImpl: async () => ({
+        ok: true,
+        status: 200,
+        headers: {
+          get: () => 'text/html; charset=utf-8',
+        },
+        arrayBuffer: async () => Buffer.from('<html><body><p>Final investment decision: June 2018</p></body></html>', 'utf8'),
+      }),
+    },
+  );
+
+  assert.equal(result.status, 'passed');
+  assert.equal(result.httpStatus, 200);
+});
+
+test('verifyEvidenceRecord still fails numeric fields without label support', async () => {
+  const result = await verifyEvidenceRecord(
+    {
+      report_item_label: 'Capacity',
+      report_field_name: 'capacity_mw',
+      reported_value: '588 MW',
+      source_url: 'https://example.com/source',
+      source_name: 'Example source',
+      source_type: 'official project',
+      evidence_quote: 'The project has a net generating capacity of five hundred and eighty-eight megawatts.',
+      provenance_mode: 'web_source',
+      human_verified: false,
+    },
+    {
+      fetchImpl: async () => ({
+        ok: true,
+        status: 200,
+        headers: {
+          get: () => 'text/html; charset=utf-8',
+        },
+        arrayBuffer: async () => Buffer.from('<html><body><p>Project summary reference 588MW portfolio overview.</p></body></html>', 'utf8'),
+      }),
+    },
+  );
+
+  assert.equal(result.status, 'failed');
+  assert.equal(result.httpStatus, 200);
+});
+
 test('verifyEvidenceRecord keeps not-confirmed rows publishable when the source page is reachable', async () => {
   const result = await verifyEvidenceRecord(
     {
@@ -1342,6 +1844,9 @@ test('verifyReportEvidence blocks reports with failed source-of-record rows', as
           rows: [
             {
               id: 11,
+              report_item_label: 'Capacity',
+              report_field_name: 'capacity_mw',
+              report_date: null,
               reported_value: '588 MW',
               source_url: 'https://example.com/source',
               source_name: 'Example source',
@@ -1426,4 +1931,129 @@ test('verifyReportEvidence does not block reachable not-confirmed rows', async (
   assert.equal(result.blockedRows.length, 0);
   assert.equal(updates.length, 1);
   assert.equal(updates[0][5], 'value_not_confirmed');
+});
+
+test('publishDraftReports repairs a blocked draft and publishes it when reverification passes', async () => {
+  const fakeClient = {
+    query: async (text) => {
+      if (text.includes('FROM research_wind_farm_reports r')) {
+        return {
+          rows: [
+            {
+              id: 50,
+              wind_farm_id: 6646,
+              report_markdown: 'Original markdown',
+              model_used: 'openai/gpt-5.4',
+              name: 'Beatrice Offshore Wind Farm',
+            },
+          ],
+        };
+      }
+
+      if (text.includes("SET review_status = 'published'")) {
+        return {
+          rows: [{ id: 50, wind_farm_id: 6646 }],
+        };
+      }
+
+      if (text.includes("SET status = 'active'")) {
+        return { rowCount: 15 };
+      }
+
+      if (text.includes('published_reports')) {
+        return {
+          rows: [{
+            published_reports: 15,
+            remaining_drafts: 5,
+            active_research_facts: 64,
+            draft_research_facts: 43,
+          }],
+        };
+      }
+
+      return { rows: [], rowCount: 0 };
+    },
+  };
+
+  let verifyCallCount = 0;
+
+  const result = await publishDraftReports({
+    client: fakeClient,
+    apiKey: 'test-key',
+    verifyReportEvidenceFn: async () => {
+      verifyCallCount += 1;
+
+      if (verifyCallCount === 1) {
+        return {
+          passed: false,
+          blockedRows: [
+            {
+              id: 847,
+              status: 'failed',
+              error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+              report_item_label: 'Capacity',
+              report_field_name: 'capacity_mw',
+              report_date: null,
+              report_development: null,
+              reported_value: '588 MW',
+              source_url: 'https://example.com/beatrice',
+              source_name: 'SSE page',
+            },
+          ],
+        };
+      }
+
+      return {
+        passed: true,
+        blockedRows: [],
+      };
+    },
+    requestBlockedRowRepairFn: async () => 'Repaired markdown',
+    updateResearchReportFn: async () => ({ reportId: 50, factsInserted: 15 }),
+    pruneObsoleteDraftReportsFn: async () => [],
+    saveReportFn: async () => 'saved-path',
+    sourceTableName: 'core_wind_farms',
+    searchEngine: 'auto',
+    maxResults: 6,
+    maxTotalResults: 18,
+    referer: '',
+    title: '',
+  });
+
+  assert.deepEqual(result.publishedReportIds, [50]);
+  assert.equal(verifyCallCount, 2);
+});
+
+test('pruneObsoleteDraftReports prefers a published report and removes stale drafts', async () => {
+  const calls = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      calls.push({ text, values });
+
+      if (text.includes('WHERE wind_farm_id = $1') && text.includes("review_status = 'draft'")) {
+        return {
+          rows: [{ id: 44 }, { id: 41 }],
+        };
+      }
+
+      if (text.includes("review_status = 'published'")) {
+        return {
+          rows: [{ id: 52 }],
+        };
+      }
+
+      return { rows: [], rowCount: 0 };
+    },
+  };
+
+  const deletedDraftIds = await pruneObsoleteDraftReports(fakeClient, {
+    windFarmId: 6425,
+  });
+
+  assert.deepEqual(deletedDraftIds, [44, 41]);
+  assert.equal(calls[2].values[0][0], 44);
+  assert.equal(calls[2].values[0][1], 41);
+  assert.equal(calls[3].values[1], 52);
+  assert.equal(calls[5].values[0][0], 44);
+  assert.equal(calls[5].values[0][1], 41);
 });

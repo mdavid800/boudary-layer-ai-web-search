@@ -30,6 +30,22 @@ const NOT_CONFIRMED_VALUES = new Set([
 const PROVENANCE_APPENDIX_HEADING_PATTERN =
   /(?:^|\n)(?:#{1,6}\s*)?Provenance appendix\s*\n+```json\s*\n([\s\S]*?)\n```/i;
 
+const ALLOWED_VERIFICATION_STATUSES = new Set([
+  'unverified',
+  'dataset_fallback',
+  'verified',
+  'failed',
+  'needs_human_review',
+  'passed',
+  'human_verified',
+  'value_not_confirmed',
+]);
+
+const ALLOWED_PROVENANCE_MODES = new Set([
+  'web_source',
+  'dataset_fallback',
+]);
+
 function splitTableRow(row) {
   return row
     .split('|')
@@ -117,6 +133,42 @@ function normalizeSourceLink(link) {
   };
 }
 
+function normalizeVerificationStatus(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const normalizedValue = value.trim().toLowerCase();
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  if (ALLOWED_VERIFICATION_STATUSES.has(normalizedValue)) {
+    return normalizedValue;
+  }
+
+  return 'unverified';
+}
+
+function normalizeProvenanceMode(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const normalizedValue = value.trim().toLowerCase();
+
+  if (!normalizedValue) {
+    return null;
+  }
+
+  if (ALLOWED_PROVENANCE_MODES.has(normalizedValue)) {
+    return normalizedValue;
+  }
+
+  return 'web_source';
+}
+
 function normalizeSourceOfRecord(sourceOfRecord) {
   if (!sourceOfRecord || typeof sourceOfRecord !== 'object') {
     return null;
@@ -152,9 +204,7 @@ function normalizeSourceOfRecord(sourceOfRecord) {
     human_verified: typeof sourceOfRecord.human_verified === 'boolean'
       ? sourceOfRecord.human_verified
       : null,
-    verification_status: typeof sourceOfRecord.verification_status === 'string'
-      ? sourceOfRecord.verification_status.trim() || null
-      : null,
+    verification_status: normalizeVerificationStatus(sourceOfRecord.verification_status),
   };
 }
 
@@ -179,9 +229,7 @@ function normalizeProvenanceRow(entry) {
     item_label: itemLabel || null,
     field_name: fieldName || null,
     value,
-    provenance_mode: typeof entry.provenance_mode === 'string'
-      ? entry.provenance_mode.trim() || null
-      : null,
+    provenance_mode: normalizeProvenanceMode(entry.provenance_mode),
     source_of_record: sourceOfRecord,
     supporting_context: supportingContext,
   };
@@ -202,9 +250,7 @@ function normalizeRecentDevelopmentProvenance(entry) {
   return {
     date,
     development,
-    provenance_mode: typeof entry.provenance_mode === 'string'
-      ? entry.provenance_mode.trim() || null
-      : null,
+    provenance_mode: normalizeProvenanceMode(entry.provenance_mode),
     source_of_record: normalizeSourceOfRecord(entry.source_of_record),
     supporting_context: Array.isArray(entry.supporting_context)
       ? entry.supporting_context.map(normalizeSourceLink).filter(Boolean)

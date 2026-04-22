@@ -17,6 +17,52 @@ const FRESHNESS_RETRY_NOTE = [
   '- In the Research summary for Developer / owners and Ownership history, explicitly state the freshest source date relied on.',
   '- Do not use access dates or phrasing like "as accessed 2026" as freshness evidence.',
 ].join('\n');
+const SOURCE_ACCESSIBILITY_RETRY_NOTE = [
+  '',
+  'Critical correction for this retry:',
+  '- Do not use paywalled, login-gated, bot-blocked, or third-party database pages as the primary source_of_record when an official, regulator, owner, operator, supplier, or open-dataset source can support the same value.',
+  '- If a risky news or third-party database source is still useful, keep it only as supporting context and choose an openly accessible primary source for source_of_record.',
+  '- Prefer current live official or regulator URLs over older moved or stale announcement links when selecting source_of_record.',
+  '- For harder-to-source fields such as MEC, FID, consent date, first power date, commissioning date, turbine model, rotor diameter, hub height, and foundations, one authoritative accessible source_of_record is acceptable when stronger corroboration is hard to obtain.',
+  '- Do not reach for blocked, paywalled, or opaque magazine/PDF sources just to add a second or third citation for those hard fields.',
+].join('\n');
+const BLOCKED_SOURCE_DOMAIN_NOTE = [
+  '',
+  'Hard blocked source rule:',
+  '- Never use Orsted, TGS, 4C Offshore, or Windpower Monthly anywhere in the report.',
+  '- Do not cite those domains in the visible Sources column, supporting_context, or source_of_record.',
+  '- Replace any fact that only used those domains with another accessible authoritative source or open dataset.',
+].join('\n');
+const VERIFIER_FRIENDLY_EVIDENCE_NOTE = [
+  '',
+  'Critical evidence correction:',
+  '- In source_of_record.evidence_quote, use a short verbatim machine-checkable fragment copied closely from the page text, not a paraphrase.',
+  '- Prefer compact label-plus-value fragments such as "Installed capacity 588 MW", "114 turbines", "Final investment decision June 2018", or owner names with percentages.',
+  '- For dates, include the milestone label and the date in the quote whenever possible.',
+  '- For ownership rows, include the entity names and percentages in the quote whenever possible.',
+  '- Avoid long prose summaries in evidence_quote when a shorter precise fragment exists on the source page.',
+].join('\n');
+const BLOCKED_SOURCE_DOMAINS = [
+  'orsted.com',
+  'tgs.com',
+  '4coffshore.com',
+  'windpowermonthly.com',
+];
+const BLOCKED_SOURCE_DOMAIN_PATTERNS = [
+  /(^|\.)orsted\.com$/i,
+  /(^|\.)tgs\.com$/i,
+  /(^|\.)4coffshore\.com$/i,
+  /(^|\.)windpowermonthly\.com$/i,
+];
+const RISKY_SOURCE_OF_RECORD_DOMAIN_PATTERNS = [
+  /(^|\.)windpowermonthly\.com$/i,
+  /(^|\.)4coffshore\.com$/i,
+  /(^|\.)rechargenews\.com$/i,
+  /(^|\.)upstreamonline\.com$/i,
+  /(^|\.)bloomberg\.com$/i,
+  /(^|\.)wsj\.com$/i,
+  /(^|\.)ft\.com$/i,
+];
 const SYSTEM_MESSAGE = [
   'You are an offshore wind research analyst.',
   'You must use current web sources via the available web search tool before answering.',
@@ -63,6 +109,46 @@ export async function requestResearchReport({
   );
 }
 
+export async function requestBlockedRowRepair({
+  apiKey,
+  model,
+  reportMarkdown,
+  blockedRows,
+  searchEngine,
+  maxResults,
+  maxTotalResults,
+  referer,
+  title,
+  fetchImpl = fetch,
+}) {
+  const repairPrompt = buildBlockedRowRepairPrompt(reportMarkdown, blockedRows);
+  const repairResult = await requestWithRetry({
+    requestFn: requestWithServerTool,
+    requestOptions: {
+      apiKey,
+      fetchImpl,
+      model,
+      prompt: repairPrompt,
+      referer,
+      searchEngine,
+      title,
+      maxResults,
+      maxTotalResults,
+    },
+  });
+
+  if (repairResult.qualityIssues.length === 0) {
+    return repairResult.report;
+  }
+
+  throw new Error(
+    buildIncompleteReportError({
+      serverToolReport: repairResult.report,
+      qualityIssues: repairResult.qualityIssues,
+    }),
+  );
+}
+
 export function isCompletedResearchReport(content) {
   if (typeof content !== 'string') {
     return false;
@@ -101,6 +187,14 @@ export function getResearchReportQualityIssues(content, referenceDate = new Date
 
   if (hasInvalidSourceLinks(profileRows, recentDevelopments)) {
     qualityIssues.push('invalid-source-links');
+  }
+
+  if (hasBlockedSourceDomain(profileRows, recentDevelopments)) {
+    qualityIssues.push('blocked-source-domain');
+  }
+
+  if (hasRiskySourceOfRecord(profileRows, recentDevelopments)) {
+    qualityIssues.push('risky-source-of-record');
   }
 
   if (recentDevelopments.length === 0) {
@@ -157,6 +251,63 @@ function hasMissingSourceOfRecord(profileRows = []) {
   });
 }
 
+function isBlockedSourceUrl(sourceUrl) {
+  if (typeof sourceUrl !== 'string' || !/^https?:\/\//i.test(sourceUrl)) {
+    return false;
+  }
+
+  try {
+    const hostname = new URL(sourceUrl).hostname;
+    return BLOCKED_SOURCE_DOMAIN_PATTERNS.some((pattern) => pattern.test(hostname));
+  } catch {
+    return false;
+  }
+}
+
+function getRowSourceUrls(row) {
+  const visibleSources = Array.isArray(row?.sources)
+    ? row.sources.map((source) => source?.url)
+    : [];
+  const supportingContext = Array.isArray(row?.provenance?.supporting_context)
+    ? row.provenance.supporting_context.map((source) => source?.url)
+    : [];
+
+  return [
+    ...visibleSources,
+    row?.provenance?.source_of_record?.source_url,
+    ...supportingContext,
+  ].filter(Boolean);
+}
+
+function hasBlockedSourceDomain(profileRows = [], recentDevelopments = []) {
+  return [...profileRows, ...recentDevelopments].some((row) =>
+    getRowSourceUrls(row).some((sourceUrl) => isBlockedSourceUrl(sourceUrl)),
+  );
+}
+
+function isRiskySourceOfRecordUrl(sourceUrl) {
+  if (typeof sourceUrl !== 'string' || !/^https?:\/\//i.test(sourceUrl)) {
+    return false;
+  }
+
+  try {
+    const hostname = new URL(sourceUrl).hostname;
+    return RISKY_SOURCE_OF_RECORD_DOMAIN_PATTERNS.some((pattern) => pattern.test(hostname));
+  } catch {
+    return false;
+  }
+}
+
+function hasRiskySourceOfRecord(profileRows = [], recentDevelopments = []) {
+  return [...profileRows, ...recentDevelopments].some((row) => {
+    if (row.is_not_confirmed) {
+      return false;
+    }
+
+    return isRiskySourceOfRecordUrl(row.provenance?.source_of_record?.source_url);
+  });
+}
+
 export function hasFreshOwnershipEvidence(
   profileRows,
   recentDevelopments = [],
@@ -210,7 +361,7 @@ async function requestWithRetry({ requestFn, requestOptions }) {
 
   const retryReport = await requestFn({
     ...requestOptions,
-    prompt: buildFreshnessRetryPrompt(requestOptions.prompt),
+    prompt: buildRetryPrompt(requestOptions.prompt, initialQualityIssues),
   });
 
   return {
@@ -219,8 +370,65 @@ async function requestWithRetry({ requestFn, requestOptions }) {
   };
 }
 
-function buildFreshnessRetryPrompt(prompt) {
-  return `${prompt.trim()}\n\n${FRESHNESS_RETRY_NOTE}`;
+function buildRetryPrompt(prompt, qualityIssues = []) {
+  const retryNotes = [];
+
+  if (qualityIssues.includes('stale-ownership-evidence')) {
+    retryNotes.push(FRESHNESS_RETRY_NOTE);
+  }
+
+  if (qualityIssues.includes('risky-source-of-record')) {
+    retryNotes.push(SOURCE_ACCESSIBILITY_RETRY_NOTE);
+  }
+
+  if (qualityIssues.includes('blocked-source-domain')) {
+    retryNotes.push(BLOCKED_SOURCE_DOMAIN_NOTE);
+  }
+
+  retryNotes.push(VERIFIER_FRIENDLY_EVIDENCE_NOTE);
+
+  if (retryNotes.length === 0) {
+    retryNotes.push(FRESHNESS_RETRY_NOTE);
+  }
+
+  return `${prompt.trim()}\n\n${retryNotes.join('\n')}`;
+}
+
+export function buildBlockedRowRepairPrompt(reportMarkdown, blockedRows = []) {
+  const blockedRowSummary = blockedRows.map((row) => ({
+    id: row.id,
+    report_item_label: row.report_item_label ?? null,
+    report_field_name: row.report_field_name ?? null,
+    report_date: row.report_date ?? null,
+    report_development: row.report_development ?? null,
+    reported_value: row.reported_value ?? null,
+    source_name: row.source_name ?? null,
+    source_url: row.source_url ?? null,
+    error: row.error ?? null,
+  }));
+
+  return [
+    'You are repairing an existing offshore wind research report that failed source-of-record verification on a small number of rows.',
+    'Search the web again and return the full corrected markdown report in the exact same parser contract format.',
+    'Preserve every table row, recent-development row, and appendix entry that is not listed as blocked below.',
+    'Only replace blocked rows and the matching provenance appendix entries unless a minimal adjacent edit is strictly required for internal consistency.',
+    'For repaired rows, prefer openly accessible official, regulator, owner, operator, supplier, or open-dataset pages over PDFs or risky third-party pages when available.',
+    'Never use Orsted, TGS, 4C Offshore, or Windpower Monthly anywhere in the repaired report.',
+    'Use short verbatim machine-checkable evidence_quote fragments copied closely from the source page text.',
+    'Prefer label-plus-value fragments such as "Installed capacity 588 MW", "114 turbines", "Final investment decision June 2018", or owner names with percentages.',
+    'Do not paraphrase the evidence_quote.',
+    'Return only the full repaired markdown report with the two tables and the Provenance appendix JSON block.',
+    '',
+    'Blocked rows to repair:',
+    '```json',
+    JSON.stringify(blockedRowSummary, null, 2),
+    '```',
+    '',
+    'Current report to repair:',
+    '```markdown',
+    reportMarkdown.trim(),
+    '```',
+  ].join('\n');
 }
 
 async function requestWithServerTool({
@@ -261,11 +469,19 @@ async function requestWithServerTool({
 }
 
 function buildWebSearchParameters({ searchEngine, maxResults, maxTotalResults }) {
-  return {
+  const parameters = {
     engine: searchEngine || 'auto',
     max_results: maxResults,
     max_total_results: maxTotalResults,
   };
+
+  // Firecrawl rejects domain filters; other supported engines accept them,
+  // and unsupported native providers will ignore or vary by provider.
+  if (parameters.engine !== 'firecrawl') {
+    parameters.excluded_domains = BLOCKED_SOURCE_DOMAINS;
+  }
+
+  return parameters;
 }
 
 async function requestChatCompletion({

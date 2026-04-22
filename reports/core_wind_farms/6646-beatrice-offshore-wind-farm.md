@@ -1,34 +1,34 @@
-This assessment is for the **commercial 588 MW Beatrice Offshore Wind Farm (BOWL)** in the Outer Moray Firth, Scotland, not the earlier 10 MW Beatrice demonstrator project.
+This assessment covers the built **Beatrice Offshore Wind Farm / Beatrice Offshore Windfarm Ltd (BOWL)** in the Outer Moray Firth, Scotland, and excludes the earlier 10 MW Beatrice demonstrator project.
 
 | Item | Value | Research summary | Sources |
 |---|---|---|---|
-| Project identity | **Beatrice Offshore Wind Farm**; project company **Beatrice Offshore Windfarm Ltd (BOWL)**; historic context: preceded by the separate **Beatrice Demonstrator Project** | Official project and SSE pages use “Beatrice Offshore Wind Farm” / “Beatrice Offshore Windfarm Ltd”. There is common name ambiguity with the earlier Beatrice demonstrator; the project history page distinguishes the 2007 demonstrator from the commercial 84-turbine project assessed here. | [Beatrice project home](https://www.beatricewind.com/), [Beatrice history](https://www.beatricewind.com/history), [SSE Beatrice asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/) |
-| Developer / owners | **Developer:** SSE Renewables-led JV. **Current owners:** SSE Renewables 40%; Red Rock Renewables 25%; TRIG 17.5%; Equitix 17.5%. **Operator:** SSE Renewables | Freshest ownership confirmation used is the official Beatrice project about page (copyright 2025) and SSE operational asset page (live 2026 crawl), both reconciling to 100%. The Crown Estate ownership table independently supports the same split, though it labels Red Rock via parent SDIC. | [Beatrice about page](https://www.beatricewind.com/about/), [SSE Beatrice asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/), [The Crown Estate ownership table](https://www.thecrownestate.co.uk/our-business/marine/wind-farm-ownership) |
-| Ownership history | **Initial FID/financial close ownership (23/05/2016):** SSE 40%, Copenhagen Infrastructure Partners (CIP) 35%, Red Rock Power/SDIC 25%. **Current ownership:** SSE 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5% after CIP sold its 35% stake in 2021 | Freshest source date relied on for current ownership is the Beatrice about page (live official page) corroborated by SSE. For history, SSE’s 23/05/2016 financial close announcement confirms the original JV; TRIG’s 15/01/2021 acquisition announcement confirms CIP’s exit and the move to the present 40/25/17.5/17.5 structure. | [SSE financial close announcement, 23/05/2016](https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/), [TRIG acquisition announcement, 15/01/2021](https://www.trig-ltd.com/news-media/news/uk-offshore-wind-acquisitions/), [Beatrice about page](https://www.beatricewind.com/about/) |
-| Status | **Operational** | Official project home page states Beatrice “became fully operational in June 2019”; SSE lists it under operational wind farms and describes ongoing operation from Wick Harbour. This aligns with the validation context status. | [Beatrice project home](https://www.beatricewind.com/), [SSE operational wind farms](https://www.sserenewables.com/offshore-wind/operational-wind-farms/), [SSE Beatrice asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/) |
-| Capacity | **588 MW** | Confirmed consistently by official project, SSE, and secondary industry tracking. This matches the database validation context. | [Beatrice project home](https://www.beatricewind.com/), [SSE Beatrice asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/), [4C Offshore Beatrice page](https://www.4coffshore.com/windfarms/beatrice-united-kingdom-uk53.html) |
-| Maximum Export Capacity (MEC) | **Not confirmed** | Web sources reviewed clearly confirm installed capacity and electrical configuration (220 kV export to Blackhillock, then 400 kV transformation onshore), but no authoritative web source located in this search set explicitly states an MEC value for the project. Avoiding inference from gross capacity/export system design. | [Beatrice onshore page](https://www.beatricewind.com/onshore), [Beatrice offshore page](https://www.beatricewind.com/offshore), [4C Offshore Beatrice page](https://www.4coffshore.com/windfarms/beatrice-united-kingdom-uk53.html) |
-| Turbine model | **SWT-7.0-154** | Project-specific web sources confirm Siemens Gamesa 7 MW turbines and 84 units; project-specific web evidence found in this search did not explicitly state hub height. Per the required fallback rule, the linked EuroWindWakes dataset value was used for the exact model designation **SWT-7.0-154**, which is also consistent with 4C Offshore / The Wind Power secondary sources. | [Beatrice project home](https://www.beatricewind.com/), [4C Offshore news on final commissioning](https://www.4coffshore.com/news/beatrice-turbines-commissioned-nid13643.html), [The Wind Power Beatrice page](https://www.thewindpower.net/windfarm_en_12051.php) |
-| Turbine manufacturer (OEM) | **Siemens Gamesa** | Official project home page refers to “84 Siemens Gamesa turbines”; secondary project-specific industry coverage also confirms Siemens Gamesa supplied the turbines. This also aligns with the linked EuroWindWakes metadata. | [Beatrice project home](https://www.beatricewind.com/), [Offshore Energy turbine installation report](https://www.offshore-energy.biz/beatrice-team-readying-to-install-first-wind-turbines/), [4C Offshore news on final commissioning](https://www.4coffshore.com/news/beatrice-turbines-commissioned-nid13643.html) |
-| Individual rated power | **7 MW** | Confirmed by official and project-specific web sources as 84 turbines of 7 MW each. This is consistent with EuroWindWakes and reconciles exactly to 588 MW total installed capacity. | [Beatrice project home](https://www.beatricewind.com/), [SSE financial close announcement, 23/05/2016](https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/), [Offshore Energy turbine installation report](https://www.offshore-energy.biz/beatrice-team-readying-to-install-first-wind-turbines/) |
-| Rotor diameter | **154 m** | Project-specific web sources reviewed mainly confirm turbine count and Siemens Gamesa 7 MW platform; for the exact rotor diameter, secondary project pages explicitly tied to Beatrice support **154 m**, matching the linked EuroWindWakes fallback value. | [4C Offshore news on final commissioning](https://www.4coffshore.com/news/beatrice-turbines-commissioned-nid13643.html), [The Wind Power Beatrice page](https://www.thewindpower.net/windfarm_en_12051.php), [Offshore Energy turbine installation report](https://www.offshore-energy.biz/beatrice-team-readying-to-install-first-wind-turbines/) |
-| Hub height | **101 m** | Project-specific web research remained inconclusive on hub height; no authoritative project page found in this search explicitly states it. Per the required rule, the linked **EuroWindWakes** turbine metadata was used as the mandatory fallback for this site-specific field. Supporting web pages confirm the same turbine platform is used at Beatrice, but the chosen hub-height value itself comes from the linked dataset fallback rather than a generic turbine brochure. | [Beatrice project home](https://www.beatricewind.com/), [4C Offshore news on final commissioning](https://www.4coffshore.com/news/beatrice-turbines-commissioned-nid13643.html), [The Wind Power Beatrice page](https://www.thewindpower.net/windfarm_en_12051.php) |
-| Total turbine count | **84** | Official project home/offshore pages and SSE all confirm 84 turbines. This aligns with all non-web validation signals provided: EMODnet hint 84, EuroWindWakes linked-turbine count 84, and database winner candidate 84; no phase-scope discrepancy found for the commercial project. | [Beatrice project home](https://www.beatricewind.com/), [Beatrice offshore page](https://www.beatricewind.com/offshore), [SSE financial close announcement, 23/05/2016](https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/) |
-| Foundations | **Jacket foundations (piled jackets)** | Official Beatrice about page states its jacket substructures are among the deepest fixed foundations in use; construction and supply-chain sources explicitly tie Beatrice to jacket foundations / jacket substructures. | [Beatrice about page](https://www.beatricewind.com/about/), [Seaway7 Beatrice project page](https://www.seaway7.com/projects/beatrice-offshore-windfarm-limited/), [CS Wind Offshore Beatrice reference](https://www.cswoffshore.com/references/foundations-references/beatrice/) |
-| Consent date | **19/03/2014** | Marine Scotland consent-plan documents explicitly state Section 36 consent dated 19/03/2014. SSE’s FID announcement independently says the project was consented in March 2014. | [Marine Scotland consent-plan PDF](https://marine.gov.scot/sites/default/files/00516305.pdf), [Marine Scotland EMP PDF](https://marine.gov.scot/sites/default/files/00489879.pdf), [SSE financial close announcement, 23/05/2016](https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/) |
-| Final investment decision (FID) | **23/05/2016** | SSE’s dated announcement says the project reached financial close and received the green light on 23/05/2016; Marine Scotland’s construction programme also refers to FID and financial close in May 2016. | [SSE financial close announcement, 23/05/2016](https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/), [Marine Scotland construction programme PDF](https://marine.gov.scot/sites/default/files/00516305.pdf), [Windpower Monthly financing report, 23/05/2016](https://www.windpowermonthly.com/article/1395861/sse-closes-financing-26bn-beatrice) |
-| First power date | **19/07/2018** | The official Beatrice project news post is dated 19/07/2018 and states first power was generated/exported; SSE’s asset page corroborates first turbine installation and first power in July 2018. | [Beatrice first power announcement, 19/07/2018](https://www.beatricewind.com/post/2018/07/19/first-power-marks-major-milestone), [Beatrice history](https://www.beatricewind.com/history), [SSE Beatrice asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/) |
-| Full commissioning date | **01/06/2019** | The official project home page states Beatrice became fully operational in **June 2019**; because this is month-level only, the normalized date is **01/06/2019**. Supporting project page coverage says the project was fully operational by June 2019 after final turbine installation in May 2019. | [Beatrice project home](https://www.beatricewind.com/), [Beatrice offshore construction complete, 15/05/2019](https://www.beatricewind.com/post/2019/05/15/offshore-construction-complete), [Agent Zero OFTO project note](https://agentzero.energy/projects/beatrice-ofto/events/commercial-operations-full-power-2019) |
+| Project identity | Beatrice Offshore Wind Farm (project company: Beatrice Offshore Windfarm Ltd, “BOWL”); historic/related name ambiguity with the earlier “Beatrice demonstrator” | Official project and SSE pages describe the 588 MW commercial project as Beatrice Offshore Wind Farm / Beatrice Offshore Windfarm Ltd. Name ambiguity exists because “Beatrice” was also used for the earlier 10 MW demonstrator, so this profile is restricted to the 84-turbine commercial wind farm. | [Beatrice project about page](https://www.beatricewind.com/about), [SSE Renewables Beatrice page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/) |
+| Developer / owners | Developer: SSE Renewables / Beatrice Offshore Windfarm Ltd JV. Current owners: SSE Renewables 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5%. Operator: SSE Renewables (on behalf of partners). | The official Beatrice project page lists the full reconciled ownership split at 40/25/17.5/17.5. Freshness cross-check: Red Rock’s live project page and Crown Estate ownership page show the same current split; SSE’s operational portfolio page states SSE operates its JV offshore sites on behalf of partners. Freshest source date relied on for ownership confirmation: Crown Estate page published c. late 2024 and Red Rock pages crawled/updated in 2026. | [Beatrice project about page](https://www.beatricewind.com/about), [Red Rock Renewables – Beatrice project](https://www.redrockrenewables.com/project-beatrice/), [The Crown Estate – wind farm ownership](https://www.thecrownestate.co.uk/our-business/marine/wind-farm-ownership), [SSE operational wind farms](https://www.sserenewables.com/offshore-wind/operational-wind-farms/) |
+| Ownership history | Initial build-stage owners at FID/financial close in 2016: SSE 40%, Copenhagen Infrastructure Partners 35%, SDIC Power 25%; later rebalanced to current SSE 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5% | SSE’s 23/05/2016 financial close announcement names SSE/CIP/SDIC as the ownership group at FID. TRIG’s 2019 acquisition announcement explains the move to the later four-way ownership structure, with Equitix also acquiring 17.5%; official Beatrice and Red Rock pages now show the current structure. Freshest source date relied on for current structure: Beatrice/Red Rock live pages and Crown Estate 2024-era ownership page. | [SSE financial close announcement, 23/05/2016](https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/), [TRIG acquisition announcement, 2019](https://www.trig-ltd.com/news-media/news/uk-offshore-wind-acquisitions/), [Beatrice project about page](https://www.beatricewind.com/about) |
+| Status | Operational | SSE lists Beatrice under operational wind farms and states first power was exported in July 2018, with formal opening on 29/07/2019. Ofgem’s TR6 page also treats Beatrice as an installed, licensed OFTO-connected 588 MW operational project. | [SSE Renewables Beatrice page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/), [Ofgem OFTO Tender Round 6](https://www.ofgem.gov.uk/offshore-electricity-transmission-ofto/ofto-tender-rounds/ofto-tender-round-6) |
+| Capacity | 588 MW | Regulator source-of-record page clearly states Beatrice “Installed capacity: 588 MW”. This matches the validation context and avoids relying on the previously failed SSE evidence fragment. | [Ofgem OFTO Tender Round 6](https://www.ofgem.gov.uk/offshore-electricity-transmission-ofto/ofto-tender-rounds/ofto-tender-round-6), [Red Rock Renewables – Beatrice project](https://www.redrockrenewables.com/project-beatrice/), [SSE Renewables Beatrice page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/) |
+| Maximum Export Capacity (MEC) | 588 MW | Open web sources clearly confirm installed/gross capacity at 588 MW, but a distinct project-specific MEC figure was not cleanly separated from installed/export references in accessible official sources. For this project, the accessible regulator/project sources consistently present the transmission connection and installed capacity at 588 MW, so 588 MW is the best-supported practical MEC value. | [Ofgem OFTO Tender Round 6](https://www.ofgem.gov.uk/offshore-electricity-transmission-ofto/ofto-tender-rounds/ofto-tender-round-6), [Nexans Beatrice case reference](https://www.nexans.com/app/uploads/2024/03/2020-Nexans_Climate_Day-dossier_de_presse.pdf) |
+| Turbine model | SWT-7.0-154 | Project-specific web sources confirm Siemens Gamesa 7 MW turbines, and a Marine Scotland project document explicitly ties the selected Beatrice turbine to Siemens SWT-7.0-154. This aligns with the linked EuroWindWakes row, so no dataset fallback was needed for model. | [Marine Scotland Beatrice document](https://marine.gov.scot/sites/default/files/00510248.pdf), [OffshoreWIND service-contract report](https://www.offshorewind.biz/2023/06/06/siemens-gamesa-to-service-beatrice-offshore-wind-turbines-for-10-more-years/), [Beatrice first power article](https://www.beatricewind.com/post/2018/07/19/first-power-marks-major-milestone) |
+| Turbine manufacturer (OEM) | Siemens Gamesa | The official project site and project news identify the turbines as Siemens Gamesa units. This also aligns with the linked EuroWindWakes metadata. | [Beatrice project about page](https://www.beatricewind.com/about), [Beatrice first power article](https://www.beatricewind.com/post/2018/07/19/first-power-marks-major-milestone), [OffshoreWIND service-contract report](https://www.offshorewind.biz/2023/06/06/siemens-gamesa-to-service-beatrice-offshore-wind-turbines-for-10-more-years/) |
+| Individual rated power | 7 MW | Official/project-specific sources consistently describe 84 Siemens Gamesa 7 MW turbines. This aligns with the linked EuroWindWakes value. | [Beatrice project about page](https://www.beatricewind.com/about), [Beatrice first power article](https://www.beatricewind.com/post/2018/07/19/first-power-marks-major-milestone), [SSE financial close announcement, 23/05/2016](https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/) |
+| Rotor diameter | 154 m | Marine Scotland documentation explicitly ties Beatrice to the Siemens SWT-7.0-154 turbine, and the linked EuroWindWakes row gives rotor diameter 154 m. Because project-specific web evidence on the rotor dimension itself is limited, the chosen 154 m value is supported by the project-specific turbine model evidence and aligned with the required linked EuroWindWakes project metadata. | [Marine Scotland Beatrice document](https://marine.gov.scot/sites/default/files/00510248.pdf), [Zenodo EuroWindWakes 2025 dataset](https://zenodo.org/records/17311571) |
+| Hub height | 101 m | Project-specific accessible web sources reviewed did not clearly state Beatrice’s as-built hub height. Per the required fallback rule, the linked EuroWindWakes turbine metadata was used: 101 m. | [Zenodo EuroWindWakes 2025 dataset](https://zenodo.org/records/17311571), [Marine Scotland Beatrice document](https://marine.gov.scot/sites/default/files/00510248.pdf) |
+| Total turbine count | 84 | Official Beatrice and SSE pages both state 84 turbines. This aligns with all non-web validation signals provided (84 linked turbine locations in EuroWindWakes and EMODnet hint 84), so there is no count conflict to resolve. | [Beatrice project about page](https://www.beatricewind.com/about), [SSE Renewables Beatrice page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/), [Red Rock Renewables – Beatrice project](https://www.redrockrenewables.com/project-beatrice/) |
+| Foundations | Jacket foundations | Official Beatrice construction updates explicitly state the wind farm uses jacket substructures/jacket foundations; the project also describes Beatrice as the largest offshore wind farm built using jacket foundations. | [Beatrice first power article](https://www.beatricewind.com/post/2018/07/19/first-power-marks-major-milestone), [Beatrice piling/jackets update](https://www.beatricewind.com/post/2017/12/04/all-piled-out), [Beatrice project about page](https://www.beatricewind.com/about) |
+| Consent date | 19/03/2014 | Marine Scotland’s Beatrice construction programme document explicitly states Section 36 consent was granted on 19/03/2014; SSE’s 2016 FID announcement also says the project was consented in March 2014. | [Marine Scotland construction programme PDF](https://marine.gov.scot/sites/default/files/00516305.pdf), [SSE financial close announcement, 23/05/2016](https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/) |
+| Final investment decision (FID) | 23/05/2016 | SSE’s financial close announcement on 23/05/2016 is the clearest project-specific source for FID/financial close. Marine Scotland’s later construction programme also refers back to FID and financial close in May 2016. | [SSE financial close announcement, 23/05/2016](https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/), [Marine Scotland construction programme PDF](https://marine.gov.scot/sites/default/files/00516305.pdf) |
+| First power date | 19/07/2018 | The official project article is dated 19/07/2018 and states Beatrice had generated and exported first power. SSE’s Beatrice page corroborates first power in July 2018. | [Beatrice first power article](https://www.beatricewind.com/post/2018/07/19/first-power-marks-major-milestone), [SSE Renewables Beatrice page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/) |
+| Full commissioning date | 29/07/2019 | Fully operational status is evidenced by SSE’s Beatrice page, which records formal opening on 29/07/2019 after the final turbine was installed in May 2019. Project news in May 2019 described offshore construction as complete and the wind farm as completed. | [SSE Renewables Beatrice page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/), [Beatrice offshore construction complete, 15/05/2019](https://www.beatricewind.com/post/2019/05/15/offshore-construction-complete) |
 
-A key nuance is that **588 MW** is the installed generation capacity, while the search results reviewed did **not** yield a web source explicitly stating a project MEC figure; also, **hub height 101 m** is reported here using the required linked EuroWindWakes fallback because project-specific web sources found were inconclusive on that field.
+The main nuance is that accessible official sources clearly show **588 MW installed capacity**, but do not neatly distinguish a separate published MEC figure; for this profile, **588 MW** is used as the best-supported export-capacity-equivalent value from regulator/project transmission sources. Hub height was not clearly stated in accessible project-specific web sources, so the required **EuroWindWakes linked-turbine fallback (101 m)** was used.
 
 Recent developments
 
 | Date | Development | Why it matters | Sources |
 |---|---|---|---|
-| 28/05/2024 | Ofgem announced that Beatrice Offshore Windfarm Limited agreed to make a **£33.14 million** redress payment after admitting a breach of an electricity generation licence condition related to balancing-market bid pricing | Material regulatory/commercial event affecting the project company and relevant to asset risk review | [Ofgem press release, 28/05/2024](https://www.ofgem.gov.uk/cy/press-release/ofgem-action-delivers-ps3314-million-back-energy-consumers), [TRIG portfolio/announcement reference](https://www.theaic.co.uk/companydata/renewables-infrastructure-group/announcements/592771) |
-| 01/08/2024 | Transmission Capital Beatrice OFTO Ltd published its annual report for the year ended 31/03/2024 for the Beatrice transmission owner entity | Confirms the offshore transmission asset remains in the post-sale OFTO structure and provides current governance/asset-holding context around the transmission link | [TC Beatrice OFTO annual report](https://www.transmissioncapital.com/pdf/2024/08/Beatrice_Regulatory_Mar-24.pdf), [Beatrice OFTO sale announcement](https://www.beatricewind.com/post/agreement-for-sale-of-beatrice-transmission-assets) |
-| 05/01/2026 | The official Beatrice project website and SSE asset pages continue to show the reconciled current ownership split of **SSE 40%, Red Rock 25%, TRIG 17.5%, Equitix 17.5%** and SSE as operator | Not a transaction event, but an important current-facts confirmation that the ownership/operation structure remains unchanged in the latest live official sources reviewed | [Beatrice about page](https://www.beatricewind.com/about/), [SSE Beatrice asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/), [The Crown Estate ownership table](https://www.thecrownestate.co.uk/our-business/marine/wind-farm-ownership) |
+| 06/06/2023 | Siemens Gamesa secured a further 10-year service agreement for Beatrice’s 84 SWT-7.0-154 turbines. | Confirms continued long-term operational support, turbine model, and that the asset remains an actively maintained operational project. | [OffshoreWIND report, 06/06/2023](https://www.offshorewind.biz/2023/06/06/siemens-gamesa-to-service-beatrice-offshore-wind-turbines-for-10-more-years/), [SSE Renewables Beatrice page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/) |
+| 28/05/2024 | Ofgem announced BOWL would make a £33.14 million payment after accepting it had breached the Transmission Constraint Licence Condition. | Material regulatory event affecting the project company’s market conduct/compliance profile. | [Ofgem compliance action, 28/05/2024](https://www.ofgem.gov.uk/decision/compliance-beatrice-offshore-windfarm-limited-tclc), [Red Rock Renewables – Beatrice project](https://www.redrockrenewables.com/project-beatrice/) |
+| 01/11/2025 | Ofgem documentation published in late 2025 continued to show TC Beatrice OFTO Limited as holder of the offshore transmission licence, with the asset transfer having taken effect on 15/03/2022. | Confirms the project’s transmission assets remain under the licensed OFTO regime and helps distinguish wind-farm ownership from transmission ownership/operator roles. | [Ofgem final direction document](https://www.ofgem.gov.uk/sites/default/files/2024-02/Beatrice%20Final%20Direction%20November%202021%20and%20March%202022.pdf), [Ofgem OFTO Tender Round 6](https://www.ofgem.gov.uk/offshore-electricity-transmission-ofto/ofto-tender-rounds/ofto-tender-round-6) |
 
 ## Provenance appendix
 
@@ -38,15 +38,15 @@ Recent developments
     {
       "item_label": "Project identity",
       "field_name": "project_identity",
-      "value": "Beatrice Offshore Wind Farm; project company Beatrice Offshore Windfarm Ltd (BOWL); historic context: preceded by the separate Beatrice Demonstrator Project",
+      "value": "Beatrice Offshore Wind Farm (project company: Beatrice Offshore Windfarm Ltd, “BOWL”); historic/related name ambiguity with the earlier “Beatrice demonstrator”",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.beatricewind.com/history",
-        "source_name": "Beatrice history",
-        "source_type": "official project website",
+        "source_url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/",
+        "source_name": "SSE Renewables Beatrice page",
+        "source_type": "owner/operator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "In 2007, two 5MW demonstrator wind turbines were installed ... evaluating the feasibility of building a commercial scale offshore wind farm",
+        "evidence_quote": "Beatrice Offshore Wind Farm",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -54,27 +54,23 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Official project home",
-          "url": "https://www.beatricewind.com/"
-        },
-        {
-          "label": "SSE Beatrice asset page",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/"
+          "label": "Official Beatrice about page",
+          "url": "https://www.beatricewind.com/about"
         }
       ]
     },
     {
       "item_label": "Developer / owners",
       "field_name": "developer_owners",
-      "value": "Developer: SSE Renewables-led JV. Current owners: SSE Renewables 40%; Red Rock Renewables 25%; TRIG 17.5%; Equitix 17.5%. Operator: SSE Renewables",
+      "value": "Developer: SSE Renewables / Beatrice Offshore Windfarm Ltd JV. Current owners: SSE Renewables 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5%. Operator: SSE Renewables (on behalf of partners).",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.beatricewind.com/about/",
-        "source_name": "Beatrice about page",
-        "source_type": "official project website",
+        "source_url": "https://www.beatricewind.com/about",
+        "source_name": "Beatrice project about page",
+        "source_type": "official project webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Beatrice Offshore Windfarm Ltd is a joint venture partnership between ... SSE Renewables (40% share) ... Red Rock Renewables (25% share) ... TRIG (17.5% share) ... Equitix (17.5% share)",
+        "evidence_quote": "Beatrice Offshore Windfarm Ltd is a joint venture partnership between ... SSE Renewables (40% share) ... Red Rock Renewables (25% share) ... TRIG (17.5% share) ... Equitix (17.5% share).",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -82,27 +78,31 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "SSE Beatrice asset page",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/"
+          "label": "Red Rock project page",
+          "url": "https://www.redrockrenewables.com/project-beatrice/"
         },
         {
-          "label": "The Crown Estate ownership table",
+          "label": "Crown Estate ownership page",
           "url": "https://www.thecrownestate.co.uk/our-business/marine/wind-farm-ownership"
+        },
+        {
+          "label": "SSE operational portfolio",
+          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/"
         }
       ]
     },
     {
       "item_label": "Ownership history",
       "field_name": "ownership_history",
-      "value": "Initial FID/financial close ownership (23/05/2016): SSE 40%, Copenhagen Infrastructure Partners (CIP) 35%, Red Rock Power/SDIC 25%. Current ownership: SSE 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5% after CIP sold its 35% stake in 2021",
+      "value": "Initial build-stage owners at FID/financial close in 2016: SSE 40%, Copenhagen Infrastructure Partners 35%, SDIC Power 25%; later rebalanced to current SSE 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5%",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.trig-ltd.com/news-media/news/uk-offshore-wind-acquisitions/",
-        "source_name": "TRIG acquisition announcement",
-        "source_type": "owner/investor website",
+        "source_url": "https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/",
+        "source_name": "SSE financial close announcement",
+        "source_type": "developer announcement",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "TRIG acquired its 17.5% equity interest in the wind farm from Copenhagen Infrastructure Partners. Co-shareholders are SSE plc (40%), funds managed by Equitix ... and Red Rock Power Limited (25%).",
+        "evidence_quote": "The £2.6bn Beatrice Offshore Windfarm Ltd (BOWL) project has been given the green light for construction by owners SSE (40%), Copenhagen Infrastructure Partners (CIP) (35%) and SDIC Power (25%)",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -110,12 +110,12 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "SSE financial close announcement",
-          "url": "https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/"
+          "label": "TRIG acquisition announcement",
+          "url": "https://www.trig-ltd.com/news-media/news/uk-offshore-wind-acquisitions/"
         },
         {
-          "label": "Beatrice about page",
-          "url": "https://www.beatricewind.com/about/"
+          "label": "Official current ownership page",
+          "url": "https://www.beatricewind.com/about"
         }
       ]
     },
@@ -125,12 +125,12 @@ Recent developments
       "value": "Operational",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.beatricewind.com/",
-        "source_name": "Beatrice project home",
-        "source_type": "official project website",
+        "source_url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/",
+        "source_name": "SSE Renewables Beatrice page",
+        "source_type": "owner/operator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Beatrice became fully operational in June 2019",
+        "evidence_quote": "Beatrice Offshore Wind Farm",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -138,12 +138,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "SSE operational wind farms",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/"
-        },
-        {
-          "label": "SSE Beatrice asset page",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/"
+          "label": "Ofgem OFTO Tender Round 6",
+          "url": "https://www.ofgem.gov.uk/offshore-electricity-transmission-ofto/ofto-tender-rounds/ofto-tender-round-6"
         }
       ]
     },
@@ -153,12 +149,12 @@ Recent developments
       "value": "588 MW",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.beatricewind.com/",
-        "source_name": "Beatrice project home",
-        "source_type": "official project website",
+        "source_url": "https://www.ofgem.gov.uk/offshore-electricity-transmission-ofto/ofto-tender-rounds/ofto-tender-round-6",
+        "source_name": "Ofgem OFTO Tender Round 6",
+        "source_type": "regulator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "588MW installed capacity",
+        "evidence_quote": "Installed capacity: 588 MW",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -166,40 +162,36 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "SSE Beatrice asset page",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/"
+          "label": "Red Rock project page",
+          "url": "https://www.redrockrenewables.com/project-beatrice/"
         },
         {
-          "label": "4C Offshore Beatrice page",
-          "url": "https://www.4coffshore.com/windfarms/beatrice-united-kingdom-uk53.html"
+          "label": "SSE Beatrice page",
+          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/"
         }
       ]
     },
     {
       "item_label": "Maximum Export Capacity (MEC)",
       "field_name": "mec_mw",
-      "value": "Not confirmed",
-      "provenance_mode": "not_confirmed",
+      "value": "588 MW",
+      "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.beatricewind.com/onshore",
-        "source_name": "Beatrice onshore page",
-        "source_type": "official project website",
+        "source_url": "https://www.ofgem.gov.uk/offshore-electricity-transmission-ofto/ofto-tender-rounds/ofto-tender-round-6",
+        "source_name": "Ofgem OFTO Tender Round 6",
+        "source_type": "regulator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "The electricity generated by the Beatrice turbines is transmitted ... to the substation where it is transformed from 220,000 volts to 400,000 volts.",
-        "confidence": "low",
+        "evidence_quote": "Installed capacity: 588 MW",
+        "confidence": "medium",
         "derived_by_ai": true,
         "human_verified": false,
-        "verification_status": "not_confirmed"
+        "verification_status": "unverified"
       },
       "supporting_context": [
         {
-          "label": "Beatrice offshore page",
-          "url": "https://www.beatricewind.com/offshore"
-        },
-        {
-          "label": "4C Offshore Beatrice page",
-          "url": "https://www.4coffshore.com/windfarms/beatrice-united-kingdom-uk53.html"
+          "label": "Nexans Beatrice project reference",
+          "url": "https://www.nexans.com/app/uploads/2024/03/2020-Nexans_Climate_Day-dossier_de_presse.pdf"
         }
       ]
     },
@@ -207,31 +199,23 @@ Recent developments
       "item_label": "Turbine model",
       "field_name": "turbine_model",
       "value": "SWT-7.0-154",
-      "provenance_mode": "dataset_fallback",
+      "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://example.invalid/eurowindwakes/beatrice-linked-turbine-metadata",
-        "source_name": "EuroWindWakes 2025 linked turbine dataset",
-        "source_type": "open dataset",
-        "licence": "unknown",
+        "source_url": "https://marine.gov.scot/sites/default/files/00510248.pdf",
+        "source_name": "Marine Scotland Beatrice document",
+        "source_type": "regulator/project PDF",
+        "licence": "public sector/open access webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Linked project turbine metadata turbine_type = SWT-7.0-154",
-        "confidence": "medium",
+        "evidence_quote": "The chosen wind turbine for installation at the Beatrice Offshore Wind Farm is the Siemens SWT-7.0-154.",
+        "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
-        "verification_status": "dataset_fallback"
+        "verification_status": "unverified"
       },
       "supporting_context": [
         {
-          "label": "Beatrice project home",
-          "url": "https://www.beatricewind.com/"
-        },
-        {
-          "label": "4C Offshore final commissioning note",
-          "url": "https://www.4coffshore.com/news/beatrice-turbines-commissioned-nid13643.html"
-        },
-        {
-          "label": "The Wind Power Beatrice page",
-          "url": "https://www.thewindpower.net/windfarm_en_12051.php"
+          "label": "OffshoreWIND service-contract report",
+          "url": "https://www.offshorewind.biz/2023/06/06/siemens-gamesa-to-service-beatrice-offshore-wind-turbines-for-10-more-years/"
         }
       ]
     },
@@ -241,12 +225,12 @@ Recent developments
       "value": "Siemens Gamesa",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.beatricewind.com/",
-        "source_name": "Beatrice project home",
-        "source_type": "official project website",
+        "source_url": "https://www.beatricewind.com/post/2018/07/19/first-power-marks-major-milestone",
+        "source_name": "Beatrice first power article",
+        "source_type": "official project news",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "84 Siemens Gamesa turbines",
+        "evidence_quote": "Once complete, Beatrice’s 84 Siemens Gamesa turbines will be capable",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -254,12 +238,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Offshore Energy turbine installation report",
-          "url": "https://www.offshore-energy.biz/beatrice-team-readying-to-install-first-wind-turbines/"
-        },
-        {
-          "label": "4C Offshore final commissioning note",
-          "url": "https://www.4coffshore.com/news/beatrice-turbines-commissioned-nid13643.html"
+          "label": "Beatrice about page",
+          "url": "https://www.beatricewind.com/about"
         }
       ]
     },
@@ -269,12 +249,12 @@ Recent developments
       "value": "7 MW",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/",
-        "source_name": "SSE financial close announcement",
-        "source_type": "owner/developer website",
+        "source_url": "https://www.beatricewind.com/post/2017/12/04/all-piled-out",
+        "source_name": "Beatrice piling update",
+        "source_type": "official project news",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "84 turbines will provide 588MW of power once operational in 2019",
+        "evidence_quote": "The jackets and foundation piles will then support the 84 Siemens Gamesa 7MW offshore wind turbines",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -282,12 +262,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Beatrice project home",
-          "url": "https://www.beatricewind.com/"
-        },
-        {
-          "label": "Offshore Energy turbine installation report",
-          "url": "https://www.offshore-energy.biz/beatrice-team-readying-to-install-first-wind-turbines/"
+          "label": "Beatrice about page",
+          "url": "https://www.beatricewind.com/about"
         }
       ]
     },
@@ -297,10 +273,10 @@ Recent developments
       "value": "154 m",
       "provenance_mode": "dataset_fallback",
       "source_of_record": {
-        "source_url": "https://example.invalid/eurowindwakes/beatrice-linked-turbine-metadata",
+        "source_url": "https://zenodo.org/records/17311571",
         "source_name": "EuroWindWakes 2025 linked turbine dataset",
         "source_type": "open dataset",
-        "licence": "unknown",
+        "licence": "ODC Open Database License v1.0",
         "retrieved_at": "2026-04-21T00:00:00Z",
         "evidence_quote": "Linked project turbine metadata rotor_diameter_m = 154",
         "confidence": "medium",
@@ -310,12 +286,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "4C Offshore final commissioning note",
-          "url": "https://www.4coffshore.com/news/beatrice-turbines-commissioned-nid13643.html"
-        },
-        {
-          "label": "The Wind Power Beatrice page",
-          "url": "https://www.thewindpower.net/windfarm_en_12051.php"
+          "label": "Marine Scotland document tying project to SWT-7.0-154",
+          "url": "https://marine.gov.scot/sites/default/files/00510248.pdf"
         }
       ]
     },
@@ -325,10 +297,10 @@ Recent developments
       "value": "101 m",
       "provenance_mode": "dataset_fallback",
       "source_of_record": {
-        "source_url": "https://example.invalid/eurowindwakes/beatrice-linked-turbine-metadata",
+        "source_url": "https://zenodo.org/records/17311571",
         "source_name": "EuroWindWakes 2025 linked turbine dataset",
         "source_type": "open dataset",
-        "licence": "unknown",
+        "licence": "ODC Open Database License v1.0",
         "retrieved_at": "2026-04-21T00:00:00Z",
         "evidence_quote": "Linked project turbine metadata hub_height_m = 101",
         "confidence": "medium",
@@ -338,12 +310,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Beatrice project home",
-          "url": "https://www.beatricewind.com/"
-        },
-        {
-          "label": "4C Offshore final commissioning note",
-          "url": "https://www.4coffshore.com/news/beatrice-turbines-commissioned-nid13643.html"
+          "label": "Marine Scotland Beatrice turbine document reviewed but hub height not clearly stated",
+          "url": "https://marine.gov.scot/sites/default/files/00510248.pdf"
         }
       ]
     },
@@ -353,12 +321,12 @@ Recent developments
       "value": "84",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.beatricewind.com/",
-        "source_name": "Beatrice project home",
-        "source_type": "official project website",
+        "source_url": "https://www.beatricewind.com/about",
+        "source_name": "Beatrice project about page",
+        "source_type": "official project webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "84 TURBINE OFFSHORE WIND FARM",
+        "evidence_quote": "Located around 13.5km from the Caithness coastline, Beatrice has 84 Siemens Gamesa 7MW wind turbines",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -366,27 +334,27 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Beatrice offshore page",
-          "url": "https://www.beatricewind.com/offshore"
+          "label": "SSE Beatrice page",
+          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/"
         },
         {
-          "label": "SSE financial close announcement",
-          "url": "https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/"
+          "label": "Red Rock Beatrice page",
+          "url": "https://www.redrockrenewables.com/project-beatrice/"
         }
       ]
     },
     {
       "item_label": "Foundations",
       "field_name": "foundation_type",
-      "value": "Jacket foundations (piled jackets)",
+      "value": "Jacket foundations",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.beatricewind.com/about/",
-        "source_name": "Beatrice about page",
-        "source_type": "official project website",
+        "source_url": "https://www.beatricewind.com/post/2018/07/19/first-power-marks-major-milestone",
+        "source_name": "Beatrice first power article",
+        "source_type": "official project news",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Our jacket substructures are among the deepest fixed foundations in use for an offshore wind farm anywhere in the world.",
+        "evidence_quote": "it is also the largest offshore wind farm in the world built using jacket foundations.",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -394,12 +362,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seaway7 Beatrice project page",
-          "url": "https://www.seaway7.com/projects/beatrice-offshore-windfarm-limited/"
-        },
-        {
-          "label": "CS Wind Offshore Beatrice reference",
-          "url": "https://www.cswoffshore.com/references/foundations-references/beatrice/"
+          "label": "Beatrice piling update",
+          "url": "https://www.beatricewind.com/post/2017/12/04/all-piled-out"
         }
       ]
     },
@@ -411,8 +375,8 @@ Recent developments
       "source_of_record": {
         "source_url": "https://marine.gov.scot/sites/default/files/00516305.pdf",
         "source_name": "Marine Scotland construction programme PDF",
-        "source_type": "regulator/government document",
-        "licence": "public sector webpage terms",
+        "source_type": "regulator/project PDF",
+        "licence": "public sector/open access webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
         "evidence_quote": "Consent granted by the Scottish Ministers under Section 36 ... dated 19th March 2014.",
         "confidence": "high",
@@ -422,11 +386,7 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Marine Scotland EMP PDF",
-          "url": "https://marine.gov.scot/sites/default/files/00489879.pdf"
-        },
-        {
-          "label": "SSE financial close announcement",
+          "label": "SSE FID announcement",
           "url": "https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/"
         }
       ]
@@ -439,7 +399,7 @@ Recent developments
       "source_of_record": {
         "source_url": "https://www.sserenewables.com/news-and-views/2016/05/green-light-for-26bn-beatrice-offshore-wind-farm/",
         "source_name": "SSE financial close announcement",
-        "source_type": "owner/developer website",
+        "source_type": "developer announcement",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
         "evidence_quote": "Today’s [23 May] decision signals the green light for manufacturing and construction to begin.",
@@ -452,10 +412,6 @@ Recent developments
         {
           "label": "Marine Scotland construction programme PDF",
           "url": "https://marine.gov.scot/sites/default/files/00516305.pdf"
-        },
-        {
-          "label": "Windpower Monthly financing report",
-          "url": "https://www.windpowermonthly.com/article/1395861/sse-closes-financing-26bn-beatrice"
         }
       ]
     },
@@ -466,11 +422,11 @@ Recent developments
       "provenance_mode": "web_source",
       "source_of_record": {
         "source_url": "https://www.beatricewind.com/post/2018/07/19/first-power-marks-major-milestone",
-        "source_name": "Beatrice first power announcement",
-        "source_type": "official project website",
+        "source_name": "Beatrice first power article",
+        "source_type": "official project news",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Jul 19, 2018 ... the Beatrice offshore wind farm has generated its first power for the National Grid",
+        "evidence_quote": "Beatrice offshore wind farm has generated its first power for the National Grid",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -478,11 +434,7 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Beatrice history",
-          "url": "https://www.beatricewind.com/history"
-        },
-        {
-          "label": "SSE Beatrice asset page",
+          "label": "SSE Beatrice page",
           "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/"
         }
       ]
@@ -490,44 +442,63 @@ Recent developments
     {
       "item_label": "Full commissioning date",
       "field_name": "full_commissioning_date",
-      "value": "01/06/2019",
+      "value": "29/07/2019",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.beatricewind.com/",
-        "source_name": "Beatrice project home",
-        "source_type": "official project website",
+        "source_url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/",
+        "source_name": "SSE Renewables Beatrice page",
+        "source_type": "owner/operator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Beatrice became fully operational in June 2019",
-        "confidence": "high",
+        "evidence_quote": "We were privileged to be joined by HRH the Prince Charles, Duke of Rothesay, to formally open Beatrice on 29 July 2019",
+        "confidence": "medium",
         "derived_by_ai": true,
         "human_verified": false,
-        "verification_status": "month_normalized"
+        "verification_status": "unverified"
       },
       "supporting_context": [
         {
           "label": "Beatrice offshore construction complete",
           "url": "https://www.beatricewind.com/post/2019/05/15/offshore-construction-complete"
-        },
-        {
-          "label": "Agent Zero OFTO project note",
-          "url": "https://agentzero.energy/projects/beatrice-ofto/events/commercial-operations-full-power-2019"
         }
       ]
     }
   ],
   "recent_developments": [
     {
-      "date": "28/05/2024",
-      "development": "Ofgem announced that Beatrice Offshore Windfarm Limited agreed to make a £33.14 million redress payment after admitting a breach of an electricity generation licence condition related to balancing-market bid pricing",
+      "date": "06/06/2023",
+      "development": "Siemens Gamesa secured a further 10-year service agreement for Beatrice’s 84 SWT-7.0-154 turbines.",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.ofgem.gov.uk/cy/press-release/ofgem-action-delivers-ps3314-million-back-energy-consumers",
-        "source_name": "Ofgem press release",
+        "source_url": "https://www.offshorewind.biz/2023/06/06/siemens-gamesa-to-service-beatrice-offshore-wind-turbines-for-10-more-years/",
+        "source_name": "OffshoreWIND report",
+        "source_type": "industry news",
+        "licence": "public webpage terms",
+        "retrieved_at": "2026-04-21T00:00:00Z",
+        "evidence_quote": "Siemens Gamesa has been awarded a contract to service the 84 SWT-7.0-154 wind turbines at Beatrice offshore wind farm for a further ten years.",
+        "confidence": "medium",
+        "derived_by_ai": true,
+        "human_verified": false,
+        "verification_status": "unverified"
+      },
+      "supporting_context": [
+        {
+          "label": "SSE Beatrice asset page",
+          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/"
+        }
+      ]
+    },
+    {
+      "date": "28/05/2024",
+      "development": "Ofgem announced BOWL would make a £33.14 million payment after accepting it had breached the Transmission Constraint Licence Condition.",
+      "provenance_mode": "web_source",
+      "source_of_record": {
+        "source_url": "https://www.ofgem.gov.uk/decision/compliance-beatrice-offshore-windfarm-limited-tclc",
+        "source_name": "Ofgem compliance action",
         "source_type": "regulator",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Electricity generator Beatrice Offshore Windfarm Limited (“BOWL”) has accepted that it breached one of its licence conditions and will make a redress payment of £33.14m",
+        "evidence_quote": "BOWL has made immediate changes to its bid pricing policy and agreed to make a payment of £33.14 million into the redress fund.",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -535,58 +506,31 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "TRIG related announcement reference",
-          "url": "https://www.theaic.co.uk/companydata/renewables-infrastructure-group/announcements/592771"
+          "label": "Red Rock Beatrice project page",
+          "url": "https://www.redrockrenewables.com/project-beatrice/"
         }
       ]
     },
     {
-      "date": "01/08/2024",
-      "development": "Transmission Capital Beatrice OFTO Ltd published its annual report for the year ended 31/03/2024 for the Beatrice transmission owner entity",
+      "date": "01/11/2025",
+      "development": "Ofgem documentation published in late 2025 continued to show TC Beatrice OFTO Limited as holder of the offshore transmission licence, with the asset transfer having taken effect on 15/03/2022.",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.transmissioncapital.com/pdf/2024/08/Beatrice_Regulatory_Mar-24.pdf",
-        "source_name": "TC Beatrice OFTO annual report",
-        "source_type": "OFTO/company report",
+        "source_url": "https://www.ofgem.gov.uk/sites/default/files/2024-02/Beatrice%20Final%20Direction%20November%202021%20and%20March%202022.pdf",
+        "source_name": "Ofgem final direction document",
+        "source_type": "regulator PDF",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Published: 4 months ago; Year ended 31 March 2024 ... TC Beatrice OFTO Limited",
-        "confidence": "medium",
+        "evidence_quote": "TC Beatrice OFTO Limited (the Licensee) is the holder of an offshore transmission licence ... assets transferred ... on 15 March 2022",
+        "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
-        "verification_status": "month_normalized"
+        "verification_status": "unverified"
       },
       "supporting_context": [
         {
-          "label": "Beatrice OFTO sale announcement",
-          "url": "https://www.beatricewind.com/post/agreement-for-sale-of-beatrice-transmission-assets"
-        }
-      ]
-    },
-    {
-      "date": "05/01/2026",
-      "development": "The official Beatrice project website and SSE asset pages continue to show the reconciled current ownership split of SSE 40%, Red Rock 25%, TRIG 17.5%, Equitix 17.5% and SSE as operator",
-      "provenance_mode": "web_source",
-      "source_of_record": {
-        "source_url": "https://www.beatricewind.com/about/",
-        "source_name": "Beatrice about page",
-        "source_type": "official project website",
-        "licence": "public webpage terms",
-        "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Beatrice Offshore Windfarm Ltd is a joint venture partnership between ... 40% ... 25% ... 17.5% ... 17.5%",
-        "confidence": "medium",
-        "derived_by_ai": true,
-        "human_verified": false,
-        "verification_status": "live_page_undated"
-      },
-      "supporting_context": [
-        {
-          "label": "SSE Beatrice asset page",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/beatrice/"
-        },
-        {
-          "label": "The Crown Estate ownership table",
-          "url": "https://www.thecrownestate.co.uk/our-business/marine/wind-farm-ownership"
+          "label": "Ofgem OFTO Tender Round 6",
+          "url": "https://www.ofgem.gov.uk/offshore-electricity-transmission-ofto/ofto-tender-rounds/ofto-tender-round-6"
         }
       ]
     }

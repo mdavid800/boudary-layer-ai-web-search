@@ -1,34 +1,34 @@
-This assessment is for the **built and operating Seagreen Phase 1 offshore wind farm** off Angus, Scotland, and excludes the later **Seagreen 1A** extension proposal.
+This profile assesses the built **Seagreen Phase 1 Offshore Wind Farm** off Angus, Scotland, and distinguishes it from the later **Seagreen 1A** extension proposals / consent variations.
 
 | Item | Value | Research summary | Sources |
 |---|---|---|---|
-| Project identity | Seagreen Phase 1 Offshore Wind Farm; also referred to as Seagreen Offshore Wind Farm and historically Seagreen Phase One / Seagreen 1 | Official JV and operator pages identify the operating asset as Seagreen / Seagreen Offshore Wind Farm; the planning history shows Phase One was the original consented name, while later extension material distinguishes Seagreen 1A from the built 114-turbine phase. | [Seagreen home](https://www.seagreenwindenergy.com/), [Seagreen planning](https://www.seagreenwindenergy.com/planning), [SSE Seagreen asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/) |
-| Developer / owners | Developer: Seagreen Wind Energy Ltd / SSE Renewables-led JV. Current owners: SSE Renewables 49%, TotalEnergies 25.5%, PTTEP 25.5%. Operator: SSE Renewables | Freshest dated ownership confirmation used is **10/03/2025** from SSE Renewables, which states SWEL is owned by SSE Renewables (49%), TotalEnergies (25.5%) and PTTEP (25.5%). The JV website and SSE operational asset page match this and state SSE Renewables is operator. | [SSE transmission-assets sale, 10/03/2025](https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/), [Seagreen about us](https://www.seagreenwindenergy.com/about-us), [SSE Seagreen asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/) |
-| Ownership history | Originally developed by SSE Renewables and Fluor; Total acquired 51% of Seagreen 1 in 06/2020; PTTEP acquired 25.5% from TotalEnergies in 2024, leaving current ownership at SSE 49%, TotalEnergies 25.5%, PTTEP 25.5% | Freshest dated source relied on is **10/03/2025** for the current split. For history, SSE’s 10/10/2014 consent announcement shows the earlier Fluor/SSE JV; SSE half-year report states Total acquired 51% of Seagreen 1 on 03/06/2020; Seagreen/TotalEnergies pages confirm PTTEP joined in 2024 after buying 25.5% from TotalEnergies. | [SSE transmission-assets sale, 10/03/2025](https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/), [SSE consent announcement, 10/10/2014](https://www.sserenewables.com/news-and-views/2014/10/marine-scotland-consents-seagreen-firth-of-forth-offshore-wind-phase-1/), [SSE half-year report](https://www.investegate.info/announcement/rns/sse--sse/half-year-report/6788827), [TotalEnergies PTTEP transaction, 21/12/2023](https://totalenergies.com/news/press-releases/scotland-totalenergies-farms-down-255-seagreen-offshore-wind-farm-pttep), [Seagreen PTTEP joins JV](https://www.seagreenwindenergy.com/post/pttep-joins-the-seagreen-joint-venture) |
-| Status | Operational | The official project site says first power was achieved in 08/2022 and the wind farm became fully operational in 10/2023; newer 2025 SSE material still describes Seagreen Phase 1 as fully operational. | [Seagreen home](https://www.seagreenwindenergy.com/), [SSE transmission-assets sale, 10/03/2025](https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/) |
-| Capacity | 1,075 MW | Official and project-specific sources consistently describe the operating Phase 1 wind farm as 1,075 MW. This differs from the EMODnet validation hint of 1,140 MW; the web evidence indicates 1,140 MW reflects a misleading count/spec combination rather than the built Phase 1 asset. | [SSE Seagreen asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/), [Seagreen home](https://www.seagreenwindenergy.com/), [Ofgem/Grant Thornton ex-post review, 10/05/2024](https://www.ofgem.gov.uk/sites/default/files/2025-04/Seagreen-Offshore-Wind-Farm-Transmission-Assets-Ex-Post-Review-dated-10-May-2024.pdf) |
-| Maximum Export Capacity (MEC) | 1,075 MW | For Seagreen Phase 1, project transmission sources state a **maximum export capacity** of 1,075 MW. Here MEC matches installed capacity in the available transmission documentation. | [Seagreen OFTO project](https://sgofto.co.uk/), [Ofgem/Grant Thornton ex-post review, 10/05/2024](https://www.ofgem.gov.uk/sites/default/files/2025-04/Seagreen-Offshore-Wind-Farm-Transmission-Assets-Ex-Post-Review-dated-10-May-2024.pdf) |
-| Turbine model | Vestas V164-10.0 MW | Project-specific web evidence ties Seagreen to 114 V164-10 MW turbines. OEM branding at contract date was MHI Vestas, but the project/operator pages and broader current references now describe them as Vestas turbines. | [SSE turbine contract, 02/06/2020](https://www.sserenewables.com/news-and-views/2020/06/mhi-vestas-offshore-wind-contract-for-seagreen-finalised/), [Seagreen first turbine up](https://www.seagreenwindenergy.com/post/first-turbine-up-at-1-1gw-seagreen) |
-| Turbine manufacturer (OEM) | Vestas | Project-specific sources identify the Seagreen turbines as Vestas / MHI Vestas V164-10 MW machines. Normalized OEM answer given as Vestas. | [Seagreen first turbine up](https://www.seagreenwindenergy.com/post/first-turbine-up-at-1-1gw-seagreen), [SSE turbine contract, 02/06/2020](https://www.sserenewables.com/news-and-views/2020/06/mhi-vestas-offshore-wind-contract-for-seagreen-finalised/) |
-| Individual rated power | 10 MW | Confirmed directly by project-specific turbine contract and installation milestone pages stating 114 V164-10 MW turbines. | [SSE turbine contract, 02/06/2020](https://www.sserenewables.com/news-and-views/2020/06/mhi-vestas-offshore-wind-contract-for-seagreen-finalised/), [Seagreen first turbine up](https://www.seagreenwindenergy.com/post/first-turbine-up-at-1-1gw-seagreen) |
-| Rotor diameter | 164 m | Project-specific web pages confirm the V164-10.0 MW model but do not separately spell out rotor diameter for this site. Per the required fallback rule, the linked EuroWindWakes project turbine metadata value of **164 m** is used as the source of record, and it is consistent with the explicitly project-linked V164 designation seen on official pages. | [SSE turbine contract, 02/06/2020](https://www.sserenewables.com/news-and-views/2020/06/mhi-vestas-offshore-wind-contract-for-seagreen-finalised/), [Seagreen first turbine up](https://www.seagreenwindenergy.com/post/first-turbine-up-at-1-1gw-seagreen) |
-| Hub height | 120 m | Project-specific web research did not produce a clear site-specific hub-height figure. Per the required fallback rule, the linked EuroWindWakes project turbine metadata value of **120 m** is used. | [Seagreen home](https://www.seagreenwindenergy.com/), [SSE Seagreen asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/) |
-| Total turbine count | 114 | Official project and owner pages consistently state 114 turbines. This aligns with the non-web EuroWindWakes linked-turbine validation count of 114 and differs from the EMODnet hint of 75, which is most likely outdated or phase-scope/database error. | [Seagreen home](https://www.seagreenwindenergy.com/), [SSE Seagreen asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/), [TotalEnergies PTTEP transaction, 21/12/2023](https://totalenergies.com/news/press-releases/scotland-totalenergies-farms-down-255-seagreen-offshore-wind-farm-pttep) |
-| Foundations | Suction bucket jacket foundations | Project-specific engineering sources state Seagreen uses 114 suction bucket foundations; SSE also describes it as the world’s deepest fixed-bottom offshore wind farm. | [Ramboll Seagreen project](https://www.ramboll.com/projects/energy/seagreen-offshore-wind-farm), [Seaway7 Seagreen project](https://www.seaway7.com/projects/seagreen-offshore-wind-farm/), [SSE Seagreen asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/) |
-| Consent date | 10/10/2014 | SSE’s dated announcement reports consent granted on 10/10/2014; the Seagreen planning page confirms consent for Seagreen Phase One was awarded in 10/2014. | [SSE consent announcement, 10/10/2014](https://www.sserenewables.com/news-and-views/2014/10/marine-scotland-consents-seagreen-firth-of-forth-offshore-wind-phase-1/), [Seagreen planning](https://www.seagreenwindenergy.com/planning) |
-| Final investment decision (FID) | 03/06/2020 | SSE’s reporting states Total acquired 51% of Seagreen 1 on 03/06/2020; contemporaneous sector reporting and Subsea 7 material say this coincided with Seagreen 1 reaching FID in June 2020. Using the exact day supported by SSE’s transaction disclosure. | [SSE half-year report](https://www.investegate.info/announcement/rns/sse--sse/half-year-report/6788827), [OffshoreWIND report on FID, 04/06/2020](https://www.offshorewind.biz/2020/06/04/subsea-7-nets-seagreen-1-owf-deal/), [Subsea7 investor presentation](https://www.subsea7.com/content/dam/subsea7-corporate2018/Results_Reports_Presentations/Presentations/2020/SUBC%20Investor%20Day%20Sep%202020.pdf.downloadasset.pdf) |
-| First power date | 23/08/2022 | TotalEnergies issued a dated press release on 23/08/2022 announcing first power; the JV homepage matches this at month level. | [TotalEnergies first power release, 23/08/2022](https://totalenergies.com/sites/g/files/nytnzq121/files/documents/2022-08/EN_Scotland_Production_start-up_of_the_Seagreen_offshore_wind_farm.pdf), [Seagreen home](https://www.seagreenwindenergy.com/) |
-| Full commissioning date | 01/10/2023 | Official project and owner pages state Seagreen became fully operational in October 2023, but do not give a precise day. Per the date-normalization rule, month-only evidence is normalized to **01/10/2023**. This also matches the provided EuroWindWakes commissioning-date hint. | [Seagreen home](https://www.seagreenwindenergy.com/), [SSE Seagreen asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/), [TotalEnergies PTTEP transaction, 21/12/2023](https://totalenergies.com/news/press-releases/scotland-totalenergies-farms-down-255-seagreen-offshore-wind-farm-pttep) |
+| Project identity | Seagreen Phase 1 Offshore Wind Farm; also referred to as Seagreen, Seagreen Phase 1, and historically derived from the consented Seagreen Alpha and Seagreen Bravo projects | The built project is the 114-turbine, 1,075 MW Phase 1 wind farm. Official project material and later variation notices show that the original 2014 consents were for Seagreen Alpha and Seagreen Bravo, while current operational references use Seagreen / Seagreen Phase 1. | [SSE Renewables operational project page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/), [Seagreen S36C application notice](https://www.seagreenwindenergy.com/s36capplicationnov2022) |
+| Developer / owners | Developer: SSE Renewables led development and construction, supported by TotalEnergies. Current owners: SSE Renewables 49%, TotalEnergies 25.5%, PTTEP 25.5%. Operator: SSE Renewables | Freshest ownership confirmation used is **10/03/2025** from SSE Renewables, which states the JV is SSE Renewables 49%, TotalEnergies 25.5%, PTTEP 25.5%. The operator is stated on the current SSE operational asset page. | [SSE Renewables transmission-assets announcement, 10/03/2025](https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/), [SSE Renewables operational project page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/) |
+| Ownership history | Initially SSE Renewables / TotalEnergies JV; PTTEP acquired a 25.5% stake from TotalEnergies, joining in 2024; current split SSE 49%, TotalEnergies 25.5%, PTTEP 25.5% | Freshest dated source relied on is **10/03/2025** from SSE. TotalEnergies announced the farm-down to PTTEP on **21/12/2023**; current SSE pages state PTTEP joined the consortium in 2024. | [SSE Renewables transmission-assets announcement, 10/03/2025](https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/), [TotalEnergies farm-down announcement, 21/12/2023](https://totalenergies.com/system/files/documents/2023-12/PR_farm_down_Seagreen.pdf) |
+| Status | Operational | Multiple official owner/project pages confirm Seagreen became fully operational in October 2023; this maps cleanly to the Boundary Layer status `Operational`. | [SSE Renewables operational project page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/), [SSE Renewables full-operation announcement, 17/10/2023](https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/) |
+| Capacity | 1,075 MW | Official current owner and project sources consistently state Phase 1 capacity as 1,075 MW. This differs from the EMODnet validation context value of 1,140 MW; the web evidence strongly indicates 1,075 MW is the as-built operational Phase 1 figure. | [SSE Renewables operational project page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/), [SSE Renewables full-operation announcement, 17/10/2023](https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/) |
+| Maximum Export Capacity (MEC) | 1,075 MW | Open OFTO materials and project transmission-sale material indicate the Phase 1 transmission system exports the full 1,075 MW project output. This is a gross-capacity-equals-MEC case for the built Phase 1 asset. | [Seagreen Phase 1 OFTO project site](https://sgofto.co.uk/), [SSE Renewables transmission-assets announcement, 10/03/2025](https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/) |
+| Turbine model | V164-10.0 MW | Project-specific official pages explicitly tie Seagreen to 114 V164-10.0 MW turbines. | [SSE Renewables full-operation announcement, 17/10/2023](https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/), [Seagreen turbine supply contract announcement, 03/06/2020](https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised) |
+| Turbine manufacturer (OEM) | Vestas | Project-specific web sources show the turbines as Vestas V164-10.0 MW. The 2020 turbine contract page names MHI Vestas Offshore Wind, reflecting the supplier branding at contract stage; the operational project pages use Vestas. | [SSE Renewables full-operation announcement, 17/10/2023](https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/), [Seagreen turbine supply contract announcement, 03/06/2020](https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised) |
+| Individual rated power | 10 MW | Project-specific official sources explicitly state 114 turbines rated at 10 MW each. | [SSE Renewables full-operation announcement, 17/10/2023](https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/), [Seagreen turbine supply contract announcement, 03/06/2020](https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised) |
+| Rotor diameter | 164 m | Project-specific web sources clearly confirm the turbine platform as V164-10.0 MW, which embeds the 164 m rotor designation for this project. | [SSE Renewables full-operation announcement, 17/10/2023](https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/), [Seagreen turbine supply contract announcement, 03/06/2020](https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised) |
+| Hub height | 120 m | Project-specific accessible web sources reviewed did not clearly state hub height for Seagreen Phase 1. Per the required fallback rule, the linked EuroWindWakes dataset value was used: 120 m. | [EuroWindWakes 2025 linked turbine dataset](https://zenodo.org/records/17311571), [SSE Renewables full-operation announcement, 17/10/2023](https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/) |
+| Total turbine count | 114 | Current official project and owner sources consistently state 114 turbines. This aligns with the non-web validation signal of 114 linked EuroWindWakes turbine locations and differs from the EMODnet hint of 75, which is likely outdated or phase-scoped incorrectly. | [SSE Renewables operational project page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/), [Seagreen About page](https://www.seagreenwindenergy.com/about-us) |
+| Foundations | Jacket foundations with suction bucket / suction caisson foundations | Project-specific sources confirm Seagreen uses jacket foundations and specifically highlight innovative suction caisson / bucket foundation technology. For precision, the foundation type is best described as jackets supported by suction buckets / suction caissons. | [SSE Renewables final-jacket milestone, 17/04/2023](https://www.sserenewables.com/news-and-views/2023/04/final-jacket-foundation-installed-on-seagreen/), [NGI Seagreen project page](https://www.ngi.no/en/projects/seagreen/) |
+| Consent date | 10/10/2014 | The original Section 36 consents for Seagreen Alpha and Seagreen Bravo were granted on 10 October 2014; this is the operative consent date for the Phase 1 project lineage. | [Seagreen S36C application notice](https://www.seagreenwindenergy.com/s36capplicationnov2022), [Scottish Government briefing note referencing consent on 10 October 2014](https://www.gov.scot/binaries/content/documents/govscot/publications/foi-eir-release/2018/06/foi-18-01249/documents/foi-18-01249-first-minister-visit-china-april-2018-main-briefing-pack-index-3-tuesday-10-april-pdf/foi-18-01249-first-minister-visit-china-april-2018-main-briefing-pack-index-3-tuesday-10-april-pdf/govscot%3Adocument/FOI-18-01249%20-%20First%20Minister%20-%20Visit%20to%20China%20-%20April%202018%20-%20MAIN%20BRIEFING%20PACK%20-%20Index%203%20-%20Tuesday%2010%20April.pdf) |
+| Final investment decision (FID) | 03/06/2020 | Project-specific Seagreen material states FID was achieved on 03 June 2020. Secondary sector reporting corroborates early June 2020. | [Seagreen turbine supply contract announcement, 03/06/2020](https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised), [Cadeler contract note citing FID on 03/06/2020](https://www.cadeler.com/news/swire-blue-ocean-clinches-seagreen-contract) |
+| First power date | 01/08/2022 | Official sources consistently state first power was achieved in August 2022. As the source wording is month-level rather than day-specific, the normalized table date is 01/08/2022. | [SSE Renewables first-power announcement, 23/08/2022](https://www.sserenewables.com/news-and-views/2022/08/first-power-at-scotlands-largest-offshore-wind-farm/), [SSE Renewables operational project page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/) |
+| Full commissioning date | 01/10/2023 | Official sources state Seagreen became fully operational in October 2023. As this is month-level wording, the normalized date is 01/10/2023. | [SSE Renewables full-operation announcement, 17/10/2023](https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/), [SSE Renewables operational project page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/) |
 
-A key nuance is that some secondary or regulatory pages mix **installed capacity, export capacity, and tender-round values** and may label the project as **1,140 MW**; however, project-specific official pages and transmission documentation for the built **Phase 1** asset consistently support **114 turbines** and **1,075 MW**, while **Seagreen 1A** relates to the unbuilt extension of up to 36 additional turbines.
+A key nuance is that some legacy datasets still reflect older consent-stage configurations such as Seagreen Alpha/Bravo or a 1,140 MW / 75-turbine framing, but the built **Phase 1** project now evidenced by current official sources is **114 turbines and 1,075 MW**; separately, **Seagreen 1A** refers to later extension/variation work and should not be merged into the operational Phase 1 asset.
 
 Recent developments
 
 | Date | Development | Why it matters | Sources |
 |---|---|---|---|
-| 31/05/2024 | PTTEP completed acquisition of a 25.5% equity stake in Seagreen and joined the JV in 2024. | This finalized the current ownership structure of SSE Renewables 49%, TotalEnergies 25.5%, PTTEP 25.5%. | [PTTEP 2024 annual report](https://sustainability.pttep.com/en/document/viewer/stream/120834/56-1-one-report-2024), [Seagreen PTTEP joins JV](https://www.seagreenwindenergy.com/post/pttep-joins-the-seagreen-joint-venture), [SSE Seagreen asset page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/) |
-| 01/11/2024 | Ofgem published its final tender costs/decision material for the Seagreen Phase 1 OFTO process. | This marked a major post-commissioning regulatory milestone toward transfer of the transmission assets under the OFTO regime. | [Ofgem annual report 2024/25](https://www.ofgem.gov.uk/sites/default/files/2025-07/Ofgem-ARA-24-25-Final.pdf), [GOV.UK transmission licence exemption outcome](https://www.gov.uk/government/publications/electricity-transmission-licence-exemption-seagreen-wind-energy-limited-swel/proposed-transmission-licence-exemption-for-seagreen-wind-energy-limited-summary-of-responses-and-outcome) |
-| 10/03/2025 | Seagreen Wind Energy Limited signed the agreement to sell Seagreen Phase 1 transmission assets to Seagreen Phase 1 OFTO, a consortium of Equitix and Kyuden Group. | This is the most material recent corporate/regulatory development for the operational asset, completing the next step in the UK offshore transmission regime. | [SSE transmission-assets sale, 10/03/2025](https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/), [Orrick deal announcement, 11/03/2025](https://www.orrick.com/en/News/2025/03/Orrick-Advises-Seagreen-Wind-Energy-on-Sale-of-Transmission-Assets), [Kyuden announcement, 10/03/2025](https://www.kyuden.co.jp/english/company/news/2024/h250310-1.html) |
+| 17/10/2023 | Seagreen announced that all 114 turbines were fully operational and generating to the GB grid | Confirms the project’s transition to full commercial operation and fixes the commissioning status/date for Phase 1 | [SSE Renewables full-operation announcement, 17/10/2023](https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/), [SSE Renewables operational project page](https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/) |
+| 01/01/2024 | PTTEP joined the Seagreen consortium, taking a 25.5% stake acquired from TotalEnergies | This changed the ownership structure from a two-party JV to the current three-party shareholding split | [Seagreen About page](https://www.seagreenwindenergy.com/about-us), [TotalEnergies farm-down announcement, 21/12/2023](https://totalenergies.com/system/files/documents/2023-12/PR_farm_down_Seagreen.pdf) |
+| 10/03/2025 | Seagreen Wind Energy Limited signed an agreement to sell the Phase 1 offshore transmission assets to the preferred OFTO consortium of Equitix and Kyuden Group following Ofgem’s tender process | Important post-commissioning asset-transfer milestone under the UK OFTO regime, separating generation ownership from transmission ownership/operation | [SSE Renewables transmission-assets announcement, 10/03/2025](https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/), [Ofgem licence determination notice](https://www.ofgem.gov.uk/decision/seagreen-phase-1-ofto-project-limited-notice-confirmation-determination-grant-licence) |
 
 ## Provenance appendix
 
@@ -38,15 +38,15 @@ Recent developments
     {
       "item_label": "Project identity",
       "field_name": "project_identity",
-      "value": "Seagreen Phase 1 Offshore Wind Farm; also referred to as Seagreen Offshore Wind Farm and historically Seagreen Phase One / Seagreen 1",
+      "value": "Seagreen Phase 1 Offshore Wind Farm; also referred to as Seagreen, Seagreen Phase 1, and historically derived from the consented Seagreen Alpha and Seagreen Bravo projects",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.seagreenwindenergy.com/planning",
-        "source_name": "Seagreen planning page",
-        "source_type": "official project website",
+        "source_url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/",
+        "source_name": "SSE Renewables Seagreen operational project page",
+        "source_type": "owner/operator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Consent for Seagreen Phase One (as it was known at the time) was awarded by Scottish Ministers in October 2014.",
+        "evidence_quote": "Seagreen",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -54,27 +54,23 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seagreen home",
-          "url": "https://www.seagreenwindenergy.com/"
-        },
-        {
-          "label": "SSE Seagreen asset page",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
+          "label": "Seagreen S36C application notice referencing Seagreen Alpha and Seagreen Bravo",
+          "url": "https://www.seagreenwindenergy.com/s36capplicationnov2022"
         }
       ]
     },
     {
       "item_label": "Developer / owners",
-      "field_name": "developer_owners_operator",
-      "value": "Developer: Seagreen Wind Energy Ltd / SSE Renewables-led JV. Current owners: SSE Renewables 49%, TotalEnergies 25.5%, PTTEP 25.5%. Operator: SSE Renewables",
+      "field_name": "developer_owners",
+      "value": "Developer: SSE Renewables led development and construction, supported by TotalEnergies. Current owners: SSE Renewables 49%, TotalEnergies 25.5%, PTTEP 25.5%. Operator: SSE Renewables",
       "provenance_mode": "web_source",
       "source_of_record": {
         "source_url": "https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/",
-        "source_name": "SSE Renewables agreement for sale of Seagreen transmission assets",
-        "source_type": "owner/operator webpage",
+        "source_name": "SSE Renewables Agreement for sale of Seagreen transmission assets",
+        "source_type": "owner webpage / press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Seagreen Wind Energy Limited (SWEL), a joint venture owned by SSE Renewables (49%), TotalEnergies (25.5%) and PTTEP (25.5%)...",
+        "evidence_quote": "Seagreen Wind Energy Limited (SWEL), a joint venture owned by SSE Renewables (49%), TotalEnergies (25.5%) and PTTEP (25.5%)",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -82,11 +78,7 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seagreen about us",
-          "url": "https://www.seagreenwindenergy.com/about-us"
-        },
-        {
-          "label": "SSE Seagreen asset page",
+          "label": "SSE Renewables operational page stating SSE is operator",
           "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
         }
       ]
@@ -94,31 +86,23 @@ Recent developments
     {
       "item_label": "Ownership history",
       "field_name": "ownership_history",
-      "value": "Originally developed by SSE Renewables and Fluor; Total acquired 51% of Seagreen 1 in 06/2020; PTTEP acquired 25.5% from TotalEnergies in 2024, leaving current ownership at SSE 49%, TotalEnergies 25.5%, PTTEP 25.5%",
+      "value": "Initially SSE Renewables / TotalEnergies JV; PTTEP acquired a 25.5% stake from TotalEnergies, joining in 2024; current split SSE 49%, TotalEnergies 25.5%, PTTEP 25.5%",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.sserenewables.com/news-and-views/2014/10/marine-scotland-consents-seagreen-firth-of-forth-offshore-wind-phase-1/",
-        "source_name": "SSE consent announcement",
-        "source_type": "developer webpage",
+        "source_url": "https://totalenergies.com/system/files/documents/2023-12/PR_farm_down_Seagreen.pdf",
+        "source_name": "TotalEnergies farm-down announcement",
+        "source_type": "owner press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Seagreen Wind Energy Ltd (Seagreen), a 50 / 50 joint venture partnership formed between Fluor Ltd and SSE Renewables...",
-        "confidence": "medium",
+        "evidence_quote": "sale of a 25.5% equity stake in the Seagreen offshore wind farm ... TotalEnergies retains 25.5% of Seagreen, alongside PTTEP (25.5%) and SSE Renewables (49%)",
+        "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
         "verification_status": "unverified"
       },
       "supporting_context": [
         {
-          "label": "SSE half-year report",
-          "url": "https://www.investegate.info/announcement/rns/sse--sse/half-year-report/6788827"
-        },
-        {
-          "label": "TotalEnergies PTTEP transaction",
-          "url": "https://totalenergies.com/news/press-releases/scotland-totalenergies-farms-down-255-seagreen-offshore-wind-farm-pttep"
-        },
-        {
-          "label": "SSE transmission-assets sale",
+          "label": "SSE 2025 page confirming current split",
           "url": "https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/"
         }
       ]
@@ -129,12 +113,12 @@ Recent developments
       "value": "Operational",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.seagreenwindenergy.com/",
-        "source_name": "Seagreen home",
-        "source_type": "official project website",
+        "source_url": "https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/",
+        "source_name": "SSE Renewables full-operation announcement",
+        "source_type": "owner/operator press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "First power was achieved in August 2022 and Seagreen became fully operational in October 2023.",
+        "evidence_quote": "all 114 Vestas V164-10.0 MW turbines ... are now fully operational",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -142,8 +126,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "SSE transmission-assets sale",
-          "url": "https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/"
+          "label": "SSE operational project page",
+          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
         }
       ]
     },
@@ -153,12 +137,12 @@ Recent developments
       "value": "1,075 MW",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/",
-        "source_name": "SSE Seagreen asset page",
-        "source_type": "owner/operator webpage",
+        "source_url": "https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/",
+        "source_name": "SSE Renewables full-operation announcement",
+        "source_type": "owner/operator press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Seagreen has 114 turbines with a total generating capacity of 1,075MW.",
+        "evidence_quote": "The 1,075MW project",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -166,12 +150,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seagreen home",
-          "url": "https://www.seagreenwindenergy.com/"
-        },
-        {
-          "label": "Ofgem/Grant Thornton ex-post review",
-          "url": "https://www.ofgem.gov.uk/sites/default/files/2025-04/Seagreen-Offshore-Wind-Farm-Transmission-Assets-Ex-Post-Review-dated-10-May-2024.pdf"
+          "label": "SSE operational project page",
+          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
         }
       ]
     },
@@ -182,11 +162,11 @@ Recent developments
       "provenance_mode": "web_source",
       "source_of_record": {
         "source_url": "https://sgofto.co.uk/",
-        "source_name": "Seagreen OFTO project page",
-        "source_type": "transmission asset webpage",
+        "source_name": "Seagreen Phase 1 OFTO project site",
+        "source_type": "OFTO project webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "All power generated from Seagreen Phase 1 wind farm, which has 114 turbines with a total maximum export capacity of 1,075 MW...",
+        "evidence_quote": "114 turbines with a total maximum export capacity of 1,075 MW",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -194,23 +174,23 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Ofgem/Grant Thornton ex-post review",
-          "url": "https://www.ofgem.gov.uk/sites/default/files/2025-04/Seagreen-Offshore-Wind-Farm-Transmission-Assets-Ex-Post-Review-dated-10-May-2024.pdf"
+          "label": "SSE transmission assets announcement",
+          "url": "https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/"
         }
       ]
     },
     {
       "item_label": "Turbine model",
       "field_name": "turbine_model",
-      "value": "Vestas V164-10.0 MW",
+      "value": "V164-10.0 MW",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.sserenewables.com/news-and-views/2020/06/mhi-vestas-offshore-wind-contract-for-seagreen-finalised/",
-        "source_name": "SSE turbine contract announcement",
-        "source_type": "developer webpage",
+        "source_url": "https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/",
+        "source_name": "SSE Renewables full-operation announcement",
+        "source_type": "owner/operator press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Under the contract MHI Vestas will manufacture 114 V164-10 MW turbines...",
+        "evidence_quote": "all 114 Vestas V164-10.0 MW turbines",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -218,23 +198,23 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seagreen first turbine up",
-          "url": "https://www.seagreenwindenergy.com/post/first-turbine-up-at-1-1gw-seagreen"
+          "label": "Seagreen turbine supply contract",
+          "url": "https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised"
         }
       ]
     },
     {
       "item_label": "Turbine manufacturer (OEM)",
-      "field_name": "oem",
+      "field_name": "turbine_oem",
       "value": "Vestas",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.seagreenwindenergy.com/post/first-turbine-up-at-1-1gw-seagreen",
-        "source_name": "Seagreen first turbine installation announcement",
-        "source_type": "official project website",
+        "source_url": "https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/",
+        "source_name": "SSE Renewables full-operation announcement",
+        "source_type": "owner/operator press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "successful installation of the project's first Vestas V164-10.0 MW turbine",
+        "evidence_quote": "114 Vestas V164-10.0 MW turbines",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -242,8 +222,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "SSE turbine contract announcement",
-          "url": "https://www.sserenewables.com/news-and-views/2020/06/mhi-vestas-offshore-wind-contract-for-seagreen-finalised/"
+          "label": "2020 supplier contract under MHI Vestas branding",
+          "url": "https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised"
         }
       ]
     },
@@ -253,9 +233,9 @@ Recent developments
       "value": "10 MW",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.sserenewables.com/news-and-views/2020/06/mhi-vestas-offshore-wind-contract-for-seagreen-finalised/",
-        "source_name": "SSE turbine contract announcement",
-        "source_type": "developer webpage",
+        "source_url": "https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised",
+        "source_name": "Seagreen turbine supply contract announcement",
+        "source_type": "project webpage / press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
         "evidence_quote": "114 V164-10 MW turbines",
@@ -266,8 +246,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seagreen first turbine up",
-          "url": "https://www.seagreenwindenergy.com/post/first-turbine-up-at-1-1gw-seagreen"
+          "label": "SSE full-operation announcement",
+          "url": "https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/"
         }
       ]
     },
@@ -275,27 +255,23 @@ Recent developments
       "item_label": "Rotor diameter",
       "field_name": "rotor_diameter_m",
       "value": "164 m",
-      "provenance_mode": "dataset_fallback",
+      "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://example.invalid/eurowindwakes/seagreen-phase-1-linked-turbine-metadata",
-        "source_name": "EuroWindWakes 2025 linked turbine dataset",
-        "source_type": "open dataset",
-        "licence": "unknown",
+        "source_url": "https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised",
+        "source_name": "Seagreen turbine supply contract announcement",
+        "source_type": "project webpage / press release",
+        "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Linked project turbine metadata rotor_diameter_m = 164",
+        "evidence_quote": "V164-10 MW turbines",
         "confidence": "medium",
         "derived_by_ai": true,
         "human_verified": false,
-        "verification_status": "dataset_fallback"
+        "verification_status": "unverified"
       },
       "supporting_context": [
         {
-          "label": "SSE turbine contract announcement",
-          "url": "https://www.sserenewables.com/news-and-views/2020/06/mhi-vestas-offshore-wind-contract-for-seagreen-finalised/"
-        },
-        {
-          "label": "Seagreen first turbine up",
-          "url": "https://www.seagreenwindenergy.com/post/first-turbine-up-at-1-1gw-seagreen"
+          "label": "SSE full-operation announcement",
+          "url": "https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/"
         }
       ]
     },
@@ -305,12 +281,12 @@ Recent developments
       "value": "120 m",
       "provenance_mode": "dataset_fallback",
       "source_of_record": {
-        "source_url": "https://example.invalid/eurowindwakes/seagreen-phase-1-linked-turbine-metadata",
+        "source_url": "https://zenodo.org/records/17311571",
         "source_name": "EuroWindWakes 2025 linked turbine dataset",
         "source_type": "open dataset",
-        "licence": "unknown",
+        "licence": "ODC Open Database License v1.0",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Linked project turbine metadata hub_height_m = 120",
+        "evidence_quote": "Linked project turbine metadata hub height = 120 m",
         "confidence": "medium",
         "derived_by_ai": true,
         "human_verified": false,
@@ -318,12 +294,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seagreen home",
-          "url": "https://www.seagreenwindenergy.com/"
-        },
-        {
-          "label": "SSE Seagreen asset page",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
+          "label": "SSE project page confirms turbine platform but not hub height",
+          "url": "https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/"
         }
       ]
     },
@@ -333,12 +305,12 @@ Recent developments
       "value": "114",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.seagreenwindenergy.com/",
-        "source_name": "Seagreen home",
-        "source_type": "official project website",
+        "source_url": "https://www.seagreenwindenergy.com/about-us",
+        "source_name": "Seagreen About page",
+        "source_type": "official project webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Seagreen has 114 turbines with a total generating capacity of 1,075MW.",
+        "evidence_quote": "Seagreen has 114 turbines",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -346,27 +318,23 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "SSE Seagreen asset page",
+          "label": "SSE operational project page",
           "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
-        },
-        {
-          "label": "TotalEnergies PTTEP transaction",
-          "url": "https://totalenergies.com/news/press-releases/scotland-totalenergies-farms-down-255-seagreen-offshore-wind-farm-pttep"
         }
       ]
     },
     {
       "item_label": "Foundations",
       "field_name": "foundation_type",
-      "value": "Suction bucket jacket foundations",
+      "value": "Jacket foundations with suction bucket / suction caisson foundations",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.ramboll.com/projects/energy/seagreen-offshore-wind-farm",
-        "source_name": "Ramboll Seagreen project page",
-        "source_type": "engineering contractor webpage",
+        "source_url": "https://www.sserenewables.com/news-and-views/2023/04/final-jacket-foundation-installed-on-seagreen/",
+        "source_name": "SSE Renewables final jacket foundation installed announcement",
+        "source_type": "owner/operator press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "For Seagreen offshore wind farm, Ramboll designed all 114 suction bucket foundations",
+        "evidence_quote": "all 114 jackets ... use of innovative suction caisson technology",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -374,12 +342,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seaway7 Seagreen project",
-          "url": "https://www.seaway7.com/projects/seagreen-offshore-wind-farm/"
-        },
-        {
-          "label": "SSE Seagreen asset page",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
+          "label": "NGI Seagreen project page",
+          "url": "https://www.ngi.no/en/projects/seagreen/"
         }
       ]
     },
@@ -389,12 +353,12 @@ Recent developments
       "value": "10/10/2014",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.sserenewables.com/news-and-views/2014/10/marine-scotland-consents-seagreen-firth-of-forth-offshore-wind-phase-1/",
-        "source_name": "SSE consent announcement",
-        "source_type": "developer webpage",
+        "source_url": "https://www.seagreenwindenergy.com/s36capplicationnov2022",
+        "source_name": "Seagreen S36C application notice",
+        "source_type": "official project notice",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "10 Oct 2014",
+        "evidence_quote": "consents granted under section 36 of the Electricity Act 1989 on 10 October 2014",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -402,8 +366,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seagreen planning",
-          "url": "https://www.seagreenwindenergy.com/planning"
+          "label": "Scottish Government document referencing 10 October 2014 consent",
+          "url": "https://www.gov.scot/binaries/content/documents/govscot/publications/foi-eir-release/2018/06/foi-18-01249/documents/foi-18-01249-first-minister-visit-china-april-2018-main-briefing-pack-index-3-tuesday-10-april-pdf/foi-18-01249-first-minister-visit-china-april-2018-main-briefing-pack-index-3-tuesday-10-april-pdf/govscot%3Adocument/FOI-18-01249%20-%20First%20Minister%20-%20Visit%20to%20China%20-%20April%202018%20-%20MAIN%20BRIEFING%20PACK%20-%20Index%203%20-%20Tuesday%2010%20April.pdf"
         }
       ]
     },
@@ -413,40 +377,12 @@ Recent developments
       "value": "03/06/2020",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.investegate.info/announcement/rns/sse--sse/half-year-report/6788827",
-        "source_name": "SSE half-year report",
-        "source_type": "company report",
+        "source_url": "https://www.seagreenwindenergy.com/post/turbine-supply-contract-for-seagreen-finalised",
+        "source_name": "Seagreen turbine supply contract announcement",
+        "source_type": "official project webpage / press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "On 3 June 2020, the Group disposed of a 51% stake in its wholly owned subsidiary, Seagreen Holdco 1 Ltd ('Seagreen 1'), to Total.",
-        "confidence": "medium",
-        "derived_by_ai": true,
-        "human_verified": false,
-        "verification_status": "unverified"
-      },
-      "supporting_context": [
-        {
-          "label": "OffshoreWIND report on FID",
-          "url": "https://www.offshorewind.biz/2020/06/04/subsea-7-nets-seagreen-1-owf-deal/"
-        },
-        {
-          "label": "Subsea7 investor presentation",
-          "url": "https://www.subsea7.com/content/dam/subsea7-corporate2018/Results_Reports_Presentations/Presentations/2020/SUBC%20Investor%20Day%20Sep%202020.pdf.downloadasset.pdf"
-        }
-      ]
-    },
-    {
-      "item_label": "First power date",
-      "field_name": "first_power_date",
-      "value": "23/08/2022",
-      "provenance_mode": "web_source",
-      "source_of_record": {
-        "source_url": "https://totalenergies.com/sites/g/files/nytnzq121/files/documents/2022-08/EN_Scotland_Production_start-up_of_the_Seagreen_offshore_wind_farm.pdf",
-        "source_name": "TotalEnergies first power press release",
-        "source_type": "owner press release",
-        "licence": "public webpage terms",
-        "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Paris, 23 August 2022 – TotalEnergies and its partner SSE Renewables, has announced first power generation from the Seagreen offshore wind farm",
+        "evidence_quote": "Following on from the news earlier today that Seagreen has achieved Final Investment Decision",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -454,8 +390,32 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seagreen home",
-          "url": "https://www.seagreenwindenergy.com/"
+          "label": "Cadeler note citing FID on 3 June 2020",
+          "url": "https://www.cadeler.com/news/swire-blue-ocean-clinches-seagreen-contract"
+        }
+      ]
+    },
+    {
+      "item_label": "First power date",
+      "field_name": "first_power_date",
+      "value": "01/08/2022",
+      "provenance_mode": "web_source",
+      "source_of_record": {
+        "source_url": "https://www.sserenewables.com/news-and-views/2022/08/first-power-at-scotlands-largest-offshore-wind-farm/",
+        "source_name": "SSE Renewables first power announcement",
+        "source_type": "owner/operator press release",
+        "licence": "public webpage terms",
+        "retrieved_at": "2026-04-21T00:00:00Z",
+        "evidence_quote": "first power was achieved in August 2022",
+        "confidence": "high",
+        "derived_by_ai": true,
+        "human_verified": false,
+        "verification_status": "unverified"
+      },
+      "supporting_context": [
+        {
+          "label": "SSE operational project page",
+          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
         }
       ]
     },
@@ -465,12 +425,12 @@ Recent developments
       "value": "01/10/2023",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.seagreenwindenergy.com/",
-        "source_name": "Seagreen home",
-        "source_type": "official project website",
+        "source_url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/",
+        "source_name": "SSE Renewables Seagreen operational project page",
+        "source_type": "owner/operator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Seagreen became fully operational in October 2023.",
+        "evidence_quote": "Seagreen became fully operational in October 2023",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -478,28 +438,24 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "SSE Seagreen asset page",
-          "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
-        },
-        {
-          "label": "TotalEnergies PTTEP transaction",
-          "url": "https://totalenergies.com/news/press-releases/scotland-totalenergies-farms-down-255-seagreen-offshore-wind-farm-pttep"
+          "label": "SSE full-operation announcement 17 October 2023",
+          "url": "https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/"
         }
       ]
     }
   ],
   "recent_developments": [
     {
-      "date": "31/05/2024",
-      "development": "PTTEP completed acquisition of a 25.5% equity stake in Seagreen and joined the JV in 2024.",
+      "date": "17/10/2023",
+      "development": "Seagreen announced that all 114 turbines were fully operational and generating to the GB grid",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://sustainability.pttep.com/en/document/viewer/stream/120834/56-1-one-report-2024",
-        "source_name": "PTTEP annual report 2024",
-        "source_type": "company report",
+        "source_url": "https://www.sserenewables.com/news-and-views/2023/10/scotland-s-largest-offshore-wind-farm-now-fully-operational/",
+        "source_name": "SSE Renewables full-operation announcement",
+        "source_type": "owner/operator press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "On May 31, 2024, the investment in the Seagreen Offshore ...",
+        "evidence_quote": "all 114 Vestas V164-10.0 MW turbines ... are now fully operational and are generating clean, renewable energy to Britain’s power grid",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -507,49 +463,22 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Seagreen PTTEP joins JV",
-          "url": "https://www.seagreenwindenergy.com/post/pttep-joins-the-seagreen-joint-venture"
-        },
-        {
-          "label": "SSE Seagreen asset page",
+          "label": "SSE operational project page",
           "url": "https://www.sserenewables.com/offshore-wind/operational-wind-farms/seagreen/"
         }
       ]
     },
     {
-      "date": "01/11/2024",
-      "development": "Ofgem published its final tender costs/decision material for the Seagreen Phase 1 OFTO process.",
+      "date": "01/01/2024",
+      "development": "PTTEP joined the Seagreen consortium, taking a 25.5% stake acquired from TotalEnergies",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.ofgem.gov.uk/sites/default/files/2025-07/Ofgem-ARA-24-25-Final.pdf",
-        "source_name": "Ofgem annual report 2024/25",
-        "source_type": "regulator report",
+        "source_url": "https://www.seagreenwindenergy.com/about-us",
+        "source_name": "Seagreen About page",
+        "source_type": "official project webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "In November 2024 Ofgem published our final ... for the Seagreen Project",
-        "confidence": "medium",
-        "derived_by_ai": true,
-        "human_verified": false,
-        "verification_status": "unverified"
-      },
-      "supporting_context": [
-        {
-          "label": "GOV.UK transmission licence exemption outcome",
-          "url": "https://www.gov.uk/government/publications/electricity-transmission-licence-exemption-seagreen-wind-energy-limited-swel/proposed-transmission-licence-exemption-for-seagreen-wind-energy-limited-summary-of-responses-and-outcome"
-        }
-      ]
-    },
-    {
-      "date": "10/03/2025",
-      "development": "Seagreen Wind Energy Limited signed the agreement to sell Seagreen Phase 1 transmission assets to Seagreen Phase 1 OFTO, a consortium of Equitix and Kyuden Group.",
-      "provenance_mode": "web_source",
-      "source_of_record": {
-        "source_url": "https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/",
-        "source_name": "SSE Renewables agreement for sale of Seagreen transmission assets",
-        "source_type": "owner/operator webpage",
-        "licence": "public webpage terms",
-        "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "10 Mar 2025 ... has signed an agreement to sell the Offshore Transmission Assets of the Seagreen Phase 1 Offshore Wind Farm...",
+        "evidence_quote": "PTTEP joined the consortium in 2024",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -557,12 +486,31 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Orrick deal announcement",
-          "url": "https://www.orrick.com/en/News/2025/03/Orrick-Advises-Seagreen-Wind-Energy-on-Sale-of-Transmission-Assets"
-        },
+          "label": "TotalEnergies announced the sale on 21 December 2023",
+          "url": "https://totalenergies.com/system/files/documents/2023-12/PR_farm_down_Seagreen.pdf"
+        }
+      ]
+    },
+    {
+      "date": "10/03/2025",
+      "development": "Seagreen Wind Energy Limited signed an agreement to sell the Phase 1 offshore transmission assets to the preferred OFTO consortium of Equitix and Kyuden Group following Ofgem’s tender process",
+      "provenance_mode": "web_source",
+      "source_of_record": {
+        "source_url": "https://www.sserenewables.com/news-and-views/2025/03/agreement-for-sale-of-seagreen-transmission-assets/",
+        "source_name": "SSE Renewables Agreement for sale of Seagreen transmission assets",
+        "source_type": "owner webpage / press release",
+        "licence": "public webpage terms",
+        "retrieved_at": "2026-04-21T00:00:00Z",
+        "evidence_quote": "has announced that it has signed an agreement to sell the Offshore Transmission Assets of the Seagreen Phase 1 Offshore Wind Farm",
+        "confidence": "high",
+        "derived_by_ai": true,
+        "human_verified": false,
+        "verification_status": "unverified"
+      },
+      "supporting_context": [
         {
-          "label": "Kyuden announcement",
-          "url": "https://www.kyuden.co.jp/english/company/news/2024/h250310-1.html"
+          "label": "Ofgem licence determination notice",
+          "url": "https://www.ofgem.gov.uk/decision/seagreen-phase-1-ofto-project-limited-notice-confirmation-determination-grant-licence"
         }
       ]
     }
