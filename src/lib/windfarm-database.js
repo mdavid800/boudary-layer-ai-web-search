@@ -56,6 +56,58 @@ export async function listWindFarmRows(client, sourceTableName, { ids, country }
   return result.rows;
 }
 
+export async function getPublishedResearchRunState(client, windFarmIds = []) {
+  if (!Array.isArray(windFarmIds)) {
+    throw new Error('windFarmIds must be an array.');
+  }
+
+  if (windFarmIds.length === 0) {
+    return new Map();
+  }
+
+  const result = await client.query(
+    `
+      WITH requested_wind_farms AS (
+        SELECT UNNEST($1::integer[]) AS wind_farm_id
+      ),
+      latest_published_reports AS (
+        SELECT DISTINCT ON (report.wind_farm_id)
+          report.wind_farm_id,
+          report.id
+        FROM research_wind_farm_reports report
+        JOIN requested_wind_farms requested
+          ON requested.wind_farm_id = report.wind_farm_id
+        WHERE report.review_status = 'published'
+        ORDER BY report.wind_farm_id, report.researched_at DESC, report.id DESC
+      )
+      SELECT
+        latest.wind_farm_id,
+        true AS has_published_report,
+        EXISTS (
+          SELECT 1
+          FROM wind_farm_facts fact
+          WHERE fact.report_id = latest.id
+            AND fact.source_type = 'research'
+            AND fact.field_name = 'status'
+            AND fact.status = 'active'
+            AND fact.value = 'Operational'
+        ) AS has_operational_published_report
+      FROM latest_published_reports latest
+    `,
+    [windFarmIds],
+  );
+
+  return new Map(
+    result.rows.map((row) => [
+      row.wind_farm_id,
+      {
+        hasPublishedReport: row.has_published_report === true,
+        hasOperationalPublishedReport: row.has_operational_published_report === true,
+      },
+    ]),
+  );
+}
+
 export async function getLinkedTurbineMetadata(client, windfarmId, sourceTableName) {
   getWindFarmSourceTableName(sourceTableName);
   const result = await client.query(
