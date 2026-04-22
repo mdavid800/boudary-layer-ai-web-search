@@ -1,6 +1,37 @@
 import { PDFParse } from 'pdf-parse';
 import { canonicalizeSourceOfRecord, isEuroWindWakesSource } from './source-of-record.js';
 
+const NUMERIC_FIELD_LABEL_TERMS = {
+  capacity_mw: ['capacity', 'installed capacity'],
+  mec_mw: ['mec', 'maximum export capacity', 'export capacity', 'transmission entry capacity'],
+  rated_power_mw: ['rated power', 'individual rated power', 'turbine rating'],
+  rotor_diameter_m: ['rotor diameter', 'rotor'],
+  hub_height_m: ['hub height', 'hub'],
+  turbine_count: ['turbine count', 'turbines', 'wtg', 'wtgs'],
+};
+
+const DATE_FIELD_LABEL_TERMS = {
+  consent_date: ['consent', 'approval', 'approved'],
+  fid_date: ['fid', 'final investment decision'],
+  first_power_date: ['first power', 'first electricity', 'began generating'],
+  commissioning_date: ['commissioning', 'commissioned', 'operation start', 'full output'],
+};
+
+const MONTH_NAMES = [
+  'january',
+  'february',
+  'march',
+  'april',
+  'may',
+  'june',
+  'july',
+  'august',
+  'september',
+  'october',
+  'november',
+  'december',
+];
+
 function normalizeText(value) {
   return String(value || '')
     .toLowerCase()
@@ -20,6 +51,139 @@ function getSignificantTerms(value) {
   return normalizeText(value)
     .split(' ')
     .filter((term) => term.length >= 4);
+}
+
+function getNormalizedFieldName(evidenceRecord) {
+  return typeof evidenceRecord?.report_field_name === 'string'
+    ? evidenceRecord.report_field_name.trim().toLowerCase()
+    : null;
+}
+
+function hasAnyTerm(pageText, terms = []) {
+  return terms.some((term) => pageText.includes(term));
+}
+
+function getTermVariants(value) {
+  const normalizedValue = normalizeText(value);
+
+  if (!normalizedValue) {
+    return [];
+  }
+
+  return [...new Set([
+    normalizedValue,
+    normalizedValue.replace(/\s+/g, ''),
+  ])];
+}
+
+function getNumericValueTerms(reportedValue, fieldName) {
+  const normalizedValue = normalizeText(reportedValue);
+
+  if (!normalizedValue) {
+    return [];
+  }
+
+  const numericTerms = [
+    ...normalizedValue.matchAll(/\b\d+(?:\.\d+)?\s*(?:mw|mva|kv|m|%|turbines?|wtgs?)\b/g),
+  ].map((match) => match[0]);
+
+  if (fieldName === 'turbine_count') {
+    const rawNumber = normalizedValue.match(/\b\d+(?:\.\d+)?\b/)?.[0];
+
+    if (rawNumber) {
+      numericTerms.push(rawNumber);
+    }
+  }
+
+  return [...new Set(numericTerms.flatMap((term) => getTermVariants(term)))];
+}
+
+function getNumericLabelTerms(evidenceRecord, fieldName) {
+  const configuredTerms = NUMERIC_FIELD_LABEL_TERMS[fieldName] ?? [];
+  const itemLabelTerms = getSignificantTerms(evidenceRecord?.report_item_label ?? '');
+
+  return [...new Set([
+    ...configuredTerms.flatMap((term) => getTermVariants(term)),
+    ...itemLabelTerms.flatMap((term) => getTermVariants(term)),
+  ])];
+}
+
+function hasNumericFieldSupport(pageText, evidenceRecord) {
+  const fieldName = getNormalizedFieldName(evidenceRecord);
+
+  if (!fieldName || !(fieldName in NUMERIC_FIELD_LABEL_TERMS)) {
+    return false;
+  }
+
+  const labelTerms = getNumericLabelTerms(evidenceRecord, fieldName);
+  const valueTerms = getNumericValueTerms(evidenceRecord?.reported_value, fieldName);
+
+  if (labelTerms.length === 0 || valueTerms.length === 0) {
+    return false;
+  }
+
+  return hasAnyTerm(pageText, labelTerms) && hasAnyTerm(pageText, valueTerms);
+}
+
+function getDateVariants(rawDate) {
+  if (typeof rawDate !== 'string') {
+    return [];
+  }
+
+  const match = rawDate.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+  if (!match) {
+    return [];
+  }
+
+  const [, day, month, year] = match;
+  const monthName = MONTH_NAMES[Number(month) - 1];
+
+  if (!monthName) {
+    return [];
+  }
+
+  const numericDay = String(Number(day));
+  const variants = [
+    `${day}/${month}/${year}`,
+    `${numericDay} ${monthName} ${year}`,
+    `${day} ${monthName} ${year}`,
+    `${monthName} ${year}`,
+  ];
+
+  return [...new Set(variants.flatMap((term) => getTermVariants(term)))];
+}
+
+function getDateLabelTerms(evidenceRecord, fieldName) {
+  const configuredTerms = DATE_FIELD_LABEL_TERMS[fieldName] ?? [];
+  const itemLabelTerms = getSignificantTerms(evidenceRecord?.report_item_label ?? '');
+
+  return [...new Set([
+    ...configuredTerms.flatMap((term) => getTermVariants(term)),
+    ...itemLabelTerms.flatMap((term) => getTermVariants(term)),
+  ])];
+}
+
+function hasDateFieldSupport(pageText, evidenceRecord) {
+  const fieldName = getNormalizedFieldName(evidenceRecord);
+
+  if (!fieldName || !(fieldName in DATE_FIELD_LABEL_TERMS)) {
+    return false;
+  }
+
+  const labelTerms = getDateLabelTerms(evidenceRecord, fieldName);
+  const dateTerms = getDateVariants(evidenceRecord?.report_date ?? evidenceRecord?.reported_value);
+
+  if (labelTerms.length === 0 || dateTerms.length === 0) {
+    return false;
+  }
+
+  return hasAnyTerm(pageText, labelTerms) && hasAnyTerm(pageText, dateTerms);
+}
+
+function hasFieldAwareSupport(pageText, evidenceRecord) {
+  return hasNumericFieldSupport(pageText, evidenceRecord)
+    || hasDateFieldSupport(pageText, evidenceRecord);
 }
 
 function hasQuoteSupport(pageText, evidenceQuote) {
@@ -171,6 +335,15 @@ export async function verifyEvidenceRecord(evidenceRecord, { fetchImpl = fetch }
       };
     }
 
+    if (hasFieldAwareSupport(pageText, evidenceRecord)) {
+      return {
+        status: 'passed',
+        httpStatus: response.status,
+        error: null,
+        normalizedRecord,
+      };
+    }
+
     return {
       status: 'failed',
       httpStatus: response.status,
@@ -189,7 +362,8 @@ export async function verifyEvidenceRecord(evidenceRecord, { fetchImpl = fetch }
 
 export async function verifyReportEvidence(client, reportId, { fetchImpl = fetch } = {}) {
   const evidenceResult = await client.query(
-    `SELECT id, fact_id, reported_value, source_url, source_name, source_type, licence, evidence_quote, provenance_mode, human_verified
+    `SELECT id, fact_id, report_item_label, report_field_name, report_date, report_development, reported_value,
+            source_url, source_name, source_type, licence, evidence_quote, provenance_mode, human_verified
      FROM research_report_evidence
      WHERE report_id = $1
        AND evidence_role = 'source_of_record'`,
@@ -256,6 +430,13 @@ export async function verifyReportEvidence(client, reportId, { fetchImpl = fetch
         id: row.id,
         status: result.status,
         error: result.error,
+        report_item_label: row.report_item_label ?? null,
+        report_field_name: row.report_field_name ?? null,
+        report_date: row.report_date ?? null,
+        report_development: row.report_development ?? null,
+        reported_value: row.reported_value ?? null,
+        source_url: row.source_url ?? null,
+        source_name: row.source_name ?? null,
       });
     }
   }

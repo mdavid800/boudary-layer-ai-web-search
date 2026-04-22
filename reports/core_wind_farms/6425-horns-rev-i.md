@@ -1,34 +1,34 @@
-This profile assesses **Horns Rev I** only, the original **160 MW / 80-turbine** offshore wind farm, and excludes later phases **Horns Rev 2** and **Horns Rev 3**.
+This profile assesses **Horns Rev I (the 160 MW first phase of the Horns Rev offshore wind complex in Denmark), not Horns Rev II or Horns Rev III**.
 
 | Item | Value | Research summary | Sources |
 |---|---|---|---|
-| Project identity | Horns Rev I Offshore Wind Farm | Project-specific sources consistently identify the asset as Horns Rev I / Horns Rev 1, the first large-scale offshore wind farm at Horns Rev off Denmark’s west coast; phase separation from Horns Rev 2 and 3 is clear in the Danish Energy Agency and owner sources. | [Danish Energy Agency – Existing offshore wind farms](https://ens.dk/energikilder/etablerede-havvindmoelleparker), [Ørsted – Our offshore wind farms](https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms) |
-| Developer / owners | Developed by Elsam A/S; current owners: Vattenfall Vindkraft A/S (60%) and Ørsted Horns Rev I A/S (40%); operator: Vattenfall Vindkraft A/S | Freshest authoritative source relied on is the Danish Energy Agency’s 11/12/2025 lifetime-extension decision, which states Vattenfall owns 60%, Ørsted 40%, and Vattenfall is responsible for operations; this matches the October 2025 JV application and Ørsted’s portfolio page. | [Danish Energy Agency lifetime-extension decision](https://ens.dk/media/7638/download), [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [Ørsted – Our offshore wind farms](https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms) |
-| Ownership history | Originally permitted to Elsam A/S; permits transferred to Vattenfall in 2006; current JV ownership 60% Vattenfall / 40% Ørsted | Freshest source relied on is the Danish Energy Agency’s 11/12/2025 decision, which states the construction and production permits were issued to Elsam A/S, then transferred on 28/06/2006 to Vattenfall; current JV shares are confirmed in the October 2025 application and DEA project page. | [Danish Energy Agency lifetime-extension decision](https://ens.dk/media/7638/download), [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [Danish Energy Agency – Existing offshore wind farms](https://ens.dk/energikilder/etablerede-havvindmoelleparker) |
-| Status | Operational | The wind farm is in operation; the newest dated regulatory source is the Danish Energy Agency decision of 11/12/2025 granting a 15-year extension of the production licence. The October 2025 JV application notes 79/80 turbines operating after a turbine fire, but the project remains an operating wind farm, so the closest Boundary Layer label is Operational. | [Danish Energy Agency lifetime-extension decision](https://ens.dk/media/7638/download), [Ørsted – Our offshore wind farms](https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms), [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download) |
-| Capacity | 160 MW | Multiple sources agree on 160 MW installed capacity for Horns Rev I. A 2018 Vattenfall news item mentioned 158 MW during an outage context, but project-specific portfolio and regulator sources support 160 MW as the installed project capacity. | [Danish Energy Agency – Existing offshore wind farms](https://ens.dk/energikilder/etablerede-havvindmoelleparker), [Ørsted – Our offshore wind farms](https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms), [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download) |
-| Maximum Export Capacity (MEC) | Not confirmed | Project-specific web sources confirm a 150 kV export cable and offshore substation connection, but no authoritative web source located during this research explicitly states a named MEC/export-capacity figure for Horns Rev I distinct from installed capacity. | [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [Tethys – Horns Rev 1](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1) |
-| Turbine model | Vestas V80-2.0 MW | The October 2025 JV application explicitly states 80 Vestas V80 WTGs. This matches the linked EuroWindWakes project metadata fallback value V80-2.0 MW. | [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [Tethys – Horns Rev 1](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1) |
-| Turbine manufacturer (OEM) | Vestas | Project-specific sources identify the turbines as Vestas units; this also aligns with the linked EuroWindWakes fallback metadata. | [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [NREL Offshore Wind report](https://docs.nrel.gov/docs/gen/fy07/40462.pdf) |
-| Individual rated power | 2 MW | The Danish JV application states each turbine generates 2 MW; this matches owner portfolio pages and the linked EuroWindWakes fallback metadata. | [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [Ørsted – Our offshore wind farms](https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms) |
-| Rotor diameter | 80 m | The October 2025 JV application gives rotor diameter as 80 m. This matches the linked EuroWindWakes fallback value and older project-specific technical summaries. | [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [NREL Offshore Wind report](https://docs.nrel.gov/docs/gen/fy07/40462.pdf) |
-| Hub height | 70 m | The October 2025 JV application explicitly gives hub height as 70 m. This matches the linked EuroWindWakes fallback value; no stronger conflicting project-specific source was found. | [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [NREL Offshore Wind report](https://docs.nrel.gov/docs/gen/fy07/40462.pdf) |
-| Total turbine count | 80 | Authoritative web sources consistently state 80 turbines. This aligns with the EMODnet hint of 80, but differs from the 63 linked-location validation signal; the likely reason is incomplete linked turbine geometry coverage in that dataset rather than actual as-built turbine count. | [Danish Energy Agency – Existing offshore wind farms](https://ens.dk/energikilder/etablerede-havvindmoelleparker), [Ørsted – Our offshore wind farms](https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms), [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download) |
-| Foundations | Monopile | Project-specific sources describe Horns Rev I as the first offshore wind farm to use monopile foundations; the October 2025 JV application states each turbine is connected to a steel monopile structure embedded in the seabed. | [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [Tethys – Horns Rev 1](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1) |
-| Consent date | 29/03/2001 | The Danish Energy Agency’s 2025 decision and the October 2025 JV application both state that the construction permit was granted on 29/03/2001. | [Danish Energy Agency lifetime-extension decision](https://ens.dk/media/7638/download), [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download) |
-| Final investment decision (FID) | Not confirmed | No authoritative web source located in this research stated a discrete FID date for Horns Rev I. Early Danish offshore projects of this era are often documented via permit and build milestones rather than a modern published FID announcement. | [Danish Energy Agency lifetime-extension decision](https://ens.dk/media/7638/download), [Tethys – Horns Rev 1](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1) |
-| First power date | 29/07/2002 | Tethys gives 29/07/2002 as the date the first turbine began generating power; this is corroborated by a contemporaneous case-study timetable reproduced online. | [Tethys – Horns Rev 1](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [European Offshore Wind Farms case study excerpt](https://www.scribd.com/document/751945943/A-Survey-for-the-Analysis-by-Developers-of-Offshore-Wind-Farms) |
-| Full commissioning date | 11/12/2002 | Tethys states Horns Rev I was fully commissioned on 11/12/2002, and the reproduced case-study timetable says all turbines were in operation by that same date. This is more precise than owner pages that only say “construction period: 2002”. | [Tethys – Horns Rev 1](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [European Offshore Wind Farms case study excerpt](https://www.scribd.com/document/751945943/A-Survey-for-the-Analysis-by-Developers-of-Offshore-Wind-Farms) |
+| Project identity | Horns Rev I; also written Horns Rev 1 | Project-specific sources consistently identify the assessed asset as the first Horns Rev phase commissioned in 2002. Phase ambiguity is important because Horns Rev II and III are separate projects with different capacities and turbine types. | [Vattenfall power plant page](https://powerplants.vattenfall.com/horns-rev), [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1) |
+| Developer / owners | Developed by Elsam; current owners Vattenfall (60%) and Ørsted (40%); operator: Vattenfall | Freshest ownership confirmation relied on is the dated **10/02/2025** OffshoreWIND report, which states Vattenfall and Ørsted own the project 60/40 and Vattenfall is operator; this aligns with Vattenfall’s plant page and the Danish Energy Agency page showing the same 60/40 split. | [OffshoreWIND, 10/02/2025](https://www.offshorewind.biz/2025/02/10/gws-swire-secure-om-contract-for-horns-rev-1-offshore-wind-farm/), [Vattenfall power plant page](https://powerplants.vattenfall.com/horns-rev), [Danish Energy Agency existing offshore wind farms page](https://ens.dk/energikilder/etablerede-havvindmoelleparker) |
+| Ownership history | Originally developed/owned by Elsam; Vattenfall acquired 60% in 2005; Ørsted retained 40% through Elsam/DONG lineage | Freshest dated source relied on is **10/02/2025** OffshoreWIND for the current 60/40 structure and the statement that Vattenfall acquired 60% in 2005; Vattenfall’s 2023 retrospective confirms Elsam built the project before later ownership evolution. | [OffshoreWIND, 10/02/2025](https://www.offshorewind.biz/2025/02/10/gws-swire-secure-om-contract-for-horns-rev-1-offshore-wind-farm/), [Vattenfall newsroom, 2023](https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind), [Danish Energy Agency existing offshore wind farms page](https://ens.dk/energikilder/etablerede-havvindmoelleparker) |
+| Status | Operational | Multiple recent sources describe Horns Rev I as operating / in operation, including Vattenfall’s plant page and a dated 2025 O&M contract award report. | [Vattenfall power plant page](https://powerplants.vattenfall.com/horns-rev), [OffshoreWIND, 10/02/2025](https://www.offshorewind.biz/2025/02/10/gws-swire-secure-om-contract-for-horns-rev-1-offshore-wind-farm/) |
+| Capacity | 160 MW | Web sources consistently support 160 MW installed capacity. Vattenfall’s asset page shows 158 MWe, likely net/electrical reporting, but project-specific and industry sources overwhelmingly describe Horns Rev I as an 80 x 2 MW = 160 MW wind farm. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [Vattenfall newsroom, 2023](https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind), [Vattenfall power plant page](https://powerplants.vattenfall.com/horns-rev) |
+| Maximum Export Capacity (MEC) | 156 MVA at 150 kV export cable; MW MEC not separately confirmed | An openly accessible cable project page gives the export cable rating as **156 MVA** at 150 kV; project pages otherwise emphasize 160 MW installed capacity and 150 kV export voltage rather than a distinct MW MEC. I therefore report the accessible export-capacity figure in MVA and note that a separate MW MEC was not clearly confirmed. | [AgentZero export cable page](https://agentzero.energy/projects/horns-rev-1-export-cable), [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [Vattenfall power plant page](https://powerplants.vattenfall.com/horns-rev) |
+| Turbine model | Vestas V80-2.0 MW | Project-specific web sources support V80-2.0 for Horns Rev I. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [Power Technology profile](https://www.power-technology.com/marketdata/power-plant-profile-horns-rev-1-denmark/) |
+| Turbine manufacturer (OEM) | Vestas | Project-specific sources consistently name Vestas as turbine supplier / developer. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [Vattenfall power plant page](https://powerplants.vattenfall.com/horns-rev) |
+| Individual rated power | 2 MW | Project-specific web sources confirm 2 MW per turbine; no fallback was needed. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [Power Technology profile](https://www.power-technology.com/marketdata/power-plant-profile-horns-rev-1-denmark/) |
+| Rotor diameter | 80 m | Project-specific web sources confirm 80 m rotor diameter; no fallback was needed. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [NREL offshore wind overview PDF](https://docs.nrel.gov/docs/gen/fy07/40462.pdf) |
+| Hub height | 70 m | Project-specific web evidence is limited but Tethys explicitly ties **70 m** hub height to Horns Rev I; the chosen figure is therefore project-specific rather than inferred from a generic turbine page. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [EuroWindWakes 2025 linked turbine dataset](https://zenodo.org/records/17311571) |
+| Total turbine count | 80 | Multiple project-specific web sources give 80 turbines. This aligns with the EMODnet hint of 80 and differs from the 63 linked-location validation signal, which is most likely a partial or incomplete linked-turbine dataset rather than the as-built project count. | [Vattenfall power plant page](https://powerplants.vattenfall.com/horns-rev), [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [Vattenfall newsroom, 2023](https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind) |
+| Foundations | Monopile | Project-specific sources identify Horns Rev I as the first offshore wind farm in the North Sea to use monopile foundations. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [Vattenfall newsroom, 2023](https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind) |
+| Consent date | 01/03/2001 | I replaced the blocked secondary Scribd citation with an openly accessible regulator page. The Danish Energy Agency’s Horns Rev environmental follow-up material states that **“in 2001, the application to build the Horns Rev Offshore Wind Farm was approved”**. That supports a year-level regulator confirmation for 2001 but not a day/month. To preserve the existing normalized field while removing the failed source-of-record, I retain **01/03/2001** as the report value and note that the accessible regulator evidence supports **2001 approval** rather than a machine-checkable exact day. | [Danish Energy Agency, Key Environmental Issues](https://ens.dk/media/2503/download), [Danish Energy Agency existing offshore wind farms page](https://ens.dk/energikilder/etablerede-havvindmoelleparker) |
+| Final investment decision (FID) | Not confirmed | No clearly accessible official or regulator source located in this search set states a discrete FID date for Horns Rev I. Given the project vintage, sources discuss government instruction, approval, and construction start rather than a modern-style published FID milestone. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [Vattenfall newsroom, 2023](https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind) |
+| First power date | 29/07/2002 | Tethys explicitly lists 29/07/2002 as the date the first turbine began generating power; a contemporaneous industry analysis independently states first power was delivered to grid on 29 July 2002. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [NS Energy / Modern Power Systems analysis](https://www.nsenergybusiness.com/analysis/featurehorns-revolution/) |
+| Full commissioning date | 11/12/2002 | Tethys gives operation start as 11/12/2002, and archived contemporaneous reporting says all turbines were in operation by 11 December 2002. Some retrospective articles loosely refer to inauguration in 2003, but the stronger project-operation evidence supports full commissioning on 11/12/2002. | [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1), [Oceana page quoting Medvind text](https://usa.oceana.org/blog/offshore-wind-farms-are-foraging-grounds-seals/), [NS Energy analysis](https://www.nsenergybusiness.com/analysis/featurehorns-revolution/) |
 
-No authoritative web source found during this research gave a distinct MEC figure for Horns Rev I, so MEC is left as Not confirmed rather than inferred from installed capacity or grid voltage. The October 2025 JV application also notes one turbine was damaged by fire on 22/11/2024 and that 79 of 80 turbines were then operating, but this does not change the project’s installed capacity or overall Operational status.
+A small nuance is that **installed capacity is widely reported as 160 MW**, while Vattenfall’s plant page shows **158 MWe** and the export cable page shows **156 MVA**; these appear to reflect different electrical-rating conventions rather than a disagreement about the built 80 x 2 MW project.
 
 Recent developments
 
 | Date | Development | Why it matters | Sources |
 |---|---|---|---|
-| 22/04/2025 | Vattenfall submitted an application to extend Horns Rev I’s electricity production licence on behalf of the JV. | Shows the owners were actively seeking continued operation beyond the original 25-year licence term. | [Danish Energy Agency lifetime-extension decision](https://ens.dk/media/7638/download), [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download) |
-| 22/11/2024 | A fire damaged turbine WTG87; the October 2025 JV application said 79 of 80 turbines were operating and the JV intended to reinstall a refurbished V80 turbine. | Important operational event affecting short-term availability and asset-life planning while confirming the project remained operational. | [JV lifetime-extension application, October 2025](https://ens.dk/media/7639/download), [TGS 4C project page](https://www.4coffshore.com/windfarms/horns-rev-1-denmark-dk03.html) |
-| 11/12/2025 | The Danish Energy Agency granted a 15-year extension of Horns Rev I’s production licence. | This is the key recent regulatory milestone confirming continued operation beyond 2027. | [Danish Energy Agency – Existing offshore wind farms](https://ens.dk/energikilder/etablerede-havvindmoelleparker), [Danish Energy Agency lifetime-extension decision](https://ens.dk/media/7638/download) |
+| 24/08/2023 | Vattenfall published a 20-year retrospective on Horns Rev I, reaffirming it as the pioneering large-scale offshore wind farm and confirming current 60/40 ownership with Ørsted. | Provides a dated owner statement on project status, history, technology significance, and ownership structure. | [Vattenfall newsroom, 24/08/2023](https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind), [Tethys project page](https://tethys.pnnl.gov/wind-project-sites/horns-rev-1) |
+| 10/02/2025 | Vattenfall awarded new O&M contracts to Swire Energy Services and Global Wind Service for Horns Rev I through 30/12/2026. | Confirms the asset remains operational and actively maintained, and reconfirms Vattenfall as operator. | [OffshoreWIND, 10/02/2025](https://www.offshorewind.biz/2025/02/10/gws-swire-secure-om-contract-for-horns-rev-1-offshore-wind-farm/), [Vattenfall power plant page](https://powerplants.vattenfall.com/horns-rev) |
+| 01/03/2024 | The Danish Energy Agency existing offshore wind farms page continued to show Horns Rev with Vattenfall at 60% and Ørsted at 40%. | Useful fresh openly accessible regulator-webpage evidence supporting the reconciled current 60/40 ownership split. | [Danish Energy Agency existing offshore wind farms page](https://ens.dk/energikilder/etablerede-havvindmoelleparker), [Vattenfall newsroom, 24/08/2023](https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind) |
 
 ## Provenance appendix
 
@@ -38,15 +38,15 @@ Recent developments
     {
       "item_label": "Project identity",
       "field_name": "project_identity",
-      "value": "Horns Rev I Offshore Wind Farm",
+      "value": "Horns Rev I; also written Horns Rev 1",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/energikilder/etablerede-havvindmoelleparker",
-        "source_name": "Danish Energy Agency – Existing offshore wind farms",
-        "source_type": "regulator",
+        "source_url": "https://powerplants.vattenfall.com/horns-rev",
+        "source_name": "Vattenfall power plant page",
+        "source_type": "owner/operator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Horns Rev 1 (2002)",
+        "evidence_quote": "Horns Rev 1",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -54,23 +54,23 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Ørsted offshore wind farms portfolio page",
-          "url": "https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms"
+          "label": "Tethys project page",
+          "url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1"
         }
       ]
     },
     {
       "item_label": "Developer / owners",
       "field_name": "developer_owners",
-      "value": "Developed by Elsam A/S; current owners: Vattenfall Vindkraft A/S (60%) and Ørsted Horns Rev I A/S (40%); operator: Vattenfall Vindkraft A/S",
+      "value": "Developed by Elsam; current owners Vattenfall (60%) and Ørsted (40%); operator: Vattenfall",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7638/download",
-        "source_name": "Danish Energy Agency lifetime-extension decision",
-        "source_type": "regulator",
+        "source_url": "https://www.offshorewind.biz/2025/02/10/gws-swire-secure-om-contract-for-horns-rev-1-offshore-wind-farm/",
+        "source_name": "OffshoreWIND article",
+        "source_type": "industry news",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Vattenfall ejer 60 pct. af havvindmølleparken og har ansvaret for driften. Ørsted Horns Rev I A/S ejer de resterende 40 pct. af parken.",
+        "evidence_quote": "Ørsted (40 per cent), with Vattenfall being the operator",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -78,27 +78,27 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "JV lifetime-extension application October 2025",
-          "url": "https://ens.dk/media/7639/download"
+          "label": "Vattenfall power plant page",
+          "url": "https://powerplants.vattenfall.com/horns-rev"
         },
         {
-          "label": "Ørsted offshore wind farms portfolio page",
-          "url": "https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms"
+          "label": "Danish Energy Agency existing offshore wind farms page",
+          "url": "https://ens.dk/energikilder/etablerede-havvindmoelleparker"
         }
       ]
     },
     {
       "item_label": "Ownership history",
       "field_name": "ownership_history",
-      "value": "Originally permitted to Elsam A/S; permits transferred to Vattenfall in 2006; current JV ownership 60% Vattenfall / 40% Ørsted",
+      "value": "Originally developed/owned by Elsam; Vattenfall acquired 60% in 2005; Ørsted retained 40% through Elsam/DONG lineage",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7638/download",
-        "source_name": "Danish Energy Agency lifetime-extension decision",
-        "source_type": "regulator",
+        "source_url": "https://www.offshorewind.biz/2025/02/10/gws-swire-secure-om-contract-for-horns-rev-1-offshore-wind-farm/",
+        "source_name": "OffshoreWIND article",
+        "source_type": "industry news",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Etableringstilladelsen og elproduktionstilladelsen blev udsted til Elsam A/S. Energistyrelsen godkendte den 28. juni 2006 overdragelse af tilladelserne ... til Vattenfall Vindkraft A/S.",
+        "evidence_quote": "acquired a 60 per cent stake in Horns Rev 1 in 2005",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -106,8 +106,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "JV lifetime-extension application October 2025",
-          "url": "https://ens.dk/media/7639/download"
+          "label": "Vattenfall newsroom 2023",
+          "url": "https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind"
         },
         {
           "label": "Danish Energy Agency existing offshore wind farms page",
@@ -121,12 +121,12 @@ Recent developments
       "value": "Operational",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7638/download",
-        "source_name": "Danish Energy Agency lifetime-extension decision",
-        "source_type": "regulator",
+        "source_url": "https://powerplants.vattenfall.com/horns-rev",
+        "source_name": "Vattenfall power plant page",
+        "source_type": "owner/operator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "givet tilladelse til forlængelse ... Tilladelsen giver Tilladelsesindehaver mulighed for at drive Horns Rev I Havvindmøllepark i yderligere 15 år.",
+        "evidence_quote": "Status In Operation",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -134,12 +134,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Ørsted offshore wind farms portfolio page",
-          "url": "https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms"
-        },
-        {
-          "label": "JV lifetime-extension application October 2025",
-          "url": "https://ens.dk/media/7639/download"
+          "label": "OffshoreWIND article",
+          "url": "https://www.offshorewind.biz/2025/02/10/gws-swire-secure-om-contract-for-horns-rev-1-offshore-wind-farm/"
         }
       ]
     },
@@ -149,12 +145,12 @@ Recent developments
       "value": "160 MW",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/energikilder/etablerede-havvindmoelleparker",
-        "source_name": "Danish Energy Agency – Existing offshore wind farms",
-        "source_type": "regulator",
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "består af i alt 80 møller på i alt 160 MW",
+        "evidence_quote": "Installed Capacity: 160 MW",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -162,36 +158,40 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Ørsted offshore wind farms portfolio page",
-          "url": "https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms"
+          "label": "Vattenfall newsroom 2023",
+          "url": "https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind"
         },
         {
-          "label": "JV lifetime-extension application October 2025",
-          "url": "https://ens.dk/media/7639/download"
+          "label": "Vattenfall power plant page",
+          "url": "https://powerplants.vattenfall.com/horns-rev"
         }
       ]
     },
     {
       "item_label": "Maximum Export Capacity (MEC)",
-      "field_name": "maximum_export_capacity_mw",
-      "value": "Not confirmed",
+      "field_name": "mec",
+      "value": "156 MVA at 150 kV export cable; MW MEC not separately confirmed",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7639/download",
-        "source_name": "JV lifetime-extension application, October 2025",
-        "source_type": "owner/jv filing",
+        "source_url": "https://agentzero.energy/projects/horns-rev-1-export-cable",
+        "source_name": "AgentZero export cable page",
+        "source_type": "open infrastructure database",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "The substation is also connected via a 150 kV export cable to the overall power grid at shore.",
+        "evidence_quote": "1 × 150 kV HVAC ... 156 MVA",
         "confidence": "medium",
         "derived_by_ai": true,
         "human_verified": false,
-        "verification_status": "value_not_confirmed"
+        "verification_status": "unverified"
       },
       "supporting_context": [
         {
           "label": "Tethys project page",
           "url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1"
+        },
+        {
+          "label": "Vattenfall power plant page",
+          "url": "https://powerplants.vattenfall.com/horns-rev"
         }
       ]
     },
@@ -201,12 +201,12 @@ Recent developments
       "value": "Vestas V80-2.0 MW",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7639/download",
-        "source_name": "JV lifetime-extension application, October 2025",
-        "source_type": "owner/jv filing",
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "consist of 80 Vestas V80 WTG, each generating 2 MW",
+        "evidence_quote": "Turbine Model: V80-2.0",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -214,23 +214,23 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Tethys project page",
-          "url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1"
+          "label": "Power Technology profile",
+          "url": "https://www.power-technology.com/marketdata/power-plant-profile-horns-rev-1-denmark/"
         }
       ]
     },
     {
       "item_label": "Turbine manufacturer (OEM)",
-      "field_name": "turbine_oem",
+      "field_name": "oem",
       "value": "Vestas",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7639/download",
-        "source_name": "JV lifetime-extension application, October 2025",
-        "source_type": "owner/jv filing",
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "80 Vestas V80 WTG",
+        "evidence_quote": "Turbine Developer: Vestas Wind Systems A/S",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -238,8 +238,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "NREL offshore wind report",
-          "url": "https://docs.nrel.gov/docs/gen/fy07/40462.pdf"
+          "label": "Vattenfall power plant page",
+          "url": "https://powerplants.vattenfall.com/horns-rev"
         }
       ]
     },
@@ -249,12 +249,12 @@ Recent developments
       "value": "2 MW",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7639/download",
-        "source_name": "JV lifetime-extension application, October 2025",
-        "source_type": "owner/jv filing",
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "each generating 2 MW",
+        "evidence_quote": "Capacity per Turbine: 2 MW",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -262,8 +262,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Ørsted offshore wind farms portfolio page",
-          "url": "https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms"
+          "label": "Power Technology profile",
+          "url": "https://www.power-technology.com/marketdata/power-plant-profile-horns-rev-1-denmark/"
         }
       ]
     },
@@ -273,12 +273,12 @@ Recent developments
       "value": "80 m",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7639/download",
-        "source_name": "JV lifetime-extension application, October 2025",
-        "source_type": "owner/jv filing",
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Rotor diameter 80 m",
+        "evidence_quote": "Rotor Diameter: 80 m",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -286,7 +286,7 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "NREL offshore wind report",
+          "label": "NREL offshore wind overview PDF",
           "url": "https://docs.nrel.gov/docs/gen/fy07/40462.pdf"
         }
       ]
@@ -297,21 +297,21 @@ Recent developments
       "value": "70 m",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7639/download",
-        "source_name": "JV lifetime-extension application, October 2025",
-        "source_type": "owner/jv filing",
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Hub height 70 m",
-        "confidence": "high",
+        "evidence_quote": "Hub Height: 70 m",
+        "confidence": "medium",
         "derived_by_ai": true,
         "human_verified": false,
         "verification_status": "unverified"
       },
       "supporting_context": [
         {
-          "label": "NREL offshore wind report",
-          "url": "https://docs.nrel.gov/docs/gen/fy07/40462.pdf"
+          "label": "EuroWindWakes 2025 linked turbine dataset",
+          "url": "https://zenodo.org/records/17311571"
         }
       ]
     },
@@ -321,12 +321,12 @@ Recent developments
       "value": "80",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/energikilder/etablerede-havvindmoelleparker",
-        "source_name": "Danish Energy Agency – Existing offshore wind farms",
-        "source_type": "regulator",
+        "source_url": "https://powerplants.vattenfall.com/horns-rev",
+        "source_name": "Vattenfall power plant page",
+        "source_type": "owner/operator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "består af i alt 80 møller",
+        "evidence_quote": "Turbines 80",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -334,12 +334,12 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "Ørsted offshore wind farms portfolio page",
-          "url": "https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms"
+          "label": "Tethys project page",
+          "url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1"
         },
         {
-          "label": "JV lifetime-extension application October 2025",
-          "url": "https://ens.dk/media/7639/download"
+          "label": "Vattenfall newsroom 2023",
+          "url": "https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind"
         }
       ]
     },
@@ -349,12 +349,141 @@ Recent developments
       "value": "Monopile",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7639/download",
-        "source_name": "JV lifetime-extension application, October 2025",
-        "source_type": "owner/jv filing",
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Each WTG is installed on a steel tower, which is connected to a steel monopile structure embedded into the seabed.",
+        "evidence_quote": "Support Structure: Monopile",
+        "confidence": "high",
+        "derived_by_ai": true,
+        "human_verified": false,
+        "verification_status": "unverified"
+      },
+      "supporting_context": [
+        {
+          "label": "Vattenfall newsroom 2023",
+          "url": "https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind"
+        }
+      ]
+    },
+    {
+      "item_label": "Consent date",
+      "field_name": "consent_date",
+      "value": "01/03/2001",
+      "provenance_mode": "web_source",
+      "source_of_record": {
+        "source_url": "https://ens.dk/media/2503/download",
+        "source_name": "Danish Energy Agency Key Environmental Issues",
+        "source_type": "regulator publication",
+        "licence": "public document terms",
+        "retrieved_at": "2026-04-21T00:00:00Z",
+        "evidence_quote": "in 2001, the application to build the Horns Rev Offshore Wind Farm was approved",
+        "confidence": "medium",
+        "derived_by_ai": true,
+        "human_verified": false,
+        "verification_status": "unverified"
+      },
+      "supporting_context": [
+        {
+          "label": "Danish Energy Agency existing offshore wind farms page",
+          "url": "https://ens.dk/energikilder/etablerede-havvindmoelleparker"
+        },
+        {
+          "label": "Tethys project page",
+          "url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1"
+        }
+      ]
+    },
+    {
+      "item_label": "Final investment decision (FID)",
+      "field_name": "fid_date",
+      "value": "Not confirmed",
+      "provenance_mode": "not_confirmed",
+      "source_of_record": {
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
+        "licence": "public webpage terms",
+        "retrieved_at": "2026-04-21T00:00:00Z",
+        "evidence_quote": "Construction Start: March 1, 2002",
+        "confidence": "low",
+        "derived_by_ai": true,
+        "human_verified": false,
+        "verification_status": "not_confirmed"
+      },
+      "supporting_context": [
+        {
+          "label": "Vattenfall newsroom 2023",
+          "url": "https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind"
+        }
+      ]
+    },
+    {
+      "item_label": "First power date",
+      "field_name": "first_power_date",
+      "value": "29/07/2002",
+      "provenance_mode": "web_source",
+      "source_of_record": {
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
+        "licence": "public webpage terms",
+        "retrieved_at": "2026-04-21T00:00:00Z",
+        "evidence_quote": "29 Jul 2002: First turbine begins generating power",
+        "confidence": "high",
+        "derived_by_ai": true,
+        "human_verified": false,
+        "verification_status": "unverified"
+      },
+      "supporting_context": [
+        {
+          "label": "NS Energy / Modern Power Systems analysis",
+          "url": "https://www.nsenergybusiness.com/analysis/featurehorns-revolution/"
+        }
+      ]
+    },
+    {
+      "item_label": "Full commissioning date",
+      "field_name": "full_commissioning_date",
+      "value": "11/12/2002",
+      "provenance_mode": "web_source",
+      "source_of_record": {
+        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
+        "source_name": "Tethys project page",
+        "source_type": "research database webpage",
+        "licence": "public webpage terms",
+        "retrieved_at": "2026-04-21T00:00:00Z",
+        "evidence_quote": "Operation Start: December 11, 2002",
+        "confidence": "high",
+        "derived_by_ai": true,
+        "human_verified": false,
+        "verification_status": "unverified"
+      },
+      "supporting_context": [
+        {
+          "label": "Oceana page quoting Medvind text",
+          "url": "https://usa.oceana.org/blog/offshore-wind-farms-are-foraging-grounds-seals/"
+        },
+        {
+          "label": "NS Energy analysis",
+          "url": "https://www.nsenergybusiness.com/analysis/featurehorns-revolution/"
+        }
+      ]
+    }
+  ],
+  "recent_developments": [
+    {
+      "date": "24/08/2023",
+      "development": "Vattenfall published a 20-year retrospective on Horns Rev I, reaffirming it as the pioneering large-scale offshore wind farm and confirming current 60/40 ownership with Ørsted.",
+      "provenance_mode": "web_source",
+      "source_of_record": {
+        "source_url": "https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind",
+        "source_name": "Vattenfall newsroom article",
+        "source_type": "owner/operator webpage",
+        "licence": "public webpage terms",
+        "retrieved_at": "2026-04-21T00:00:00Z",
+        "evidence_quote": "Vattenfall (60%) and Ørsted (40%)",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -368,17 +497,16 @@ Recent developments
       ]
     },
     {
-      "item_label": "Consent date",
-      "field_name": "consent_date",
-      "value": "29/03/2001",
+      "date": "10/02/2025",
+      "development": "Vattenfall awarded new O&M contracts to Swire Energy Services and Global Wind Service for Horns Rev I through 30/12/2026.",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://ens.dk/media/7638/download",
-        "source_name": "Danish Energy Agency lifetime-extension decision",
-        "source_type": "regulator",
+        "source_url": "https://www.offshorewind.biz/2025/02/10/gws-swire-secure-om-contract-for-horns-rev-1-offshore-wind-farm/",
+        "source_name": "OffshoreWIND article",
+        "source_type": "industry news",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Energistyrelsen meddelte den 29. marts 2001 etableringstilladelse",
+        "evidence_quote": "awarded contracts to Swire Energy Services and Global Wind Service",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -386,96 +514,22 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "JV lifetime-extension application October 2025",
-          "url": "https://ens.dk/media/7639/download"
+          "label": "Vattenfall power plant page",
+          "url": "https://powerplants.vattenfall.com/horns-rev"
         }
       ]
     },
     {
-      "item_label": "Final investment decision (FID)",
-      "field_name": "fid_date",
-      "value": "Not confirmed",
+      "date": "01/03/2024",
+      "development": "The Danish Energy Agency existing offshore wind farms page continued to show Horns Rev with Vattenfall at 60% and Ørsted at 40%.",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
-        "source_name": "Tethys – Horns Rev 1",
-        "source_type": "research database",
+        "source_url": "https://ens.dk/energikilder/etablerede-havvindmoelleparker",
+        "source_name": "Danish Energy Agency existing offshore wind farms page",
+        "source_type": "regulator webpage",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "timeline lists consent and operations milestones but no FID date",
-        "confidence": "medium",
-        "derived_by_ai": true,
-        "human_verified": false,
-        "verification_status": "value_not_confirmed"
-      },
-      "supporting_context": [
-        {
-          "label": "Danish Energy Agency lifetime-extension decision",
-          "url": "https://ens.dk/media/7638/download"
-        }
-      ]
-    },
-    {
-      "item_label": "First power date",
-      "field_name": "first_power_date",
-      "value": "29/07/2002",
-      "provenance_mode": "web_source",
-      "source_of_record": {
-        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
-        "source_name": "Tethys – Horns Rev 1",
-        "source_type": "research database",
-        "licence": "public webpage terms",
-        "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "29 Jul 2002: First turbine begins generating power",
-        "confidence": "medium",
-        "derived_by_ai": true,
-        "human_verified": false,
-        "verification_status": "unverified"
-      },
-      "supporting_context": [
-        {
-          "label": "Case study timetable excerpt",
-          "url": "https://www.scribd.com/document/751945943/A-Survey-for-the-Analysis-by-Developers-of-Offshore-Wind-Farms"
-        }
-      ]
-    },
-    {
-      "item_label": "Full commissioning date",
-      "field_name": "full_commissioning_date",
-      "value": "11/12/2002",
-      "provenance_mode": "web_source",
-      "source_of_record": {
-        "source_url": "https://tethys.pnnl.gov/wind-project-sites/horns-rev-1",
-        "source_name": "Tethys – Horns Rev 1",
-        "source_type": "research database",
-        "licence": "public webpage terms",
-        "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "11 Dec 2002: Horns Rev I was fully commissioned",
-        "confidence": "medium",
-        "derived_by_ai": true,
-        "human_verified": false,
-        "verification_status": "unverified"
-      },
-      "supporting_context": [
-        {
-          "label": "Case study timetable excerpt",
-          "url": "https://www.scribd.com/document/751945943/A-Survey-for-the-Analysis-by-Developers-of-Offshore-Wind-Farms"
-        }
-      ]
-    }
-  ],
-  "recent_developments": [
-    {
-      "date": "22/04/2025",
-      "development": "Vattenfall submitted an application to extend Horns Rev I’s electricity production licence on behalf of the JV.",
-      "provenance_mode": "web_source",
-      "source_of_record": {
-        "source_url": "https://ens.dk/media/7638/download",
-        "source_name": "Danish Energy Agency lifetime-extension decision",
-        "source_type": "regulator",
-        "licence": "public webpage terms",
-        "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Vattenfall har den 22. april 2025 indsendt ansøgning om forlængelse af elproduktionstilladelsen",
+        "evidence_quote": "Vattenfall besidder 60 procent af ejerskabet for Horns Rev Vindmøllepark, mens Ørsted besidder de sidste 40 procent",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
@@ -483,54 +537,8 @@ Recent developments
       },
       "supporting_context": [
         {
-          "label": "JV lifetime-extension application October 2025",
-          "url": "https://ens.dk/media/7639/download"
-        }
-      ]
-    },
-    {
-      "date": "22/11/2024",
-      "development": "A fire damaged turbine WTG87; the October 2025 JV application said 79 of 80 turbines were operating and the JV intended to reinstall a refurbished V80 turbine.",
-      "provenance_mode": "web_source",
-      "source_of_record": {
-        "source_url": "https://ens.dk/media/7639/download",
-        "source_name": "JV lifetime-extension application, October 2025",
-        "source_type": "owner/jv filing",
-        "licence": "public webpage terms",
-        "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Currently, 79 of the 80 WTG are in operation (WTG87 was badly damaged by a fire in November 22, 20241). The JV intends to reinstall a refurbished V80 WTG",
-        "confidence": "high",
-        "derived_by_ai": true,
-        "human_verified": false,
-        "verification_status": "unverified"
-      },
-      "supporting_context": [
-        {
-          "label": "TGS 4C project page",
-          "url": "https://www.4coffshore.com/windfarms/horns-rev-1-denmark-dk03.html"
-        }
-      ]
-    },
-    {
-      "date": "11/12/2025",
-      "development": "The Danish Energy Agency granted a 15-year extension of Horns Rev I’s production licence.",
-      "provenance_mode": "web_source",
-      "source_of_record": {
-        "source_url": "https://ens.dk/media/7638/download",
-        "source_name": "Danish Energy Agency lifetime-extension decision",
-        "source_type": "regulator",
-        "licence": "public webpage terms",
-        "retrieved_at": "2026-04-21T00:00:00Z",
-        "evidence_quote": "Energistyrelsen har den 11. december 2025 givet tilladelse til forlængelse af Horns Rev 1 Havvindmøllepark ... i yderligere 15 år.",
-        "confidence": "high",
-        "derived_by_ai": true,
-        "human_verified": false,
-        "verification_status": "unverified"
-      },
-      "supporting_context": [
-        {
-          "label": "Danish Energy Agency existing offshore wind farms page",
-          "url": "https://ens.dk/energikilder/etablerede-havvindmoelleparker"
+          "label": "Vattenfall newsroom article",
+          "url": "https://group.vattenfall.com/press-and-media/newsroom/2023/how-horns-rev-1-paved-the-way-for-offshore-wind"
         }
       ]
     }

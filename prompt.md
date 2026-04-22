@@ -17,6 +17,8 @@ Important rules:
    - grid / transmission authority documents
    - reputable industry news
 3. For every item, provide at least 2 web sources wherever possible.
+3a. For harder-to-source fields such as MEC, consent date, FID, first power date, full commissioning date, turbine model, rotor diameter, hub height, and foundations, one authoritative accessible source is acceptable when stronger corroboration is genuinely hard to obtain.
+3b. Do not add a blocked, paywalled, bot-blocked, third-party database, or opaque magazine/PDF source just to force a second or third citation for those harder fields.
 4. For facts that can change over time, especially current owners, operator, ownership split, and status, prioritise sources that themselves show a visible published date or last-updated date.
 5. The important freshness signal is the source page's own published / updated date, not the date you performed the search.
 6. If an official project page is clearly old or undated, treat it as background only and confirm current ownership / operator / status with a newer dated authoritative source such as a current owner portfolio page, investor results page, regulator page, or recent company update.
@@ -30,6 +32,12 @@ Important rules:
    - state the conflict briefly
    - explain which value is most likely correct
    - prefer project-specific official or regulatory sources over secondary summaries
+Source accessibility rule:
+- For `source_of_record`, prefer openly accessible official, regulator, owner, operator, supplier, or open-dataset pages whenever they support the chosen value.
+- Do not choose paywalled, login-gated, bot-blocked, or third-party database pages as the primary `source_of_record` if the same value can be supported by an official page, regulator page, company PDF, open dataset, or another openly accessible source.
+- If a blocked or risky source is still useful, keep it only as supporting context, not as `source_of_record`.
+- Prefer current live official or regulator URLs over older moved or stale announcement links when selecting `source_of_record`.
+- Never use Orsted, TGS, 4C Offshore, or Windpower Monthly anywhere in the report, including the visible `Sources` column, `supporting_context`, or `source_of_record`.
 14. Be careful to distinguish:
    - the built project vs extensions / later phases
    - gross installed capacity vs export capacity / MEC
@@ -55,14 +63,18 @@ Important rules:
 30. Include citations directly in the “Sources” column using markdown links.
 31. Every citation link in the `Sources` column must be a direct absolute `https://` or `http://` URL. Never use placeholder links such as `(#)` or non-web links.
 32. If an item cannot be confirmed, write `Not confirmed` rather than inventing an answer, but only after applying the required linked EuroWindWakes fallback rules above when a linked turbine row exists.
-33. Treat the output tables as a downstream parser contract:
+33. In every `source_of_record.evidence_quote`, use a short verbatim machine-checkable fragment copied closely from the source page text, not a paraphrase.
+34. Prefer compact label-plus-value evidence quotes such as `Installed capacity 588 MW`, `114 turbines`, `Final investment decision June 2018`, or owner names with percentages.
+35. For date rows, include the milestone label and the date in the quote whenever possible.
+36. For ownership rows, include the entity names and percentage shares in the quote whenever possible.
+37. Treat the output tables as a downstream parser contract:
    - keep the first table row order exactly as specified below
    - keep the second table heading as “Recent developments” and the second table headers exactly as specified below
    - do not rename the table headers
    - do not add extra columns, bullet lists, or prose between the table header and table rows
-34. Normalize all dates in both tables to `DD/MM/YYYY`.
-35. If a source only confirms a month and year, use the first day of that month in the table, for example `01/10/2023`, and explain that month-level wording briefly in the `Research summary` when it matters.
-36. If a source only confirms a year, use `01/01/YYYY`.
+38. Normalize all dates in both tables to `DD/MM/YYYY`.
+39. If a source only confirms a month and year, use the first day of that month in the table, for example `01/10/2023`, and explain that month-level wording briefly in the `Research summary` when it matters.
+40. If a source only confirms a year, use `01/01/YYYY`.
 
 Research and complete the following items:
 
@@ -217,6 +229,7 @@ Critical provenance rules:
 - If a value uses EuroWindWakes or another dataset fallback, set `provenance_mode` accordingly and make the dataset the `source_of_record`.
 - For EuroWindWakes dataset fallbacks, use `https://zenodo.org/records/17311571` as `source_url`. Do not use placeholders such as `example.invalid`.
 - Do not use supporting web pages as the `source_of_record` when they do not explicitly contain the chosen value.
+- Keep `evidence_quote` short and verifier-friendly. Prefer the smallest verbatim fragment that clearly supports the chosen value.
 - Keep the visible markdown tables unchanged; put provenance detail only in the appendix JSON.
 
 Style requirements:
