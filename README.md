@@ -129,10 +129,12 @@ If an official project page is older or undated, use it as background only and c
 For the project `Status` field, the research output should use Boundary Layer's canonical vocabulary:
 
 - `Operational`
+- `Decommissioned`
 - `Under Construction`
-- `Consent Authorised`
+- `Consented`
 - `FID Taken, Pre-Construction`
-- `Consent Application Submitted`
+- `In Planning / Consent Application Submitted`
+- `Lease Awarded, Pre-Planning`
 - `Development Zone / lease area`
 - `Concept`
 

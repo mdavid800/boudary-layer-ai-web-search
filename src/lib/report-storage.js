@@ -11,6 +11,24 @@ export function sha256(text) {
   return createHash('sha256').update(text, 'utf8').digest('hex');
 }
 
+export async function getLatestPublishedResearchReport(client, { windFarmId } = {}) {
+  if (!Number.isInteger(windFarmId)) {
+    throw new Error('windFarmId is required to load the latest published report.');
+  }
+
+  const result = await client.query(
+    `SELECT id, report_markdown, model_used, researched_at
+     FROM research_wind_farm_reports
+     WHERE wind_farm_id = $1
+       AND review_status = 'published'
+     ORDER BY researched_at DESC, id DESC
+     LIMIT 1`,
+    [windFarmId],
+  );
+
+  return result.rows[0] ?? null;
+}
+
 export async function pruneObsoleteDraftReports(client, {
   windFarmId,
   keepDraftReportId = null,

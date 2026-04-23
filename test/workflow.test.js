@@ -11,7 +11,14 @@ import {
   isPromptTraceEnabled,
   slugifyFileSegment,
 } from '../src/lib/report-output.js';
-import { getWindFarmSourceTableName } from '../src/lib/windfarm-database.js';
+import {
+  getPublishedResearchRunState,
+  getWindFarmSourceTableName,
+} from '../src/lib/windfarm-database.js';
+import {
+  buildOperationalRefreshContext,
+  mergeOperationalRefreshReport,
+} from '../src/lib/operational-refresh.js';
 import {
   buildBlockedRowRepairPrompt,
   extractTextContent,
@@ -22,6 +29,11 @@ import {
   requestResearchReport,
 } from '../src/lib/openrouter.js';
 import { buildProjectContext, buildResearchPrompt } from '../src/lib/prompt.js';
+import {
+  parseResearchDatabaseArgs,
+  runDatabaseResearch,
+  shouldSkipPublishedOperationalReport,
+} from '../src/research-from-database.js';
 import { buildOfficialSourceContext } from '../src/lib/official-source-hints.js';
 import { normalizeCanonicalWindFarmStatus } from '../src/lib/status.js';
 import { extractFactsFromReport } from '../src/lib/fact-extraction.js';
@@ -58,6 +70,125 @@ function createProvenanceAppendix({ profileRows = [], recentDevelopments = [] } 
       recent_developments: recentDevelopments,
     }, null, 2),
     '```',
+  ].join('\n');
+}
+
+function createPublishedOperationalReportMarkdown() {
+  return [
+    'This profile assesses Beatrice Offshore Wind Farm.',
+    '',
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Project identity | Beatrice Offshore Wind Farm | Confirms the built project identity. | [Owner](https://example.com/project-1), [Regulator](https://example.com/project-2) |',
+    '| Developer / owners | SSE 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5% | SSE portfolio page updated November 2024 confirms the current ownership split. | [Owner](https://example.com/owner-1), [Investor](https://example.com/owner-2) |',
+    '| Ownership history | SSE, Red Rock Renewables, TRIG and Equitix have remained the published owners since the latest portfolio update. | Owner materials updated January 2025 indicate no later equity change. | [History](https://example.com/history-1), [Investor](https://example.com/history-2) |',
+    '| Status | Operational | Current owner and regulator sources both confirm operations. | [Owner](https://example.com/status-1), [Regulator](https://example.com/status-2) |',
+    '| Capacity | 588 MW | Current project pages confirm 588 MW. | [Owner](https://example.com/capacity-1), [Regulator](https://example.com/capacity-2) |',
+    '',
+    'A short nuance paragraph that should survive a targeted refresh merge.',
+    '',
+    'Recent developments',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    '| 15/05/2024 | OFTO transfer closed | Marks a post-operations ownership and transmission milestone. | [Ofgem](https://example.com/event-1), [Industry](https://example.com/event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Project identity',
+          field_name: null,
+          value: 'Beatrice Offshore Wind Farm',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/project-1' }),
+          supporting_context: [{ label: 'Regulator', url: 'https://example.com/project-2' }],
+        },
+        {
+          item_label: 'Developer / owners',
+          field_name: 'developer',
+          value: 'SSE 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5%',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/owner-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/owner-2' }],
+        },
+        {
+          item_label: 'Ownership history',
+          field_name: null,
+          value: 'SSE, Red Rock Renewables, TRIG and Equitix have remained the published owners since the latest portfolio update.',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/history-1' }),
+          supporting_context: [{ label: 'Investor', url: 'https://example.com/history-2' }],
+        },
+        {
+          item_label: 'Status',
+          field_name: 'status',
+          value: 'Operational',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/status-1' }),
+          supporting_context: [{ label: 'Regulator', url: 'https://example.com/status-2' }],
+        },
+        {
+          item_label: 'Capacity',
+          field_name: 'capacity_mw',
+          value: '588 MW',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/capacity-1' }),
+          supporting_context: [{ label: 'Regulator', url: 'https://example.com/capacity-2' }],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: '15/05/2024',
+          development: 'OFTO transfer closed',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
+          supporting_context: [{ label: 'Industry', url: 'https://example.com/event-2' }],
+        },
+      ],
+    }),
+  ].join('\n');
+}
+
+function createOperationalRefreshReportMarkdown() {
+  return [
+    '| Item | Value | Research summary | Sources |',
+    '|---|---|---|---|',
+    '| Developer / owners | SSE 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5% | SSE portfolio page updated February 2026 and operator material updated March 2026 confirm the current ownership split. | [Owner](https://example.com/refresh-owner-1), [Operator](https://example.com/refresh-owner-2) |',
+    '| Ownership history | SSE, Red Rock Renewables, TRIG and Equitix remain the owners, and refreshed 2026 sources do not indicate a later transfer. | SSE portfolio material updated February 2026 and operator material updated March 2026 show no subsequent equity change. | [History](https://example.com/refresh-history-1), [Operator](https://example.com/refresh-history-2) |',
+    '',
+    'Recent developments',
+    '',
+    '| Date | Development | Why it matters | Sources |',
+    '|---|---|---|---|',
+    '| 10/03/2026 | Operator portfolio page refreshed the Beatrice ownership description | Provides a dated current-state ownership check inside the monitoring window. | [Operator](https://example.com/refresh-event-1), [Owner](https://example.com/refresh-event-2) |',
+    createProvenanceAppendix({
+      profileRows: [
+        {
+          item_label: 'Developer / owners',
+          field_name: 'developer',
+          value: 'SSE 40%, Red Rock Renewables 25%, TRIG 17.5%, Equitix 17.5%',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/refresh-owner-1' }),
+          supporting_context: [{ label: 'Operator', url: 'https://example.com/refresh-owner-2' }],
+        },
+        {
+          item_label: 'Ownership history',
+          field_name: null,
+          value: 'SSE, Red Rock Renewables, TRIG and Equitix remain the owners, and refreshed 2026 sources do not indicate a later transfer.',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/refresh-history-1' }),
+          supporting_context: [{ label: 'Operator', url: 'https://example.com/refresh-history-2' }],
+        },
+      ],
+      recentDevelopments: [
+        {
+          date: '10/03/2026',
+          development: 'Operator portfolio page refreshed the Beatrice ownership description',
+          provenance_mode: 'web_source',
+          source_of_record: createSourceOfRecord({ source_url: 'https://example.com/refresh-event-1' }),
+          supporting_context: [{ label: 'Owner', url: 'https://example.com/refresh-event-2' }],
+        },
+      ],
+    }),
   ].join('\n');
 }
 
@@ -212,8 +343,17 @@ test('buildOfficialSourceContext matches project aliases for UK ownership hints'
 
 test('normalizeCanonicalWindFarmStatus maps legacy and planning aliases into canonical statuses', () => {
   assert.equal(normalizeCanonicalWindFarmStatus('Production'), 'Operational');
-  assert.equal(normalizeCanonicalWindFarmStatus('consented'), 'Consent Authorised');
-  assert.equal(normalizeCanonicalWindFarmStatus('in planning'), 'Consent Application Submitted');
+  assert.equal(normalizeCanonicalWindFarmStatus('Dismantled'), 'Decommissioned');
+  assert.equal(normalizeCanonicalWindFarmStatus('consented'), 'Consented');
+  assert.equal(
+    normalizeCanonicalWindFarmStatus('in planning'),
+    'In Planning / Consent Application Submitted',
+  );
+  assert.equal(
+    normalizeCanonicalWindFarmStatus('lease awarded, pre-planning'),
+    'Lease Awarded, Pre-Planning',
+  );
+  assert.equal(normalizeCanonicalWindFarmStatus('planned'), 'Concept');
   assert.equal(normalizeCanonicalWindFarmStatus('lease area'), 'Development Zone / lease area');
   assert.equal(normalizeCanonicalWindFarmStatus('unsupported'), null);
 });
@@ -256,6 +396,291 @@ test('formatHelp includes the main usage line', () => {
 
   assert.match(helpText, /npm run research -- "<wind farm name>" \[options\]/);
   assert.match(helpText, /Search engine \(default: auto\)/);
+});
+
+test('parseResearchDatabaseArgs supports filters and force refresh', () => {
+  const result = parseResearchDatabaseArgs([
+    'node',
+    'src/research-from-database.js',
+    '--ids',
+    '259,272',
+    '--country',
+    'United Kingdom',
+    '--publish',
+    '--force-refresh',
+  ]);
+
+  assert.deepEqual(result, {
+    ids: [259, 272],
+    country: 'United Kingdom',
+    publish: true,
+    forceRefresh: true,
+    operationalRefresh: false,
+  });
+});
+
+test('parseResearchDatabaseArgs supports operational refresh mode', () => {
+  const result = parseResearchDatabaseArgs([
+    'node',
+    'src/research-from-database.js',
+    '--operational-refresh',
+  ]);
+
+  assert.deepEqual(result, {
+    ids: null,
+    country: null,
+    publish: false,
+    forceRefresh: false,
+    operationalRefresh: true,
+  });
+});
+
+test('buildOperationalRefreshContext summarizes current ownership and recent developments', () => {
+  const result = buildOperationalRefreshContext({
+    projectContext: 'Beatrice Offshore Wind Farm',
+    publishedReportMarkdown: createPublishedOperationalReportMarkdown(),
+  });
+
+  assert.match(result, /Developer \/ owners: SSE 40%, Red Rock Renewables 25%, TRIG 17\.5%, Equitix 17\.5%/);
+  assert.match(result, /Ownership history: SSE, Red Rock Renewables, TRIG and Equitix have remained/);
+  assert.match(result, /15\/05\/2024: OFTO transfer closed/);
+});
+
+test('mergeOperationalRefreshReport replaces targeted sections and keeps static profile rows', () => {
+  const merged = mergeOperationalRefreshReport({
+    publishedReportMarkdown: createPublishedOperationalReportMarkdown(),
+    refreshReportMarkdown: createOperationalRefreshReportMarkdown(),
+  });
+  const parsed = parseStructuredReport(merged);
+
+  assert.match(merged, /A short nuance paragraph that should survive a targeted refresh merge\./);
+  assert.equal(
+    parsed.profileRows.find((row) => row.item_label === 'Developer / owners')?.research_summary,
+    'SSE portfolio page updated February 2026 and operator material updated March 2026 confirm the current ownership split.',
+  );
+  assert.equal(
+    parsed.profileRows.find((row) => row.item_label === 'Ownership history')?.value,
+    'SSE, Red Rock Renewables, TRIG and Equitix remain the owners, and refreshed 2026 sources do not indicate a later transfer.',
+  );
+  assert.equal(
+    parsed.profileRows.find((row) => row.item_label === 'Capacity')?.value,
+    '588 MW',
+  );
+  assert.equal(parsed.recentDevelopments.length, 1);
+  assert.equal(parsed.recentDevelopments[0].date, '10/03/2026');
+  assert.equal(
+    parsed.recentDevelopments[0].development,
+    'Operator portfolio page refreshed the Beatrice ownership description',
+  );
+  assert.equal(parsed.provenanceAppendix.profile_rows.length, 5);
+});
+
+test('shouldSkipPublishedOperationalReport skips only when default mode sees an operational published report', () => {
+  assert.equal(
+    shouldSkipPublishedOperationalReport(
+      { forceRefresh: false },
+      { hasPublishedReport: true, hasOperationalPublishedReport: true },
+    ),
+    true,
+  );
+
+  assert.equal(
+    shouldSkipPublishedOperationalReport(
+      { forceRefresh: false },
+      { hasPublishedReport: true, hasOperationalPublishedReport: false },
+    ),
+    false,
+  );
+
+  assert.equal(
+    shouldSkipPublishedOperationalReport(
+      { forceRefresh: true },
+      { hasPublishedReport: true, hasOperationalPublishedReport: true },
+    ),
+    false,
+  );
+});
+
+test('getPublishedResearchRunState returns latest published report state by wind farm', async () => {
+  let capturedValues = null;
+  const fakeClient = {
+    query: async (_text, values = []) => {
+      capturedValues = values;
+      return {
+        rows: [
+          {
+            wind_farm_id: 6646,
+            has_published_report: true,
+            has_operational_published_report: true,
+          },
+          {
+            wind_farm_id: 6653,
+            has_published_report: true,
+            has_operational_published_report: false,
+          },
+        ],
+      };
+    },
+  };
+
+  const result = await getPublishedResearchRunState(fakeClient, [6646, 6653]);
+
+  assert.deepEqual(capturedValues, [[6646, 6653]]);
+  assert.deepEqual(result.get(6646), {
+    hasPublishedReport: true,
+    hasOperationalPublishedReport: true,
+  });
+  assert.deepEqual(result.get(6653), {
+    hasPublishedReport: true,
+    hasOperationalPublishedReport: false,
+  });
+});
+
+test('runDatabaseResearch skips published operational reports unless forced', async () => {
+  const loggedMessages = [];
+  const originalConsoleError = console.error;
+  const originalApiKey = process.env.OPENROUTER_API_KEY;
+  let requestCallCount = 0;
+  let storeCallCount = 0;
+
+  console.error = (message) => loggedMessages.push(String(message));
+  process.env.OPENROUTER_API_KEY = 'test-key';
+
+  const fakeClient = {
+    connect: async () => {},
+    end: async () => {},
+  };
+
+  try {
+    await runDatabaseResearch({
+      argv: ['node', 'src/research-from-database.js'],
+      createClient: () => fakeClient,
+      loadPromptTemplateFn: async () => 'Research this project:\n{PROJECT_CONTEXT}\n',
+      listWindFarmRowsFn: async () => ([
+        {
+          id: 6646,
+          name: 'Beatrice Offshore Wind Farm',
+          type: 'Offshore wind farm',
+          n_turbines: 84,
+          power_mw: 588,
+          status: 'Operational',
+        },
+        {
+          id: 6653,
+          name: 'Seagreen Phase 1 Windfarm',
+          type: 'Offshore wind farm',
+          n_turbines: 114,
+          power_mw: 1075,
+          status: 'Operational',
+        },
+      ]),
+      getPublishedResearchRunStateFn: async () => new Map([
+        [6646, { hasPublishedReport: true, hasOperationalPublishedReport: true }],
+        [6653, { hasPublishedReport: true, hasOperationalPublishedReport: false }],
+      ]),
+      getLinkedTurbineMetadataFn: async () => null,
+      getTurbineCountValidationContextFn: async () => null,
+      buildOfficialSourceContextFn: async () => '',
+      requestResearchReportFn: async () => {
+        requestCallCount += 1;
+        return '# Report';
+      },
+      saveReportFn: async () => 'saved-path',
+      saveTextFileFn: async () => 'prompt-trace-path',
+      storeResearchReportFn: async () => {
+        storeCallCount += 1;
+        return { reportId: 77, factsInserted: 1 };
+      },
+    });
+  } finally {
+    console.error = originalConsoleError;
+    process.env.OPENROUTER_API_KEY = originalApiKey;
+  }
+
+  assert.equal(requestCallCount, 1);
+  assert.equal(storeCallCount, 1);
+  assert.equal(
+    loggedMessages.some((message) => message.includes('Skipping Beatrice Offshore Wind Farm')),
+    true,
+  );
+  assert.equal(
+    loggedMessages.some((message) => message.includes('Running research for Seagreen Phase 1 Windfarm')),
+    true,
+  );
+  assert.equal(
+    loggedMessages.some((message) => message.includes('1 saved, 1 skipped, 2 total')),
+    true,
+  );
+});
+
+test('runDatabaseResearch operational refresh mode merges the refreshed sections into a draft report', async () => {
+  const loggedMessages = [];
+  const originalConsoleError = console.error;
+  const originalApiKey = process.env.OPENROUTER_API_KEY;
+  const publishedReportMarkdown = createPublishedOperationalReportMarkdown();
+  const refreshReportMarkdown = createOperationalRefreshReportMarkdown();
+  const loadedPromptPaths = [];
+  const storedReports = [];
+
+  console.error = (message) => loggedMessages.push(String(message));
+  process.env.OPENROUTER_API_KEY = 'test-key';
+
+  const fakeClient = {
+    connect: async () => {},
+    end: async () => {},
+  };
+
+  try {
+    await runDatabaseResearch({
+      argv: ['node', 'src/research-from-database.js', '--operational-refresh'],
+      createClient: () => fakeClient,
+      loadPromptTemplateFn: async (filePath) => {
+        loadedPromptPaths.push(filePath);
+        return 'Refresh this project:\n{PROJECT_CONTEXT}\n';
+      },
+      listWindFarmRowsFn: async () => ([
+        {
+          id: 6646,
+          name: 'Beatrice Offshore Wind Farm',
+          type: 'Offshore wind farm',
+          n_turbines: 84,
+          power_mw: 588,
+          status: 'Operational',
+        },
+      ]),
+      getPublishedResearchRunStateFn: async () => new Map([
+        [6646, { hasPublishedReport: true, hasOperationalPublishedReport: true }],
+      ]),
+      getLatestPublishedResearchReportFn: async () => ({
+        id: 50,
+        report_markdown: publishedReportMarkdown,
+        model_used: 'openai/gpt-5.4',
+      }),
+      getLinkedTurbineMetadataFn: async () => null,
+      getTurbineCountValidationContextFn: async () => null,
+      buildOfficialSourceContextFn: async () => '',
+      requestResearchReportFn: async () => refreshReportMarkdown,
+      saveReportFn: async (_path, markdown) => markdown,
+      saveTextFileFn: async () => 'prompt-trace-path',
+      storeResearchReportFn: async (_client, options) => {
+        storedReports.push(options);
+        return { reportId: 88, factsInserted: 2 };
+      },
+    });
+  } finally {
+    console.error = originalConsoleError;
+    process.env.OPENROUTER_API_KEY = originalApiKey;
+  }
+
+  assert.equal(loadedPromptPaths.some((filePath) => /prompt-operational-refresh\.md$/.test(filePath)), true);
+  assert.equal(storedReports.length, 1);
+  assert.equal(storedReports[0].reviewStatus, 'draft');
+  assert.match(storedReports[0].reportMarkdown, /Capacity \| 588 MW/);
+  assert.match(storedReports[0].reportMarkdown, /10\/03\/2026 \| Operator portfolio page refreshed the Beatrice ownership description/);
+  assert.equal(
+    loggedMessages.some((message) => message.includes('Running operational refresh for Beatrice Offshore Wind Farm')),
+    true,
+  );
 });
 
 test('requestResearchReport explicitly passes auto engine when no search engine is configured', async () => {
