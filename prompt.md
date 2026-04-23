@@ -92,11 +92,13 @@ Research and complete the following items:
    - current development stage
    - classify using exactly one of these Boundary Layer statuses:
      - `Operational`
+       - `Decommissioned` — asset permanently retired, dismantled, or otherwise removed from service
      - `Under Construction`
-     - `Consent Authorised`
+       - `Consented`
      - `FID Taken, Pre-Construction` — consented and preparing for construction; FID taken and major contracts awarded
-     - `Consent Application Submitted` — planning / consent application submitted and awaiting decision
-     - `Development Zone / lease area` — lease / seabed zone awarded but no specific project consent application yet
+       - `In Planning / Consent Application Submitted` — planning / consent application submitted and awaiting decision
+       - `Lease Awarded, Pre-Planning` — lease or development zone awarded to a developer, but no project-specific planning / consent application has been submitted yet
+       - `Development Zone / lease area` — lease or seabed zone proposed / issued, but the leasing process has not concluded yet
      - `Concept` — early-stage project with no formal application yet
    - when evidence is ambiguous, choose the closest exact label above and explain the nuance briefly in the research summary
 

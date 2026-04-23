@@ -343,8 +343,17 @@ test('buildOfficialSourceContext matches project aliases for UK ownership hints'
 
 test('normalizeCanonicalWindFarmStatus maps legacy and planning aliases into canonical statuses', () => {
   assert.equal(normalizeCanonicalWindFarmStatus('Production'), 'Operational');
-  assert.equal(normalizeCanonicalWindFarmStatus('consented'), 'Consent Authorised');
-  assert.equal(normalizeCanonicalWindFarmStatus('in planning'), 'Consent Application Submitted');
+  assert.equal(normalizeCanonicalWindFarmStatus('Dismantled'), 'Decommissioned');
+  assert.equal(normalizeCanonicalWindFarmStatus('consented'), 'Consented');
+  assert.equal(
+    normalizeCanonicalWindFarmStatus('in planning'),
+    'In Planning / Consent Application Submitted',
+  );
+  assert.equal(
+    normalizeCanonicalWindFarmStatus('lease awarded, pre-planning'),
+    'Lease Awarded, Pre-Planning',
+  );
+  assert.equal(normalizeCanonicalWindFarmStatus('planned'), 'Concept');
   assert.equal(normalizeCanonicalWindFarmStatus('lease area'), 'Development Zone / lease area');
   assert.equal(normalizeCanonicalWindFarmStatus('unsupported'), null);
 });
