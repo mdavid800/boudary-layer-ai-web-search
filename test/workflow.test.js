@@ -14,6 +14,7 @@ import {
 import {
   getPublishedResearchRunState,
   getWindFarmSourceTableName,
+  listWindFarmRows,
 } from '../src/lib/windfarm-database.js';
 import {
   buildOperationalRefreshContext,
@@ -1436,6 +1437,39 @@ test('getWindFarmSourceTableName rejects unsupported tables', () => {
     () => getWindFarmSourceTableName('windfarm_database_archive'),
     /Unsupported WIND_FARM_SOURCE_TABLE: windfarm_database_archive/,
   );
+});
+
+test('listWindFarmRows excludes archived rows from default research selection', async () => {
+  let capturedText = '';
+  let capturedValues = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      capturedText = text;
+      capturedValues = values;
+      return {
+        rows: [
+          {
+            id: 101,
+            name: 'Morven',
+            type: 'Offshore wind farm',
+            n_turbines: 60,
+            power_mw: 882,
+            status: 'Consented',
+          },
+        ],
+      };
+    },
+  };
+
+  const rows = await listWindFarmRows(fakeClient, 'core_wind_farms', {
+    ids: [101, 102],
+    country: 'United Kingdom',
+  });
+
+  assert.equal(rows.length, 1);
+  assert.match(capturedText, /record_status = 'active'/);
+  assert.match(capturedText, /COALESCE\(status, ''\) <> 'Archive'/);
+  assert.deepEqual(capturedValues, [[101, 102], 'United Kingdom']);
 });
 
 test('slugifyFileSegment normalizes report file names', () => {
