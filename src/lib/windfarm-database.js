@@ -22,7 +22,11 @@ export function getWindFarmReportsDirectory(value = process.env.WIND_FARM_REPORT
 export async function listWindFarmRows(client, sourceTableName, { ids, country } = {}) {
   const validatedTableName = getWindFarmSourceTableName(sourceTableName);
 
-  const conditions = ["name is not null", "record_status = 'active'"];
+  const conditions = [
+    "name is not null",
+    "record_status = 'active'",
+    "COALESCE(status, '') <> 'Archive'",
+  ];
   const params = [];
 
   if (ids && ids.length > 0) {
