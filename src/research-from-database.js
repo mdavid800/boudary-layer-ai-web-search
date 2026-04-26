@@ -47,10 +47,14 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
  * Parse research-db runner flags from process.argv.
  *   --ids 259,272,345       → [259, 272, 345]
  *   --country "United Kingdom"  → "United Kingdom"
+ *   --wind-farm-type "Offshore wind farm" → "Offshore wind farm"
+ *   --skip-existing-reports → true
  */
 export function parseResearchDatabaseArgs(argv) {
   let ids = null;
   let country = null;
+  let windFarmType = null;
+  let skipExistingReports = false;
   let publish = false;
   let forceRefresh = false;
   let operationalRefresh = false;
@@ -68,6 +72,13 @@ export function parseResearchDatabaseArgs(argv) {
       country = argv[i + 1].trim();
       i += 1;
     }
+    if (argv[i] === '--wind-farm-type' && argv[i + 1]) {
+      windFarmType = argv[i + 1].trim();
+      i += 1;
+    }
+    if (argv[i] === '--skip-existing-reports') {
+      skipExistingReports = true;
+    }
     if (argv[i] === '--publish') {
       publish = true;
     }
@@ -79,7 +90,15 @@ export function parseResearchDatabaseArgs(argv) {
     }
   }
 
-  return { ids, country, publish, forceRefresh, operationalRefresh };
+  return {
+    ids,
+    country,
+    windFarmType,
+    skipExistingReports,
+    publish,
+    forceRefresh,
+    operationalRefresh,
+  };
 }
 
 export function shouldSkipPublishedOperationalReport(runState, reportState) {
@@ -113,7 +132,15 @@ export async function runDatabaseResearch({
   const reportsDirectory = path.join(getWindFarmReportsDirectory(), sourceTableName);
   const promptTraceEnabled = isPromptTraceEnabled();
   const promptTraceDirectory = path.join(getPromptTraceDirectory(), sourceTableName);
-  const { ids, country, publish, forceRefresh, operationalRefresh } = parseResearchDatabaseArgs(argv);
+  const {
+    ids,
+    country,
+    windFarmType,
+    skipExistingReports,
+    publish,
+    forceRefresh,
+    operationalRefresh,
+  } = parseResearchDatabaseArgs(argv);
 
   if (operationalRefresh && publish) {
     throw new Error('Operational refresh mode creates a draft for review and does not support --publish.');
@@ -132,7 +159,12 @@ export async function runDatabaseResearch({
   await client.connect();
 
   try {
-    const windFarmRows = await listWindFarmRowsFn(client, sourceTableName, { ids, country });
+    const windFarmRows = await listWindFarmRowsFn(client, sourceTableName, {
+      ids,
+      country,
+      windFarmType,
+      skipExistingReports,
+    });
     const publishedResearchRunState = await getPublishedResearchRunStateFn(
       client,
       windFarmRows.map((row) => row.id),
@@ -144,6 +176,8 @@ export async function runDatabaseResearch({
     console.error(`Using OpenRouter model: ${DEFAULT_MODEL}`);
     if (ids) console.error(`Filtering by IDs: ${ids.join(', ')}`);
     if (country) console.error(`Filtering by country: ${country}`);
+    if (windFarmType) console.error(`Filtering by wind farm type: ${windFarmType}`);
+    if (skipExistingReports) console.error('Filtering to rows without any existing research reports.');
     console.error(`Source table: ${sourceTableName}`);
     console.error(`Reports directory: ${reportsDirectory}`);
 
@@ -208,6 +242,9 @@ export async function runDatabaseResearch({
           nTurbines: windFarmRow.n_turbines,
           powerMw: windFarmRow.power_mw,
           status: windFarmRow.status,
+          primarySourceType: windFarmRow.primary_source_type,
+          geometrySourceType: windFarmRow.geometry_source_type,
+          sourcePolicyKey: windFarmRow.source_policy_key,
         },
       });
       const publishedReport = operationalRefresh

@@ -233,10 +233,35 @@ test('buildProjectContext formats wind farm and linked turbine metadata', () => 
     },
   });
 
-  assert.match(result, /Emodnet wind farm database metadata \(core_wind_farms, lower-confidence for turbine technical fields\):/);
+  assert.match(result, /Cleaned EMODnet fallback row metadata \(core_wind_farms, lower-confidence for turbine technical fields\):/);
   assert.match(result, /- Name: Seagreen Phase 1 Windfarm/);
+  assert.match(result, /Core row source-policy context/);
+  assert.match(result, /- Primary row source: Not provided/);
   assert.match(result, /EuroWindWakes European Offshore Dataset \(2025\) linked project turbine metadata \(required fallback for turbine specs and hub height when project-specific web evidence is inconclusive; do not replace it with generic turbine-model pages or specs from other sites\):/);
   assert.match(result, /- OEM manufacturer: Vestas/);
+});
+
+test('buildProjectContext describes authoritative regional primary rows without treating EMODnet as the baseline', () => {
+  const result = buildProjectContext({
+    sourceTableName: 'core_wind_farms',
+    windFarmMetadata: {
+      name: 'Moray East',
+      type: 'Offshore wind farm',
+      nTurbines: 100,
+      powerMw: 950,
+      status: 'Operational',
+      primarySourceType: 'crown_estate_scotland',
+      geometrySourceType: 'crown_estate_scotland',
+      sourcePolicyKey: 'uk_crown_estate_scotland_wind_farms',
+    },
+    turbineMetadata: null,
+  });
+
+  assert.match(result, /Authoritative regional source-of-record row metadata/);
+  assert.match(result, /- Primary row source: Crown Estate Scotland/);
+  assert.match(result, /- Geometry source: Crown Estate Scotland/);
+  assert.match(result, /- Source precedence policy: uk_crown_estate_scotland_wind_farms/);
+  assert.match(result, /Cleaned EMODnet values should be treated only as matched enrichment/);
 });
 
 test('buildProjectContext includes turbine-count validation and approved community signals when available', () => {
@@ -407,6 +432,9 @@ test('parseResearchDatabaseArgs supports filters and force refresh', () => {
     '259,272',
     '--country',
     'United Kingdom',
+    '--wind-farm-type',
+    'Offshore wind farm',
+    '--skip-existing-reports',
     '--publish',
     '--force-refresh',
   ]);
@@ -414,6 +442,8 @@ test('parseResearchDatabaseArgs supports filters and force refresh', () => {
   assert.deepEqual(result, {
     ids: [259, 272],
     country: 'United Kingdom',
+    windFarmType: 'Offshore wind farm',
+    skipExistingReports: true,
     publish: true,
     forceRefresh: true,
     operationalRefresh: false,
@@ -430,6 +460,8 @@ test('parseResearchDatabaseArgs supports operational refresh mode', () => {
   assert.deepEqual(result, {
     ids: null,
     country: null,
+    windFarmType: null,
+    skipExistingReports: false,
     publish: false,
     forceRefresh: false,
     operationalRefresh: true,
@@ -1464,12 +1496,20 @@ test('listWindFarmRows excludes archived rows from default research selection', 
   const rows = await listWindFarmRows(fakeClient, 'core_wind_farms', {
     ids: [101, 102],
     country: 'United Kingdom',
+    windFarmType: 'Offshore wind farm',
+    skipExistingReports: true,
   });
 
   assert.equal(rows.length, 1);
   assert.match(capturedText, /record_status = 'active'/);
   assert.match(capturedText, /COALESCE\(status, ''\) <> 'Archive'/);
-  assert.deepEqual(capturedValues, [[101, 102], 'United Kingdom']);
+  assert.match(capturedText, /type = \$3/);
+  assert.match(capturedText, /primary_source_type/);
+  assert.match(capturedText, /geometry_source_type/);
+  assert.match(capturedText, /source_policy_key/);
+  assert.match(capturedText, /NOT EXISTS \(/);
+  assert.match(capturedText, /research_wind_farm_reports report/);
+  assert.deepEqual(capturedValues, [[101, 102], 'United Kingdom', 'Offshore wind farm']);
 });
 
 test('slugifyFileSegment normalizes report file names', () => {

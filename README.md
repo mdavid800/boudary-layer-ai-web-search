@@ -106,8 +106,23 @@ That workflow reads directly from the processing-owned core tables:
 
 `npm run research-db` reads each row from the configured `WIND_FARM_SOURCE_TABLE` in sequence and injects only compact validation metadata into the prompt:
 
+Common filtered runs:
+
+```powershell
+# Research all farms in a country
+npm run research-db -- --country "United Kingdom"
+
+# Research only offshore wind farms in a country
+npm run research-db -- --country "United Kingdom" --wind-farm-type "Offshore wind farm"
+
+# Research only new UK offshore wind farms that do not already have a report
+npm run research-db -- --country "United Kingdom" --wind-farm-type "Offshore wind farm" --skip-existing-reports
+```
+
 1. From `core_wind_farms`: `name`, `turbine_count`, `power_mw`, and `status`
 2. From linked `core_turbines` rows, when available: `manufacturer`, `rated_power_mw`, `rotor_diameter_m`, `hub_height_m`, `turbine_type`, and `commissioning_date`
+
+`research-db` already excludes rows where `record_status <> 'active'` and rows whose cleaned status is `Archive`, so `--country "United Kingdom" --wind-farm-type "Offshore wind farm"` targets the final offshore-only list from the processed core table. Add `--skip-existing-reports` when you want only wind farms that have not yet been researched at all.
 
 The prompt still asks the model to validate everything with current web sources and supporting links. The database values are treated as moderately confident validation inputs, not final truth.
 

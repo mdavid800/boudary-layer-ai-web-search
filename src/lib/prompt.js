@@ -41,18 +41,39 @@ export function buildProjectContext({
     );
   }
 
+  const primarySourceType = normalizeSourceType(windFarmMetadata?.primarySourceType);
+  const primarySourceLabel = getSourceTypeLabel(primarySourceType);
+  const geometrySourceLabel = getSourceTypeLabel(
+    normalizeSourceType(windFarmMetadata?.geometrySourceType),
+  );
+  const sourcePolicyKey = formatValue(windFarmMetadata?.sourcePolicyKey);
+  const isAuthoritativePrimaryRow = primarySourceType && primarySourceType !== 'emodnet';
+
   const lines = [
     windFarmName,
     '',
     'Moderately confident database validation context to cross-check against current web sources and support with citations:',
     '',
-    `Emodnet wind farm database metadata (${sourceTableName}, lower-confidence for turbine technical fields):`,
+    isAuthoritativePrimaryRow
+      ? `Authoritative regional source-of-record row metadata (${sourceTableName}; cleaned EMODnet values are enrichment-only when matched):`
+      : `Cleaned EMODnet fallback row metadata (${sourceTableName}, lower-confidence for turbine technical fields):`,
     `- Name: ${windFarmName}`,
     `- Type: ${formatValue(windFarmMetadata?.type)}`,
     `- Total turbine count: ${formatValue(windFarmMetadata?.nTurbines)}`,
     `- Capacity (MW): ${formatValue(windFarmMetadata?.powerMw)}`,
     `- Status: ${formatValue(windFarmMetadata?.status)}`,
   ];
+
+  lines.push(
+    '',
+    'Core row source-policy context (use as database context only, not as a web citation):',
+    `- Primary row source: ${primarySourceLabel}`,
+    `- Geometry source: ${geometrySourceLabel}`,
+    `- Source precedence policy: ${sourcePolicyKey}`,
+    isAuthoritativePrimaryRow
+      ? '- Cleaned EMODnet values should be treated only as matched enrichment for this row, not as the primary row identity or geometry source.'
+      : '- This row currently falls back to cleaned EMODnet because no higher-precedence regional public source was selected.',
+  );
 
   if (turbineMetadata) {
     lines.push(
@@ -120,4 +141,29 @@ function formatValue(value) {
   }
 
   return String(value);
+}
+
+function normalizeSourceType(value) {
+  if (!value) {
+    return null;
+  }
+
+  return String(value).trim().toLowerCase();
+}
+
+function getSourceTypeLabel(value) {
+  switch (value) {
+    case 'crown_estate_scotland':
+    case 'crown_estate_scot':
+      return 'Crown Estate Scotland';
+    case 'crown_estate_england_wales':
+    case 'crown_estate_eng_wal':
+      return 'Crown Estate England and Wales';
+    case 'emodnet':
+      return 'EMODnet';
+    case 'eurowindwakes':
+      return 'EuroWindWakes';
+    default:
+      return formatValue(value);
+  }
 }

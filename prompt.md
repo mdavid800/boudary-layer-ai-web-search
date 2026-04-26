@@ -47,34 +47,36 @@ Source accessibility rule:
 16. Never infer a site-specific turbine field from a generic turbine-model product page, a turbine brochure, or another wind farm that happens to use the same turbine.
 17. In particular, do not infer hub height from turbine model alone. The same turbine platform can be deployed at different hub heights on different sites.
 18. If a source describes the turbine platform generically but does not explicitly say that the value applies to this project, treat it as background only, not as confirming evidence for the table.
-19. If the project context includes both EMODnet wind farm metadata and linked EuroWindWakes turbine metadata, treat EuroWindWakes as the higher-priority project-linked database hint for turbine model, OEM, individual rated power, rotor diameter, hub height, and other turbine-specific fields.
-20. If EMODnet and EuroWindWakes disagree on turbine information or hub height, prefer EuroWindWakes unless newer authoritative project-specific web sources clearly support EMODnet instead.
-21. Treat EMODnet turbine technical fields as lower-confidence background only. Do not let EMODnet override stronger EuroWindWakes evidence or better project-specific web sourcing for turbine specifications.
-22. If a linked EuroWindWakes turbine row is present in the project context, you MUST use it as the fallback for turbine model, OEM, individual rated power, rotor diameter, hub height, and related turbine-specific fields whenever project-specific web research is inconclusive, ambiguous, or missing one of those values.
-23. When a linked EuroWindWakes turbine row is present, do not leave those turbine-specific fields as `Not confirmed` unless the EuroWindWakes row itself is missing that specific value.
-24. When you use a EuroWindWakes fallback because project-specific web research was inconclusive, say so explicitly in the relevant `Research summary` cell, for example by stating that project-specific web sources remained ambiguous and the linked EuroWindWakes dataset value was used as the required fallback.
-25. Do not claim that the EuroWindWakes value was unavailable if the project context includes a linked EuroWindWakes row for that field. Use the provided value and state that you used it.
-26. If the project context includes a calculated linked turbine count, an EMODnet turbine-count hint, or approved community turbine-count notes, treat them as non-web validation signals for `Total turbine count` only.
-27. In the `Research summary` for `Total turbine count`, explicitly say whether the web-sourced figure aligns with or differs from those validation signals, and briefly explain likely reasons such as phase scope, overlapping geometries, outdated dataset values, or community dispute when relevant.
-26. If the project context says the dataset `Type` is not `Offshore wind farm`, do not force the asset into a commercial wind-farm interpretation. Preserve the indicated type, state clearly if it is a demo zone, wave site, tidal site, or development zone, and use `Not confirmed` for fields that do not apply cleanly.
-27. For “Recent developments”, only include items from the last 24 months from the date of the search.
-28. Use concise wording, but include enough detail to be useful.
-29. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
-30. Include citations directly in the “Sources” column using markdown links.
-31. Every citation link in the `Sources` column must be a direct absolute `https://` or `http://` URL. Never use placeholder links such as `(#)` or non-web links.
-32. If an item cannot be confirmed, write `Not confirmed` rather than inventing an answer, but only after applying the required linked EuroWindWakes fallback rules above when a linked turbine row exists.
-33. In every `source_of_record.evidence_quote`, use a short verbatim machine-checkable fragment copied closely from the source page text, not a paraphrase.
-34. Prefer compact label-plus-value evidence quotes such as `Installed capacity 588 MW`, `114 turbines`, `Final investment decision June 2018`, or owner names with percentages.
-35. For date rows, include the milestone label and the date in the quote whenever possible.
-36. For ownership rows, include the entity names and percentage shares in the quote whenever possible.
-37. Treat the output tables as a downstream parser contract:
+19. If the project context includes a `Primary row source` and `Source precedence policy`, treat that as a hint for which public dataset currently owns the database row. Do not assume EMODnet is the baseline source for every project.
+20. If the project context says the row is sourced primarily from an authoritative regional source such as Crown Estate Scotland or Crown Estate England and Wales, treat cleaned EMODnet values as matched enrichment only unless newer project-specific web sources clearly support using EMODnet for the chosen fact.
+21. If the project context includes both EMODnet wind farm metadata and linked EuroWindWakes turbine metadata, treat EuroWindWakes as the higher-priority project-linked database hint for turbine model, OEM, individual rated power, rotor diameter, hub height, and other turbine-specific fields.
+22. If EMODnet and EuroWindWakes disagree on turbine information or hub height, prefer EuroWindWakes unless newer authoritative project-specific web sources clearly support EMODnet instead.
+23. Treat EMODnet turbine technical fields as lower-confidence background only. Do not let EMODnet override stronger EuroWindWakes evidence or better project-specific web sourcing for turbine specifications.
+24. If a linked EuroWindWakes turbine row is present in the project context, you MUST use it as the fallback for turbine model, OEM, individual rated power, rotor diameter, hub height, and related turbine-specific fields whenever project-specific web research is inconclusive, ambiguous, or missing one of those values.
+25. When a linked EuroWindWakes turbine row is present, do not leave those turbine-specific fields as `Not confirmed` unless the EuroWindWakes row itself is missing that specific value.
+26. When you use a EuroWindWakes fallback because project-specific web research was inconclusive, say so explicitly in the relevant `Research summary` cell, for example by stating that project-specific web sources remained ambiguous and the linked EuroWindWakes dataset value was used as the required fallback.
+27. Do not claim that the EuroWindWakes value was unavailable if the project context includes a linked EuroWindWakes row for that field. Use the provided value and state that you used it.
+28. If the project context includes a calculated linked turbine count, an EMODnet turbine-count hint, or approved community turbine-count notes, treat them as non-web validation signals for `Total turbine count` only.
+29. In the `Research summary` for `Total turbine count`, explicitly say whether the web-sourced figure aligns with or differs from those validation signals, and briefly explain likely reasons such as phase scope, overlapping geometries, outdated dataset values, or community dispute when relevant.
+30. If the project context says the dataset `Type` is not `Offshore wind farm`, do not force the asset into a commercial wind-farm interpretation. Preserve the indicated type, state clearly if it is a demo zone, wave site, tidal site, or development zone, and use `Not confirmed` for fields that do not apply cleanly.
+31. For “Recent developments”, only include items from the last 24 months from the date of the search.
+32. Use concise wording, but include enough detail to be useful.
+33. Output in markdown tables only, plus at most 1 short explanatory paragraph where needed.
+34. Include citations directly in the “Sources” column using markdown links.
+35. Every citation link in the `Sources` column must be a direct absolute `https://` or `http://` URL. Never use placeholder links such as `(#)` or non-web links.
+36. If an item cannot be confirmed, write `Not confirmed` rather than inventing an answer, but only after applying the required linked EuroWindWakes fallback rules above when a linked turbine row exists.
+37. In every `source_of_record.evidence_quote`, use a short verbatim machine-checkable fragment copied closely from the source page text, not a paraphrase.
+38. Prefer compact label-plus-value evidence quotes such as `Installed capacity 588 MW`, `114 turbines`, `Final investment decision June 2018`, or owner names with percentages.
+39. For date rows, include the milestone label and the date in the quote whenever possible.
+40. For ownership rows, include the entity names and percentage shares in the quote whenever possible.
+41. Treat the output tables as a downstream parser contract:
    - keep the first table row order exactly as specified below
    - keep the second table heading as “Recent developments” and the second table headers exactly as specified below
    - do not rename the table headers
    - do not add extra columns, bullet lists, or prose between the table header and table rows
-38. Normalize all dates in both tables to `DD/MM/YYYY`.
-39. If a source only confirms a month and year, use the first day of that month in the table, for example `01/10/2023`, and explain that month-level wording briefly in the `Research summary` when it matters.
-40. If a source only confirms a year, use `01/01/YYYY`.
+42. Normalize all dates in both tables to `DD/MM/YYYY`.
+43. If a source only confirms a month and year, use the first day of that month in the table, for example `01/10/2023`, and explain that month-level wording briefly in the `Research summary` when it matters.
+44. If a source only confirms a year, use `01/01/YYYY`.
 
 Research and complete the following items:
 

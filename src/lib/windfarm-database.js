@@ -19,7 +19,11 @@ export function getWindFarmReportsDirectory(value = process.env.WIND_FARM_REPORT
   return path.resolve(process.cwd(), configuredPath);
 }
 
-export async function listWindFarmRows(client, sourceTableName, { ids, country } = {}) {
+export async function listWindFarmRows(
+  client,
+  sourceTableName,
+  { ids, country, windFarmType, skipExistingReports } = {},
+) {
   const validatedTableName = getWindFarmSourceTableName(sourceTableName);
 
   const conditions = [
@@ -39,6 +43,19 @@ export async function listWindFarmRows(client, sourceTableName, { ids, country }
     conditions.push(`LOWER(country) = LOWER($${params.length})`);
   }
 
+  if (windFarmType) {
+    params.push(windFarmType);
+    conditions.push(`type = $${params.length}`);
+  }
+
+  if (skipExistingReports) {
+    conditions.push(`NOT EXISTS (
+      SELECT 1
+      FROM public.research_wind_farm_reports report
+      WHERE report.wind_farm_id = ${validatedTableName}.id
+    )`);
+  }
+
   const whereClause = conditions.join(' AND ');
 
   const result = await client.query(
@@ -49,7 +66,10 @@ export async function listWindFarmRows(client, sourceTableName, { ids, country }
       type,
       turbine_count as n_turbines,
       power_mw,
-      status
+      status,
+      primary_source_type,
+      geometry_source_type,
+      source_policy_key
     from public.${validatedTableName}
     where ${whereClause}
     order by id
