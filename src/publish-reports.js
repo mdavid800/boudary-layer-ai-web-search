@@ -1,7 +1,4 @@
 import path from 'node:path';
-import process from 'node:process';
-import { pathToFileURL } from 'node:url';
-import dotenv from 'dotenv';
 import { createDatabaseClient } from './lib/database.js';
 import {
   DEFAULT_MAX_RESULTS,
@@ -14,9 +11,6 @@ import { requestBlockedRowRepair } from './lib/openrouter.js';
 import { saveReport, slugifyFileSegment } from './lib/report-output.js';
 import { pruneObsoleteDraftReports, updateResearchReport } from './lib/report-storage.js';
 import { getWindFarmSourceTableName } from './lib/windfarm-database.js';
-
-dotenv.config();
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 function buildReportOutputPath({ sourceTableName, windFarmId, windFarmName }) {
   return path.join(
@@ -177,7 +171,7 @@ export async function publishDraftReports({
   };
 }
 
-async function main() {
+export async function main() {
   const client = createDatabaseClient();
   await client.connect();
 
@@ -186,14 +180,4 @@ async function main() {
   } finally {
     await client.end();
   }
-}
-
-const isDirectExecution = process.argv[1]
-  && import.meta.url === pathToFileURL(process.argv[1]).href;
-
-if (isDirectExecution) {
-  main().catch((error) => {
-    console.error(error.message);
-    process.exitCode = 1;
-  });
 }
