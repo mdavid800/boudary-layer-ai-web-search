@@ -7,8 +7,10 @@
   "scripts": {
     "backfill-report-structure": "node src/backfill-report-structure.js",
     "backfill-status-terminology": "node src/backfill-status-terminology.js",
+    "hooks:install": "git config core.hooksPath .githooks",
+    "lint": "node scripts/check-syntax.mjs",
     "research-db": "node src/research-from-database.js",
-    "publish-reports": "node src/publish-reports.js",
+    "publish-reports": "node src/publish-reports-cli.js",
     "research": "node src/cli.js",
     "start": "node src/cli.js",
     "test": "node --test"
