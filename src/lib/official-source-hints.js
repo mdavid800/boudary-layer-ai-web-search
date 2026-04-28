@@ -75,6 +75,110 @@ const OFFICIAL_SOURCE_HINTS = [
     ],
   },
   {
+    normalizedProjectNames: ['walney1', 'walneyphase1'],
+    sources: [
+      {
+        label: 'Archived SSE Walney 1 operational announcement',
+        url: 'https://web.archive.org/web/20110814112309/http://www.sse.com/Pressreleases/2011/Walney1stPhaseOperational/',
+        anchorText: '51 turbines, with a total installed capacity of 183.6MW',
+      },
+      {
+        label: 'Greencoat UK Wind Walney acquisition announcement',
+        url: 'https://www.greencoat-ukwind.com/news-and-media/news-hub/sep-01-walney/',
+        anchorText:
+          'The wind farm receives 2 ROCs per MWh, has a load factor of 45.1% and is operated and managed by Orsted, the 50.1% owner. The remaining 24.8% is owned by PGGM.',
+      },
+      {
+        label: 'PGGM Walney ownership announcement',
+        url: 'https://www.pggm.nl/en/press/pggm-infrastructure-fund-increases-interest-in-walney-windfarm',
+        anchorText: 'PGGM Infrastructure Fund now owns 24.8% of Walney Offshore Windfarms Ltd',
+      },
+      {
+        label: 'Walney Wind Farm reference page',
+        url: 'https://en.wikipedia.org/wiki/Walney_Wind_Farm',
+        anchorText: 'Walney Wind Farms are a group of offshore wind farms 9 miles (14 km) west of Walney Island',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: [
+      'walney',
+      'walney1',
+      'walney2',
+      'walneyii',
+      'walneyphase1',
+      'walneyphase2',
+      'walneyoffshorewindfarm',
+    ],
+    sources: [
+      {
+        label: 'Greencoat UK Wind Walney acquisition announcement',
+        url: 'https://www.greencoat-ukwind.com/news-and-media/news-hub/sep-01-walney/',
+        anchorText:
+          'The wind farm receives 2 ROCs per MWh, has a load factor of 45.1% and is operated and managed by Orsted, the 50.1% owner. The remaining 24.8% is owned by PGGM.',
+      },
+      {
+        label: 'PGGM Walney ownership announcement',
+        url: 'https://www.pggm.nl/en/press/pggm-infrastructure-fund-increases-interest-in-walney-windfarm',
+        anchorText: 'PGGM Infrastructure Fund now owns 24.8% of Walney Offshore Windfarms Ltd',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: [
+      'westofduddonsands',
+      'westofduddonsandsoffshorewindfarm',
+    ],
+    sources: [
+      {
+        label: 'ScottishPower Renewables West of Duddon Sands page',
+        url: 'https://www.scottishpowerrenewables.com/offshore/west-of-duddon-sands-offshore-windfarm',
+        anchorText:
+          'The West of Duddon Sands Offshore Windfarm is a joint venture project between ScottishPower Renewables and Ørsted, comprising 108 wind turbines with a total installed capacity of 389 megawatts.',
+      },
+      {
+        label: 'West of Duddon Sands project page',
+        url: 'https://westofduddonsands.co.uk/about-the-project',
+        anchorText:
+          'The West of Duddon Sands Offshore Wind Farm comprises 108 wind turbines with a total installed capacity of 389MW',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: ['ormonde', 'ormondeoffshorewindfarm'],
+    sources: [
+      {
+        label: 'Vattenfall UK Ormonde page',
+        url: 'https://www.vattenfall.co.uk/our-projects/ormonde',
+        anchorText:
+          'In 2015, Vattenfall entered a partnership with Swedish pension group AMF. The partnership agreement means that AMF own a 49% share and Vattenfall continues to operate the wind farm as the majority shareholder.',
+      },
+      {
+        label: 'Vattenfall Ormonde power plant page',
+        url: 'https://powerplants.vattenfall.com/ormonde/',
+        anchorText:
+          'Country United Kingdom Electricity Capacity 150 MWe Turbines 30 Onshore / Offshore Offshore Supplier Repower Vattenfall ownership share 51 % Status In Operation',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: ['rhylflats', 'rhylflatsoffshorewindfarm'],
+    sources: [
+      {
+        label: 'RWE Rhyl Flats page',
+        url: 'https://uk.rwe.com/locations/rhyl-flats-offshore-wind-farm/',
+        anchorText:
+          'Rhyl Flats offshore wind farm is operated by RWE and is owned by a consortium of RWE (50.1%), Green Investment Group (24.95%) and Greencoat (24.95%).',
+      },
+      {
+        label: 'RWE Rhyl Flats facts page',
+        url: 'https://uk.rwe.com/locations/rhyl-flats-offshore-wind-farm/',
+        anchorText:
+          'Rhyl Flats is a 25 turbine, 90 megawatt wind farm located in Liverpool Bay, approximately 8 kilometres north east of Llandudno in North Wales. The wind farm began producing power in December 2009.',
+      },
+    ],
+  },
+  {
     normalizedProjectNames: ['eastangliaone', 'eastanglia1', 'eastangliaonewindfarm'],
     sources: [
       {

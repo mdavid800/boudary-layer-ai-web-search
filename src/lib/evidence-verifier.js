@@ -1,6 +1,15 @@
 import { PDFParse } from 'pdf-parse';
 import { canonicalizeSourceOfRecord, isEuroWindWakesSource } from './source-of-record.js';
 
+const VERIFIER_REQUEST_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,application/pdf;q=0.8,*/*;q=0.7',
+  'Accept-Language': 'en-GB,en;q=0.9',
+  'Cache-Control': 'no-cache',
+  Pragma: 'no-cache',
+};
+const VERIFIER_FETCH_ATTEMPTS = 2;
+
 const NUMERIC_FIELD_LABEL_TERMS = {
   capacity_mw: ['capacity', 'installed capacity'],
   mec_mw: ['mec', 'maximum export capacity', 'export capacity', 'transmission entry capacity'],
@@ -230,7 +239,6 @@ function isPdfResponse(response, sourceUrl, buffer) {
   const contentType = response.headers?.get?.('content-type')?.toLowerCase?.() ?? '';
 
   return contentType.includes('application/pdf')
-    || /\.pdf(?:$|[?#])/i.test(sourceUrl)
     || buffer.subarray(0, 4).toString('utf8') === '%PDF';
 }
 
@@ -247,12 +255,30 @@ async function readResponseText(response, sourceUrl) {
     try {
       const parsed = await parser.getText();
       return parsed.text ?? '';
+    } catch {
+      return buffer.toString('latin1');
     } finally {
       await parser.destroy().catch(() => undefined);
     }
   }
 
   return buffer.toString('utf8');
+}
+
+async function fetchEvidenceResponse(sourceUrl, fetchImpl) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= VERIFIER_FETCH_ATTEMPTS; attempt += 1) {
+    try {
+      return await fetchImpl(sourceUrl, {
+        headers: VERIFIER_REQUEST_HEADERS,
+      });
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError;
 }
 
 export async function verifyEvidenceRecord(evidenceRecord, { fetchImpl = fetch } = {}) {
@@ -277,7 +303,7 @@ export async function verifyEvidenceRecord(evidenceRecord, { fetchImpl = fetch }
   }
 
   try {
-    const response = await fetchImpl(normalizedRecord.source_url);
+    const response = await fetchEvidenceResponse(normalizedRecord.source_url, fetchImpl);
     const bodyText = await readResponseText(response, normalizedRecord.source_url);
     const pageText = normalizeText(bodyText);
 

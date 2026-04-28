@@ -171,6 +171,7 @@ export async function runDatabaseResearch({
     );
     let completedCount = 0;
     let skippedCount = 0;
+    const failedRows = [];
 
     console.error(`Starting database-backed research run for ${windFarmRows.length} rows.`);
     console.error(`Using OpenRouter model: ${DEFAULT_MODEL}`);
@@ -222,108 +223,127 @@ export async function runDatabaseResearch({
           ? `[${index + 1}/${windFarmRows.length}] Running operational refresh for ${windFarmRow.name} (ID ${windFarmRow.id})`
           : `[${index + 1}/${windFarmRows.length}] Running research for ${windFarmRow.name} (ID ${windFarmRow.id})`,
       );
-
-      const fileStem = `${windFarmRow.id}-${slugifyFileSegment(
-        windFarmRow.name || `windfarm-${windFarmRow.id}`,
-      )}`;
-      const turbineMetadata = await getLinkedTurbineMetadataFn(client, windFarmRow.id, sourceTableName);
-      const turbineCountValidation = await getTurbineCountValidationContextFn(
-        client,
-        windFarmRow.id,
-        sourceTableName,
-      );
-      const projectContext = buildProjectContext({
-        sourceTableName,
-        turbineMetadata,
-        turbineCountValidation,
-        windFarmMetadata: {
-          name: windFarmRow.name,
-          type: windFarmRow.type,
-          nTurbines: windFarmRow.n_turbines,
-          powerMw: windFarmRow.power_mw,
-          status: windFarmRow.status,
-          primarySourceType: windFarmRow.primary_source_type,
-          geometrySourceType: windFarmRow.geometry_source_type,
-          sourcePolicyKey: windFarmRow.source_policy_key,
-        },
-      });
-      const publishedReport = operationalRefresh
-        ? await getLatestPublishedResearchReportFn(client, { windFarmId: windFarmRow.id })
-        : null;
-
-      if (operationalRefresh && !publishedReport?.report_markdown) {
-        throw new Error(
-          `Operational refresh requires a published report for ${windFarmRow.name} (ID ${windFarmRow.id}), but none could be loaded.`,
+      try {
+        const fileStem = `${windFarmRow.id}-${slugifyFileSegment(
+          windFarmRow.name || `windfarm-${windFarmRow.id}`,
+        )}`;
+        const turbineMetadata = await getLinkedTurbineMetadataFn(client, windFarmRow.id, sourceTableName);
+        const turbineCountValidation = await getTurbineCountValidationContextFn(
+          client,
+          windFarmRow.id,
+          sourceTableName,
         );
-      }
+        const projectContext = buildProjectContext({
+          sourceTableName,
+          turbineMetadata,
+          turbineCountValidation,
+          windFarmMetadata: {
+            name: windFarmRow.name,
+            type: windFarmRow.type,
+            nTurbines: windFarmRow.n_turbines,
+            powerMw: windFarmRow.power_mw,
+            status: windFarmRow.status,
+            primarySourceType: windFarmRow.primary_source_type,
+            geometrySourceType: windFarmRow.geometry_source_type,
+            sourcePolicyKey: windFarmRow.source_policy_key,
+          },
+        });
+        const publishedReport = operationalRefresh
+          ? await getLatestPublishedResearchReportFn(client, { windFarmId: windFarmRow.id })
+          : null;
 
-      const officialSourceContext = await buildOfficialSourceContextFn(windFarmRow.name);
-      const promptContext = operationalRefresh
-        ? buildOperationalRefreshContextFn({
-            projectContext,
-            publishedReportMarkdown: publishedReport.report_markdown,
-          })
-        : projectContext;
-      const finalPrompt = buildResearchPromptFn(
-        promptTemplate,
-        [promptContext, officialSourceContext].filter(Boolean).join('\n'),
-      );
+        if (operationalRefresh && !publishedReport?.report_markdown) {
+          throw new Error(
+            `Operational refresh requires a published report for ${windFarmRow.name} (ID ${windFarmRow.id}), but none could be loaded.`,
+          );
+        }
 
-      if (promptTraceEnabled) {
-        const promptTracePath = path.join(
-          promptTraceDirectory,
-          `${fileStem}${operationalRefresh ? '-operational-refresh' : ''}.prompt.md`,
+        const officialSourceContext = await buildOfficialSourceContextFn(windFarmRow.name);
+        const promptContext = operationalRefresh
+          ? buildOperationalRefreshContextFn({
+              projectContext,
+              publishedReportMarkdown: publishedReport.report_markdown,
+            })
+          : projectContext;
+        const finalPrompt = buildResearchPromptFn(
+          promptTemplate,
+          [promptContext, officialSourceContext].filter(Boolean).join('\n'),
         );
-        const savedPromptTracePath = await saveTextFileFn(promptTracePath, finalPrompt);
+
+        if (promptTraceEnabled) {
+          const promptTracePath = path.join(
+            promptTraceDirectory,
+            `${fileStem}${operationalRefresh ? '-operational-refresh' : ''}.prompt.md`,
+          );
+          const savedPromptTracePath = await saveTextFileFn(promptTracePath, finalPrompt);
+          console.error(
+            `[${index + 1}/${windFarmRows.length}] Saved prompt trace for ${windFarmRow.name} to ${savedPromptTracePath}`,
+          );
+        }
+
+        const report = await requestResearchReportFn({
+          apiKey,
+          model: DEFAULT_MODEL,
+          prompt: finalPrompt,
+          searchEngine: DEFAULT_SEARCH_ENGINE,
+          maxResults: DEFAULT_MAX_RESULTS,
+          maxTotalResults: DEFAULT_MAX_TOTAL_RESULTS,
+          referer: process.env.OPENROUTER_SITE_URL,
+          title: process.env.OPENROUTER_SITE_NAME || 'boundary-layer-ai-web-search',
+        });
+        const finalReport = operationalRefresh
+          ? mergeOperationalRefreshReportFn({
+              publishedReportMarkdown: publishedReport.report_markdown,
+              refreshReportMarkdown: report,
+            })
+          : report;
+        const outputPath = path.join(
+          reportsDirectory,
+          `${fileStem}.md`,
+        );
+        const savedPath = await saveReportFn(outputPath, finalReport);
+
         console.error(
-          `[${index + 1}/${windFarmRows.length}] Saved prompt trace for ${windFarmRow.name} to ${savedPromptTracePath}`,
+          `[${index + 1}/${windFarmRows.length}] Saved ${windFarmRow.name} from ${sourceTableName} to ${savedPath}`,
+        );
+
+        const { reportId, factsInserted } = await storeResearchReportFn(client, {
+          windFarmId: windFarmRow.id,
+          reportMarkdown: finalReport,
+          modelUsed: DEFAULT_MODEL,
+          finalPrompt,
+          reviewStatus,
+        });
+
+        console.error(
+          `[${index + 1}/${windFarmRows.length}] Stored report #${reportId} with ${factsInserted} facts for ${windFarmRow.name}`,
+        );
+
+        completedCount += 1;
+      } catch (error) {
+        failedRows.push({
+          id: windFarmRow.id,
+          name: windFarmRow.name,
+          message: error.message,
+        });
+        console.error(
+          `[${index + 1}/${windFarmRows.length}] Failed ${windFarmRow.name} (ID ${windFarmRow.id}): ${error.message}`,
         );
       }
-
-      const report = await requestResearchReportFn({
-        apiKey,
-        model: DEFAULT_MODEL,
-        prompt: finalPrompt,
-        searchEngine: DEFAULT_SEARCH_ENGINE,
-        maxResults: DEFAULT_MAX_RESULTS,
-        maxTotalResults: DEFAULT_MAX_TOTAL_RESULTS,
-        referer: process.env.OPENROUTER_SITE_URL,
-        title: process.env.OPENROUTER_SITE_NAME || 'boundary-layer-ai-web-search',
-      });
-      const finalReport = operationalRefresh
-        ? mergeOperationalRefreshReportFn({
-            publishedReportMarkdown: publishedReport.report_markdown,
-            refreshReportMarkdown: report,
-          })
-        : report;
-      const outputPath = path.join(
-        reportsDirectory,
-        `${fileStem}.md`,
-      );
-      const savedPath = await saveReportFn(outputPath, finalReport);
-
-      console.error(
-        `[${index + 1}/${windFarmRows.length}] Saved ${windFarmRow.name} from ${sourceTableName} to ${savedPath}`,
-      );
-
-      const { reportId, factsInserted } = await storeResearchReportFn(client, {
-        windFarmId: windFarmRow.id,
-        reportMarkdown: finalReport,
-        modelUsed: DEFAULT_MODEL,
-        finalPrompt,
-        reviewStatus,
-      });
-
-      console.error(
-        `[${index + 1}/${windFarmRows.length}] Stored report #${reportId} with ${factsInserted} facts for ${windFarmRow.name}`,
-      );
-
-      completedCount += 1;
     }
 
     console.error(
-      `Completed database-backed research run: ${completedCount} saved, ${skippedCount} skipped, ${windFarmRows.length} total.`,
+      `Completed database-backed research run: ${completedCount} saved, ${skippedCount} skipped, ${failedRows.length} failed, ${windFarmRows.length} total.`,
     );
+
+    if (failedRows.length > 0) {
+      const failureSummary = failedRows
+        .map((failure) => `${failure.name} (ID ${failure.id}): ${failure.message}`)
+        .join(' | ');
+      throw new Error(
+        `Database-backed research run completed with ${failedRows.length} failed row(s): ${failureSummary}`,
+      );
+    }
   } finally {
     await client.end();
   }

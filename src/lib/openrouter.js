@@ -29,7 +29,7 @@ const SOURCE_ACCESSIBILITY_RETRY_NOTE = [
 const BLOCKED_SOURCE_DOMAIN_NOTE = [
   '',
   'Hard blocked source rule:',
-  '- Never use Orsted, TGS, 4C Offshore, or Windpower Monthly anywhere in the report.',
+  '- Never use TGS, 4C Offshore, or Windpower Monthly anywhere in the report.',
   '- Do not cite those domains in the visible Sources column, supporting_context, or source_of_record.',
   '- Replace any fact that only used those domains with another accessible authoritative source or open dataset.',
 ].join('\n');
@@ -43,13 +43,11 @@ const VERIFIER_FRIENDLY_EVIDENCE_NOTE = [
   '- Avoid long prose summaries in evidence_quote when a shorter precise fragment exists on the source page.',
 ].join('\n');
 const BLOCKED_SOURCE_DOMAINS = [
-  'orsted.com',
   'tgs.com',
   '4coffshore.com',
   'windpowermonthly.com',
 ];
 const BLOCKED_SOURCE_DOMAIN_PATTERNS = [
-  /(^|\.)orsted\.com$/i,
   /(^|\.)tgs\.com$/i,
   /(^|\.)4coffshore\.com$/i,
   /(^|\.)windpowermonthly\.com$/i,
@@ -338,6 +336,10 @@ export function hasFreshOwnershipEvidence(
     return true;
   }
 
+  if (hasStableOwnershipFallback(profileRows)) {
+    return true;
+  }
+
   return recentDevelopments.some((row) => {
     const datedRecently = recentYears.some((year) => row.date.includes(year));
     const mentionsOwnership = /(owner|ownership|operator|equity|stake)/i.test(
@@ -346,6 +348,20 @@ export function hasFreshOwnershipEvidence(
 
     return datedRecently && mentionsOwnership;
   });
+}
+
+function hasStableOwnershipFallback(profileRows = []) {
+  const developerOwnersRow = profileRows.find(
+    (candidate) => candidate.item_label === 'Developer / owners',
+  );
+  const ownershipHistoryRow = profileRows.find(
+    (candidate) => candidate.item_label === 'Ownership history',
+  );
+
+  return (
+    rowHasCurrentOwnershipNarrative(developerOwnersRow?.research_summary)
+    && rowHasStableOwnershipNarrative(ownershipHistoryRow?.research_summary)
+  );
 }
 
 async function requestWithRetry({ requestFn, requestOptions }) {
@@ -413,7 +429,7 @@ export function buildBlockedRowRepairPrompt(reportMarkdown, blockedRows = []) {
     'Preserve every table row, recent-development row, and appendix entry that is not listed as blocked below.',
     'Only replace blocked rows and the matching provenance appendix entries unless a minimal adjacent edit is strictly required for internal consistency.',
     'For repaired rows, prefer openly accessible official, regulator, owner, operator, supplier, or open-dataset pages over PDFs or risky third-party pages when available.',
-    'Never use Orsted, TGS, 4C Offshore, or Windpower Monthly anywhere in the repaired report.',
+    'Never use TGS, 4C Offshore, or Windpower Monthly anywhere in the repaired report.',
     'Use short verbatim machine-checkable evidence_quote fragments copied closely from the source page text.',
     'Prefer label-plus-value fragments such as "Installed capacity 588 MW", "114 turbines", "Final investment decision June 2018", or owner names with percentages.',
     'Do not paraphrase the evidence_quote.',
@@ -603,6 +619,26 @@ function rowHasUsableFreshnessDate(summary, recentYears) {
   }
 
   return recentYears.some((year) => summary.includes(year));
+}
+
+function rowHasCurrentOwnershipNarrative(summary) {
+  if (typeof summary !== 'string' || /as accessed/i.test(summary)) {
+    return false;
+  }
+
+  return /(current owner|current ownership|current ownership split|ownership split|owners include|owned by|operator|freshest (?:ownership )?source|current portfolio page|current structure)/i.test(
+    summary,
+  );
+}
+
+function rowHasStableOwnershipNarrative(summary) {
+  if (typeof summary !== 'string' || /as accessed/i.test(summary)) {
+    return false;
+  }
+
+  return /(remain(?:s|ed)?|no (?:later|subsequent|confirmed) (?:equity |ownership |transfer |stake |change)|unchanged|continue(?:s|d)? to own|still owned|later ownership change|current structure|operating partner|current split)/i.test(
+    summary,
+  );
 }
 
 async function readBody(response) {
