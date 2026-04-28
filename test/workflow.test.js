@@ -1103,6 +1103,31 @@ test('hasFreshOwnershipEvidence accepts stable legacy ownership summaries withou
   assert.equal(hasFreshOwnershipEvidence(profileRows, [], new Date('2026-04-17T00:00:00Z')), true);
 });
 
+test('hasFreshOwnershipEvidence skips freshness checks for decommissioned projects', () => {
+  const profileRows = [
+    {
+      item_label: 'Developer / owners',
+      value: 'Historic owners not relevant to current operations.',
+      research_summary: 'Historic ownership sources identify the project sponsors at the time the wind farm operated.',
+      sources: [{ url: 'https://example.com/1' }, { url: 'https://example.com/2' }],
+    },
+    {
+      item_label: 'Ownership history',
+      value: 'Historic ownership chain recorded before decommissioning.',
+      research_summary: 'Historic materials describe the ownership chain before decommissioning.',
+      sources: [{ url: 'https://example.com/3' }, { url: 'https://example.com/4' }],
+    },
+    {
+      item_label: 'Status',
+      value: 'Decommissioned',
+      research_summary: 'Government material confirms the project is decommissioned.',
+      sources: [{ url: 'https://example.com/5' }, { url: 'https://example.com/6' }],
+    },
+  ];
+
+  assert.equal(hasFreshOwnershipEvidence(profileRows, [], new Date('2026-04-17T00:00:00Z')), true);
+});
+
 test('hasFreshOwnershipEvidence accepts freshest-source ownership wording used by the model', () => {
   const profileRows = [
     {

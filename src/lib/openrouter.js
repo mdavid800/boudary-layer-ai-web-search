@@ -315,6 +315,10 @@ export function hasFreshOwnershipEvidence(
     return false;
   }
 
+  if (isOwnershipFreshnessExempt(profileRows)) {
+    return true;
+  }
+
   const recentYears = getRecentYearStrings(referenceDate);
   const hasRequiredOwnershipRows = OWNERSHIP_ITEM_LABELS.every((itemLabel) => {
     const row = profileRows.find((candidate) => candidate.item_label === itemLabel);
@@ -611,6 +615,12 @@ function summarizeContent(content) {
 function getRecentYearStrings(referenceDate) {
   const currentYear = referenceDate.getUTCFullYear();
   return [currentYear, currentYear - 1, currentYear - 2].map(String);
+}
+
+function isOwnershipFreshnessExempt(profileRows = []) {
+  const statusRow = profileRows.find((candidate) => candidate.item_label === 'Status');
+
+  return typeof statusRow?.value === 'string' && /decommissioned/i.test(statusRow.value);
 }
 
 function rowHasUsableFreshnessDate(summary, recentYears) {
