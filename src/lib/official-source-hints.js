@@ -179,6 +179,17 @@ const OFFICIAL_SOURCE_HINTS = [
     ],
   },
   {
+    normalizedProjectNames: ['scrobysands', 'scrobysandsoffshorewindfarm'],
+    sources: [
+      {
+        label: 'RWE Scroby Sands page',
+        url: 'https://uk.rwe.com/locations/scroby-sands-offshore-wind-farm/',
+        anchorText:
+          'Scroby Sands is owned and operated by RWE Renewables UK Limited (100%).',
+      },
+    ],
+  },
+  {
     normalizedProjectNames: ['eastangliaone', 'eastanglia1', 'eastangliaonewindfarm'],
     sources: [
       {
