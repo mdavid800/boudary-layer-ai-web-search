@@ -219,6 +219,42 @@ const OFFICIAL_SOURCE_HINTS = [
       },
     ],
   },
+  {
+    normalizedProjectNames: [
+      'hornsea1',
+      'hornseaone',
+      'hornseaprojectone',
+      'hornsea1east',
+      'hornsea1west',
+      'hornsea1centre',
+      'hornsea1central',
+      'hornseaoneeast',
+      'hornseaonewest',
+      'hornseaonecentre',
+      'hornseaonecentral',
+      'hornseaprojectoneeast',
+      'hornseaprojectonewest',
+      'hornseaprojectonecentre',
+      'hornseaprojectonecentral',
+    ],
+    sources: [
+      {
+        label: 'Ørsted Hornsea One project page',
+        url: 'https://orsted.co.uk/energy-solutions/offshore-wind/our-wind-farms/hornsea1',
+        anchorText: 'Hornsea 1 is the world’s first offshore wind farm to exceed 1GW in capacity and is jointly owned by Ørsted and Global Infrastructure Partners.',
+      },
+      {
+        label: 'Ørsted Hornsea One project summary PDF',
+        url: 'https://cdn.orsted.com/-/media/www/docs/corp/uk/updated-project-summaries-06-19/sept-2020/200819_ps_hornsea-one_v3_web-aw.pdf',
+        anchorText: 'The 1.2GW Hornsea One offshore wind farm, located 120km off the Yorkshire coast, generates enough green electricity to power well over one million UK homes.',
+      },
+      {
+        label: 'Ofgem Hornsea Project One presentation',
+        url: 'https://www.ofgem.gov.uk/sites/default/files/docs/2018/10/hornsea_one_project_presentation.pdf',
+        anchorText: 'Offshore substation West',
+      },
+    ],
+  },
 ];
 
 export async function buildOfficialSourceContext(projectName, { fetchImpl = fetch } = {}) {
