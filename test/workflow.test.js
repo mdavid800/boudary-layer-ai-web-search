@@ -641,7 +641,7 @@ test('runDatabaseResearch skips published operational reports unless forced', as
     true,
   );
   assert.equal(
-    loggedMessages.some((message) => message.includes('1 saved, 1 skipped, 2 total')),
+    loggedMessages.some((message) => message.includes('1 saved, 1 skipped, 0 failed, 2 total')),
     true,
   );
 });
@@ -808,7 +808,6 @@ test('requestResearchReport explicitly passes auto engine when no search engine 
   assert.equal(calls.length, 1);
   assert.equal(calls[0].tools[0].parameters.engine, 'auto');
   assert.deepEqual(calls[0].tools[0].parameters.excluded_domains, [
-    'orsted.com',
     'tgs.com',
     '4coffshore.com',
     'windpowermonthly.com',
@@ -1085,6 +1084,65 @@ test('hasFreshOwnershipEvidence accepts a recent dated ownership development sig
     hasFreshOwnershipEvidence(profileRows, recentDevelopments, new Date('2026-04-17T00:00:00Z')),
     true,
   );
+});
+
+test('hasFreshOwnershipEvidence accepts stable legacy ownership summaries without recent dated events', () => {
+  const profileRows = [
+    {
+      item_label: 'Developer / owners',
+      research_summary: 'Current ownership split remains Vattenfall 51% and AMF 49% based on owner and investor project pages.',
+      sources: [{ url: 'https://example.com/1' }, { url: 'https://example.com/2' }],
+    },
+    {
+      item_label: 'Ownership history',
+      research_summary: 'The published project materials do not indicate a later ownership change, and the current partnership remains in place.',
+      sources: [{ url: 'https://example.com/3' }, { url: 'https://example.com/4' }],
+    },
+  ];
+
+  assert.equal(hasFreshOwnershipEvidence(profileRows, [], new Date('2026-04-17T00:00:00Z')), true);
+});
+
+test('hasFreshOwnershipEvidence skips freshness checks for decommissioned projects', () => {
+  const profileRows = [
+    {
+      item_label: 'Developer / owners',
+      value: 'Historic owners not relevant to current operations.',
+      research_summary: 'Historic ownership sources identify the project sponsors at the time the wind farm operated.',
+      sources: [{ url: 'https://example.com/1' }, { url: 'https://example.com/2' }],
+    },
+    {
+      item_label: 'Ownership history',
+      value: 'Historic ownership chain recorded before decommissioning.',
+      research_summary: 'Historic materials describe the ownership chain before decommissioning.',
+      sources: [{ url: 'https://example.com/3' }, { url: 'https://example.com/4' }],
+    },
+    {
+      item_label: 'Status',
+      value: 'Decommissioned',
+      research_summary: 'Government material confirms the project is decommissioned.',
+      sources: [{ url: 'https://example.com/5' }, { url: 'https://example.com/6' }],
+    },
+  ];
+
+  assert.equal(hasFreshOwnershipEvidence(profileRows, [], new Date('2026-04-17T00:00:00Z')), true);
+});
+
+test('hasFreshOwnershipEvidence accepts freshest-source ownership wording used by the model', () => {
+  const profileRows = [
+    {
+      item_label: 'Developer / owners',
+      research_summary: 'Freshest ownership source used here is the operator’s current portfolio page plus partner ownership announcements. The current structure reconciles to 100%.',
+      sources: [{ url: 'https://example.com/1' }, { url: 'https://example.com/2' }],
+    },
+    {
+      item_label: 'Ownership history',
+      research_summary: 'Freshest source relied on for the later ownership change is the partner acquisition announcement; the current portfolio page confirms the operating partner and current structure.',
+      sources: [{ url: 'https://example.com/3' }, { url: 'https://example.com/4' }],
+    },
+  ];
+
+  assert.equal(hasFreshOwnershipEvidence(profileRows, [], new Date('2026-04-17T00:00:00Z')), true);
 });
 
 test('hasFreshOwnershipEvidence rejects access-date language as freshness evidence', () => {
@@ -1844,7 +1902,7 @@ test('getResearchReportQualityIssues flags risky source-of-record domains', () =
   );
 });
 
-test('getResearchReportQualityIssues flags hard-blocked domains anywhere in report sources', () => {
+test('getResearchReportQualityIssues allows Orsted sources but still flags other blocked domains', () => {
   const markdown = [
     'This profile assesses Horns Rev I.',
     '',
@@ -1858,7 +1916,7 @@ test('getResearchReportQualityIssues flags hard-blocked domains anywhere in repo
     '',
     '| Date | Development | Why it matters | Sources |',
     '|---|---|---|---|',
-    '| 01/03/2024 | Ownership page still listed the asset at a 40% share. | A current project-level ownership update. | [Blocked](https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms), [Archive](https://example.com/event-2) |',
+    '| 01/03/2024 | Ownership page still listed the asset at a 40% share. | A current project-level ownership update. | [Blocked](https://tgs.com/project-source), [Archive](https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms) |',
     createProvenanceAppendix({
       profileRows: [
         {
@@ -1893,8 +1951,8 @@ test('getResearchReportQualityIssues flags hard-blocked domains anywhere in repo
           provenance_mode: 'web_source',
           source_of_record: createSourceOfRecord({ source_url: 'https://example.com/event-1' }),
           supporting_context: [
-            { label: 'Blocked', url: 'https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms' },
-            { label: 'Archive', url: 'https://example.com/event-2' },
+            { label: 'Blocked', url: 'https://tgs.com/project-source' },
+            { label: 'Archive', url: 'https://orsted.com/en/Our-business/Offshore-wind/Our-offshore-wind-farms' },
           ],
         },
       ],
@@ -1904,6 +1962,89 @@ test('getResearchReportQualityIssues flags hard-blocked domains anywhere in repo
   assert.deepEqual(
     getResearchReportQualityIssues(markdown, new Date('2026-04-17T00:00:00Z')),
     ['blocked-source-domain'],
+  );
+});
+
+test('runDatabaseResearch continues after a row failure and reports the batch failure at the end', async () => {
+  const loggedMessages = [];
+  const originalConsoleError = console.error;
+  const originalApiKey = process.env.OPENROUTER_API_KEY;
+  let requestCallCount = 0;
+  let storeCallCount = 0;
+
+  console.error = (message) => loggedMessages.push(String(message));
+  process.env.OPENROUTER_API_KEY = 'test-key';
+
+  const fakeClient = {
+    connect: async () => {},
+    end: async () => {},
+  };
+
+  try {
+    await assert.rejects(
+      () =>
+        runDatabaseResearch({
+          argv: ['node', 'src/research-from-database.js'],
+          createClient: () => fakeClient,
+          loadPromptTemplateFn: async () => 'Research this project:\n{PROJECT_CONTEXT}\n',
+          listWindFarmRowsFn: async () => ([
+            {
+              id: 6670,
+              name: 'Walney 1',
+              type: 'Offshore wind farm',
+              n_turbines: 51,
+              power_mw: 183.6,
+              status: 'Operational',
+            },
+            {
+              id: 6671,
+              name: 'West of Duddon Sands',
+              type: 'Offshore wind farm',
+              n_turbines: 108,
+              power_mw: 389,
+              status: 'Operational',
+            },
+          ]),
+          getPublishedResearchRunStateFn: async () => new Map(),
+          getLinkedTurbineMetadataFn: async () => null,
+          getTurbineCountValidationContextFn: async () => null,
+          buildOfficialSourceContextFn: async () => '',
+          requestResearchReportFn: async ({ prompt }) => {
+            requestCallCount += 1;
+
+            if (prompt.includes('Walney 1')) {
+              throw new Error('blocked-source-domain');
+            }
+
+            return '# Report';
+          },
+          saveReportFn: async () => 'saved-path',
+          saveTextFileFn: async () => 'prompt-trace-path',
+          storeResearchReportFn: async () => {
+            storeCallCount += 1;
+            return { reportId: 99, factsInserted: 2 };
+          },
+        }),
+      /1 failed row\(s\): Walney 1 \(ID 6670\): blocked-source-domain/,
+    );
+  } finally {
+    console.error = originalConsoleError;
+    process.env.OPENROUTER_API_KEY = originalApiKey;
+  }
+
+  assert.equal(requestCallCount, 2);
+  assert.equal(storeCallCount, 1);
+  assert.equal(
+    loggedMessages.some((message) => message.includes('Failed Walney 1 (ID 6670): blocked-source-domain')),
+    true,
+  );
+  assert.equal(
+    loggedMessages.some((message) => message.includes('Running research for West of Duddon Sands')),
+    true,
+  );
+  assert.equal(
+    loggedMessages.some((message) => message.includes('1 saved, 0 skipped, 1 failed, 2 total')),
+    true,
   );
 });
 
@@ -2332,6 +2473,73 @@ test('verifyEvidenceRecord keeps not-confirmed rows publishable when the source 
   assert.equal(result.status, 'value_not_confirmed');
   assert.equal(result.httpStatus, 200);
   assert.equal(result.error, null);
+});
+
+test('verifyEvidenceRecord sends browser-like headers and retries transient fetch errors', async () => {
+  const requestHeaders = [];
+  let callCount = 0;
+
+  const result = await verifyEvidenceRecord(
+    {
+      source_url: 'https://example.com/source',
+      source_name: 'Example source',
+      source_type: 'official project',
+      evidence_quote: 'The installed capacity is 588 MW.',
+      provenance_mode: 'web_source',
+      human_verified: false,
+    },
+    {
+      fetchImpl: async (_url, options = {}) => {
+        requestHeaders.push(options.headers);
+        callCount += 1;
+
+        if (callCount === 1) {
+          throw new Error('fetch failed');
+        }
+
+        return {
+          ok: true,
+          status: 200,
+          headers: {
+            get: () => 'text/html; charset=utf-8',
+          },
+          arrayBuffer: async () => Buffer.from('<html><body>The installed capacity is 588 MW.</body></html>', 'utf8'),
+        };
+      },
+    },
+  );
+
+  assert.equal(callCount, 2);
+  assert.equal(requestHeaders[0]['User-Agent'].includes('Mozilla/5.0'), true);
+  assert.equal(result.status, 'passed');
+  assert.equal(result.httpStatus, 200);
+});
+
+test('verifyEvidenceRecord treats html error pages at pdf urls as HTTP failures, not PDF parse failures', async () => {
+  const result = await verifyEvidenceRecord(
+    {
+      source_url: 'https://example.com/source.pdf',
+      source_name: 'Example PDF source',
+      source_type: 'official project pdf',
+      evidence_quote: 'Barrow | 90 | Orsted',
+      provenance_mode: 'web_source',
+      human_verified: false,
+    },
+    {
+      fetchImpl: async () => ({
+        ok: false,
+        status: 404,
+        headers: {
+          get: () => 'text/html; charset=utf-8',
+        },
+        arrayBuffer: async () => Buffer.from('<html><body>Not found</body></html>', 'utf8'),
+      }),
+    },
+  );
+
+  assert.equal(result.status, 'failed');
+  assert.equal(result.httpStatus, 404);
+  assert.equal(result.error, 'Source-of-record request returned HTTP 404.');
 });
 
 test('verifyReportEvidence blocks reports with failed source-of-record rows', async () => {
