@@ -3,7 +3,7 @@ Hornsea Project 2 - Phase 1 (Breesea) appears to correspond to the built **Horns
 | Item | Value | Research summary | Sources |
 |---|---|---|---|
 | Project identity | Hornsea Project Two (Hornsea 2); historic/project-company context includes Breesea Limited and Optimus Wind Limited within the original Hornsea Zone Project Two consent | Planning Inspectorate material for Hornsea Two states the applicant entities were **Optimus Wind Limited and Breesea Limited** and refers to the consent as the **Hornsea Project Two Order**. The built operational project is publicly branded by Ørsted as **Hornsea 2**. | [Planning Inspectorate NMC decision PDF](https://nsip-documents.planninginspectorate.gov.uk/published-documents/EN010053-002177-Final-%20DL%20-%20NMC%20Hornsea%20Two%20Offshore%20Wind%20Farm%20Order.pdf), [Ørsted full operation announcement](https://orsted.com/en/media/news/2022/08/20220831559011) |
-| Developer / owners | Developer: Ørsted. Current owners: Ørsted 50%, AXA IM Alts-led clients 25%, Crédit Agricole Assurances 25%. Operator: Ørsted | Freshest dated ownership split found is The Crown Estate Offshore Wind Report 2022 published 25/04/2023, which lists **Hornsea 2** at **50% Ørsted / 25% AXA IM Alts / 25% Crédit Agricole Assurances**. Ørsted’s dated 28/03/2022 and 29/09/2022 announcements explain the sell-down and closing. A newer Ørsted update dated 01/06/2025 confirms Ørsted runs operations directly after taking full control from Siemens Gamesa. | [The Crown Estate Offshore Wind Report 2022 PDF](https://www.thecrownestate.co.uk/media/4378/final-published_11720_owoperationalreport_2022_tp_250423.pdf), [Ørsted stake sale announcement](https://orsted.com/en/media/news/2022/03/20220328503311), [Ørsted sale completion announcement](https://orsted.com/da/media/news/2022/09/20220929567412), [Ørsted operations announcement](https://orsted.co.uk/media/newsroom/news/2025/06/orsted-takes-full-control-of-hornsea-2-operations) |
+| Developer / owners | Developer: Ørsted. Current owners: Ørsted 50%, AXA IM Alts-led clients 25%, Crédit Agricole Assurances 25%. Operator: Ørsted | Repaired from Ørsted source-of-record pages rather than the broken Crown Estate PDF. Ørsted’s 28/03/2022 announcement says it would divest a **50 % ownership stake** in Hornsea 2 to a consortium comprising **AXA IM Alts** and **Crédit Agricole Assurances**, with each to own **25 %** after closing. Ørsted’s 29/09/2022 completion announcement confirms the divestment closed. A newer Ørsted update dated 01/06/2025 confirms Ørsted runs operations directly after taking full control from Siemens Gamesa. | [Ørsted stake sale announcement](https://orsted.com/en/media/news/2022/03/20220328503311), [Ørsted sale completion announcement](https://orsted.com/da/media/news/2022/09/20220929567412), [Ørsted operations announcement](https://orsted.co.uk/media/newsroom/news/2025/06/orsted-takes-full-control-of-hornsea-2-operations) |
 | Ownership history | Originally developed in the SMart Wind / Hornsea Zone structure; Ørsted acquired full ownership in 08/2015, then sold 50% in 2022 to AXA IM Alts-led clients and Crédit Agricole Assurances (25% each) | The decommissioning programme states **“In August 2015, Ørsted Wind Power A/S acquired full ownership of Hornsea Project Two”**. Ørsted then announced the 50% divestment on 28/03/2022 and completed it on 29/09/2022. Freshest source date relied on for the current split is 25/04/2023 from The Crown Estate report. | [Hornsea Project Two Decommissioning Programme PDF](https://tethys.pnnl.gov/sites/default/files/publications/HOW02DecommissioningProgramme.pdf), [Ørsted stake sale announcement](https://orsted.com/en/media/news/2022/03/20220328503311), [Ørsted sale completion announcement](https://orsted.com/da/media/news/2022/09/20220929567412), [The Crown Estate Offshore Wind Report 2022 PDF](https://www.thecrownestate.co.uk/media/4378/final-published_11720_owoperationalreport_2022_tp_250423.pdf) |
 | Status | Operational | Ørsted announced on 31/08/2022 that Hornsea 2 was **fully operational**. A later dated operational update on 01/06/2025 about Ørsted taking full control of operations supports the project remaining operational. | [Ørsted full operation announcement](https://orsted.com/en/media/news/2022/08/20220831559011), [Ørsted operations announcement](https://orsted.co.uk/media/newsroom/news/2025/06/orsted-takes-full-control-of-hornsea-2-operations) |
 | Capacity | 1386 MW | Project-specific sources consistently give a gross installed capacity of **1,386 MW**. This is the installed wind-farm capacity, not the lower export/transmission figure. | [Siemens Gamesa Hornsea Two turbine order](https://www.siemensgamesa.com/global/en/home/press-releases/siemens-gamesa-news-offshore-hornsea-two-oersted.html), [Ørsted full operation announcement](https://orsted.com/en/media/news/2022/08/20220831559011) |
@@ -64,22 +64,18 @@ Recent developments
       "value": "Developer: Ørsted. Current owners: Ørsted 50%, AXA IM Alts-led clients 25%, Crédit Agricole Assurances 25%. Operator: Ørsted",
       "provenance_mode": "web_source",
       "source_of_record": {
-        "source_url": "https://www.thecrownestate.co.uk/media/4378/final-published_11720_owoperationalreport_2022_tp_250423.pdf",
-        "source_name": "The Crown Estate Offshore Wind Report 2022",
-        "source_type": "authoritative regional report PDF",
+        "source_url": "https://orsted.com/en/media/news/2022/03/20220328503311",
+        "source_name": "Ørsted stake sale announcement",
+        "source_type": "developer press release",
         "licence": "public webpage terms",
         "retrieved_at": "2026-04-28T00:00:00Z",
-        "evidence_quote": "Hornsea 2 ... Ørsted 50% / AXA IM Alts 25% / Crédit Agricole Assurances 25%",
+        "evidence_quote": "divest a 50 % ownership stake ... AXA IM Alts ... Crédit Agricole Assurances ... each own 25 %",
         "confidence": "high",
         "derived_by_ai": true,
         "human_verified": false,
-        "verification_status": "unverified"
+        "verification_status": "repaired"
       },
       "supporting_context": [
-        {
-          "label": "Ørsted stake sale announcement",
-          "url": "https://orsted.com/en/media/news/2022/03/20220328503311"
-        },
         {
           "label": "Ørsted sale completion announcement",
           "url": "https://orsted.com/da/media/news/2022/09/20220929567412"
