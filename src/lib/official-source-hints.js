@@ -75,6 +75,65 @@ const OFFICIAL_SOURCE_HINTS = [
     ],
   },
   {
+    normalizedProjectNames: [
+      'belwind',
+      'belwindi',
+      'belwindii',
+      'belwindiii',
+      'belwindiii',
+      'belwindiandii',
+      'belwindiiii',
+      'belwindphase1',
+      'blighbankphase1',
+    ],
+    sources: [
+      {
+        label: 'Parkwind Belwind project page',
+        url: 'https://parkwind.eu/projects/belwind',
+        anchorText:
+          'Belwind is Parkwind’s first wind energy project and one of Belgium’s first offshore wind farms',
+      },
+      {
+        label: 'Parkwind projects overview',
+        url: 'https://parkwind.eu/projects',
+        anchorText:
+          'Parkwind’s current portfolio includes four offshore wind farms off the Belgian coast',
+      },
+      {
+        label: 'Parkwind corporate update',
+        url: 'https://parkwind.eu/projects/belwind',
+        anchorText: 'As of 4th August 2025, Parkwind is part of JERA Nex bp.',
+      },
+    ],
+  },
+  {
+    normalizedProjectNames: [
+      'nobelwind',
+      'belwindphase2',
+      'belwindphase2nobelwind',
+      'belwindphase2nobelwindzone1',
+      'belwindphase2nobelwindzone2',
+    ],
+    sources: [
+      {
+        label: 'Parkwind Nobelwind project page',
+        url: 'https://parkwind.eu/projects/nobelwind',
+        anchorText: 'Nobelwind is Parkwind’s third offshore wind energy project.',
+      },
+      {
+        label: 'Parkwind projects overview',
+        url: 'https://parkwind.eu/projects',
+        anchorText:
+          'Parkwind’s current portfolio includes four offshore wind farms off the Belgian coast',
+      },
+      {
+        label: 'Parkwind corporate update',
+        url: 'https://parkwind.eu/projects/nobelwind',
+        anchorText: 'As of 4th August 2025, Parkwind is part of JERA Nex bp.',
+      },
+    ],
+  },
+  {
     normalizedProjectNames: ['walney1', 'walneyphase1'],
     sources: [
       {
