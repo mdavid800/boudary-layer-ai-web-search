@@ -384,6 +384,27 @@ test('normalizeCanonicalWindFarmStatus maps legacy and planning aliases into can
   assert.equal(normalizeCanonicalWindFarmStatus('unsupported'), null);
 });
 
+test('normalizeCanonicalWindFarmStatus treats Princess Elisabeth lots as development zones', () => {
+  assert.equal(
+    normalizeCanonicalWindFarmStatus('lease awarded, pre-planning', {
+      windFarmName: 'Princess Elisabeth Zone Lot 1',
+    }),
+    'Development Zone / lease area',
+  );
+  assert.equal(
+    normalizeCanonicalWindFarmStatus('planned', {
+      windFarmName: 'Princess Elisabeth Zone Lot 3',
+    }),
+    'Development Zone / lease area',
+  );
+  assert.equal(
+    normalizeCanonicalWindFarmStatus('lease awarded, pre-planning', {
+      windFarmName: 'Dogger Bank A',
+    }),
+    'Lease Awarded, Pre-Planning',
+  );
+});
+
 test('parseCliArgs supports positional names and flags', () => {
   const result = parseCliArgs([
     'Dogger',

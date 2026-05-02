@@ -155,6 +155,18 @@ async function syncResearchReportArtifacts(client, {
 
   const facts = extractFactsFromReport(reportMarkdown);
   const factStatus = reviewStatus === 'published' ? 'active' : 'draft';
+  const hasStatusFact = facts.some((fact) => fact.fieldName === 'status');
+  let windFarmName = null;
+
+  if (hasStatusFact) {
+    const windFarmResult = await client.query(
+      `SELECT name
+       FROM core_wind_farms
+       WHERE id = $1`,
+      [windFarmId],
+    );
+    windFarmName = windFarmResult.rows[0]?.name ?? null;
+  }
 
   let factsInserted = 0;
   const factIdsByFieldName = new Map();
@@ -162,7 +174,7 @@ async function syncResearchReportArtifacts(client, {
   for (const fact of facts) {
     const normalizedValue =
       fact.fieldName === 'status'
-        ? normalizeCanonicalWindFarmStatus(fact.value)
+        ? normalizeCanonicalWindFarmStatus(fact.value, { windFarmName })
         : fact.value;
 
     if (fact.fieldName === 'status' && normalizedValue === null) {

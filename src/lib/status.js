@@ -47,11 +47,35 @@ const STATUS_ALIASES = new Map([
   ['testsite', 'Concept'],
 ]);
 
-export function normalizeCanonicalWindFarmStatus(value) {
+function shouldUseDevelopmentZoneStatus(windFarmName, normalizedStatus) {
+  if (typeof windFarmName !== 'string') {
+    return false;
+  }
+
+  const normalizedName = windFarmName.trim().toLowerCase();
+  if (!normalizedName.startsWith('princess elisabeth zone lot ')) {
+    return false;
+  }
+
+  return (
+    normalizedStatus === 'Lease Awarded, Pre-Planning'
+    || normalizedStatus === 'Concept'
+  );
+}
+
+export function normalizeCanonicalWindFarmStatus(value, { windFarmName } = {}) {
   if (typeof value !== 'string') {
     return null;
   }
 
   const normalized = STATUS_ALIASES.get(value.trim().toLowerCase());
-  return normalized ?? null;
+  if (normalized == null) {
+    return null;
+  }
+
+  if (shouldUseDevelopmentZoneStatus(windFarmName, normalized)) {
+    return 'Development Zone / lease area';
+  }
+
+  return normalized;
 }
