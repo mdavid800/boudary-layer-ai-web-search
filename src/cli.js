@@ -9,10 +9,12 @@ import { buildResearchPrompt, loadPromptTemplate } from './lib/prompt.js';
 import {
   DEFAULT_MAX_RESULTS,
   DEFAULT_MAX_TOTAL_RESULTS,
+  DEFAULT_CODEX_MODEL,
   DEFAULT_MODEL,
   DEFAULT_PROMPT_PATH,
   DEFAULT_SEARCH_ENGINE,
   DEFAULT_RESEARCH_PROVIDER,
+  getDefaultModelForProvider,
   getResearchProvider,
   getApiKeyForProvider,
 } from './lib/runtime-config.js';
@@ -28,6 +30,7 @@ async function main() {
       formatHelp({
         defaultPromptPath: DEFAULT_PROMPT_PATH,
         defaultModel: DEFAULT_MODEL,
+        defaultCodexModel: DEFAULT_CODEX_MODEL,
         defaultSearchEngine: DEFAULT_SEARCH_ENGINE,
         defaultMaxResults: DEFAULT_MAX_RESULTS,
         defaultMaxTotalResults: DEFAULT_MAX_TOTAL_RESULTS,
@@ -47,7 +50,7 @@ async function main() {
     promptTemplate,
     [windFarmName, officialSourceContext].filter(Boolean).join('\n'),
   );
-  const model = args.model || DEFAULT_MODEL;
+  const model = args.model || getDefaultModelForProvider(provider);
   const searchEngine = args.engine || DEFAULT_SEARCH_ENGINE;
 
   console.error(`Using research provider: ${provider}`);

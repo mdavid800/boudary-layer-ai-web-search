@@ -67,6 +67,7 @@ export function parseCliArgs(argv) {
 export function formatHelp({
   defaultPromptPath,
   defaultModel,
+  defaultCodexModel,
   defaultSearchEngine,
   defaultMaxResults,
   defaultMaxTotalResults,
@@ -78,7 +79,7 @@ export function formatHelp({
     '',
     'Options:',
     `  --prompt <path>               Prompt file path (default: ${defaultPromptPath})`,
-    `  --model <model>               OpenRouter model (default: ${defaultModel})`,
+    `  --model <model>               Research model override (defaults: openrouter=${defaultModel}, codex=${defaultCodexModel})`,
     `  --engine <engine>             Search engine (default: ${defaultSearchEngine})`,
     `  --max-results <number>        Max results per search call (default: ${defaultMaxResults})`,
     `  --max-total-results <number>  Max total results across the request (default: ${defaultMaxTotalResults})`,

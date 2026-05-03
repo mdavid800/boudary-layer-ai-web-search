@@ -6,6 +6,7 @@ dotenv.config();
 
 export const DEFAULT_PROMPT_PATH = path.resolve(process.cwd(), 'prompt.md');
 export const DEFAULT_MODEL = readEnvValue('OPENROUTER_MODEL') || 'openai/gpt-5.4';
+export const DEFAULT_CODEX_MODEL = readEnvValue('CODEX_MODEL') || readEnvValue('OPENAI_MODEL') || 'gpt-5.4-2026-03-05';
 export const DEFAULT_SEARCH_ENGINE = readEnvValue('OPENROUTER_SEARCH_ENGINE') || 'auto';
 export const DEFAULT_MAX_RESULTS = getPositiveInteger(
   readEnvValue('OPENROUTER_MAX_RESULTS'),
@@ -57,6 +58,10 @@ export function getResearchProvider(value, variableName = 'provider') {
   }
 
   return normalized;
+}
+
+export function getDefaultModelForProvider(provider) {
+  return provider === 'codex' ? DEFAULT_CODEX_MODEL : DEFAULT_MODEL;
 }
 
 export function getApiKeyForProvider(provider) {

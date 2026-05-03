@@ -9,6 +9,7 @@ import {
   DEFAULT_PROMPT_PATH,
   DEFAULT_SEARCH_ENGINE,
   DEFAULT_RESEARCH_PROVIDER,
+  getDefaultModelForProvider,
   getResearchProvider,
   getApiKeyForProvider,
 } from './lib/runtime-config.js';
@@ -165,6 +166,7 @@ export async function runDatabaseResearch({
   );
   const reviewStatus = publish ? 'published' : 'draft';
   const client = createClient();
+  const model = getDefaultModelForProvider(provider);
 
   await client.connect();
 
@@ -185,7 +187,7 @@ export async function runDatabaseResearch({
 
     console.error(`Starting database-backed research run for ${windFarmRows.length} rows.`);
     console.error(`Using research provider: ${provider}`);
-    console.error(`Using model: ${DEFAULT_MODEL}`);
+    console.error(`Using model: ${model}`);
     if (ids) console.error(`Filtering by IDs: ${ids.join(', ')}`);
     if (country) console.error(`Filtering by country: ${country}`);
     if (windFarmType) console.error(`Filtering by wind farm type: ${windFarmType}`);
@@ -295,7 +297,7 @@ export async function runDatabaseResearch({
         const report = await requestResearchReportFn({
           provider,
           apiKey,
-          model: DEFAULT_MODEL,
+          model,
           prompt: finalPrompt,
           searchEngine: DEFAULT_SEARCH_ENGINE,
           maxResults: DEFAULT_MAX_RESULTS,
@@ -322,7 +324,7 @@ export async function runDatabaseResearch({
         const { reportId, factsInserted } = await storeResearchReportFn(client, {
           windFarmId: windFarmRow.id,
           reportMarkdown: finalReport,
-          modelUsed: DEFAULT_MODEL,
+          modelUsed: model,
           finalPrompt,
           reviewStatus,
         });

@@ -335,7 +335,7 @@ test('buildOfficialSourceContext injects official ownership hints for Beatrice',
     '</body></html>',
   ].join('');
 
-  const result = await buildOfficialSourceContext('Beatrice Offshore Wind Farm', {
+  const result = await buildOfficialSourceContext('Beatrice', {
     fetchImpl: async () => ({
       ok: true,
       text: async () => html,
@@ -437,6 +437,7 @@ test('formatHelp includes the main usage line', () => {
   const helpText = formatHelp({
     defaultPromptPath: 'C:\\repo\\prompt.md',
     defaultModel: 'openai/gpt-4.1',
+    defaultCodexModel: 'gpt-5.4-2026-03-05',
     defaultSearchEngine: 'auto',
     defaultMaxResults: 6,
     defaultMaxTotalResults: 18,
@@ -444,6 +445,7 @@ test('formatHelp includes the main usage line', () => {
   });
 
   assert.match(helpText, /npm run research -- "<wind farm name>" \[options\]/);
+  assert.match(helpText, /Research model override \(defaults: openrouter=openai\/gpt-4\.1, codex=gpt-5\.4-2026-03-05\)/);
   assert.match(helpText, /Search engine \(default: auto\)/);
   assert.match(helpText, /Research provider: openrouter\|codex/);
 });
@@ -955,6 +957,28 @@ test('runtime-config loads OPENROUTER_MODEL from .env before exporting defaults'
   );
 
   assert.equal(output.trim(), 'openai/gpt-5.4');
+});
+
+test('runtime-config uses gpt-5.4-2026-03-05 as the default codex model when unset', () => {
+  const childEnv = { ...process.env };
+  childEnv.CODEX_MODEL = '';
+  childEnv.OPENAI_MODEL = '';
+
+  const output = execFileSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '--eval',
+      "import { getDefaultModelForProvider } from './src/lib/runtime-config.js'; console.log(getDefaultModelForProvider('codex'));",
+    ],
+    {
+      cwd: process.cwd(),
+      env: childEnv,
+      encoding: 'utf8',
+    },
+  );
+
+  assert.equal(output.trim(), 'gpt-5.4-2026-03-05');
 });
 
 test('runtime-config defaults to auto engine with server-tool mode when unset', () => {
