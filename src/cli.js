@@ -4,15 +4,19 @@ import { createInterface } from 'node:readline/promises';
 import dotenv from 'dotenv';
 import { formatHelp, parseCliArgs } from './lib/args.js';
 import { buildOfficialSourceContext } from './lib/official-source-hints.js';
-import { requestResearchReport } from './lib/openrouter.js';
+import { requestResearchReportWithProvider } from './lib/research-provider.js';
 import { buildResearchPrompt, loadPromptTemplate } from './lib/prompt.js';
 import {
   DEFAULT_MAX_RESULTS,
   DEFAULT_MAX_TOTAL_RESULTS,
+  DEFAULT_CODEX_MODEL,
   DEFAULT_MODEL,
   DEFAULT_PROMPT_PATH,
   DEFAULT_SEARCH_ENGINE,
-  requireValue,
+  DEFAULT_RESEARCH_PROVIDER,
+  getDefaultModelForProvider,
+  getResearchProvider,
+  getApiKeyForProvider,
 } from './lib/runtime-config.js';
 import { saveReport as saveReportToFile } from './lib/report-output.js';
 
@@ -26,15 +30,18 @@ async function main() {
       formatHelp({
         defaultPromptPath: DEFAULT_PROMPT_PATH,
         defaultModel: DEFAULT_MODEL,
+        defaultCodexModel: DEFAULT_CODEX_MODEL,
         defaultSearchEngine: DEFAULT_SEARCH_ENGINE,
         defaultMaxResults: DEFAULT_MAX_RESULTS,
         defaultMaxTotalResults: DEFAULT_MAX_TOTAL_RESULTS,
+        defaultResearchProvider: DEFAULT_RESEARCH_PROVIDER,
       }),
     );
     return;
   }
 
-  const apiKey = requireValue(process.env.OPENROUTER_API_KEY, 'OPENROUTER_API_KEY');
+  const provider = getResearchProvider(args.provider || DEFAULT_RESEARCH_PROVIDER);
+  const apiKey = getApiKeyForProvider(provider);
   const windFarmName = await resolveWindFarmName(args.windFarmName);
   const promptPath = path.resolve(process.cwd(), args.promptPath || DEFAULT_PROMPT_PATH);
   const promptTemplate = await loadPromptTemplate(promptPath);
@@ -43,12 +50,14 @@ async function main() {
     promptTemplate,
     [windFarmName, officialSourceContext].filter(Boolean).join('\n'),
   );
-  const model = args.model || DEFAULT_MODEL;
+  const model = args.model || getDefaultModelForProvider(provider);
   const searchEngine = args.engine || DEFAULT_SEARCH_ENGINE;
 
-  console.error(`Using OpenRouter model: ${model}`);
+  console.error(`Using research provider: ${provider}`);
+  console.error(`Using model: ${model}`);
 
-  const report = await requestResearchReport({
+  const report = await requestResearchReportWithProvider({
+    provider,
     apiKey,
     model,
     prompt: finalPrompt,
