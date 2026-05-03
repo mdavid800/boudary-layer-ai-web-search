@@ -428,6 +428,7 @@ test('parseCliArgs supports positional names and flags', () => {
     model: 'openai/gpt-4.1-mini',
     outputPath: 'reports\\dogger-bank-a.md',
     promptPath: null,
+    provider: null,
     windFarmName: 'Dogger Bank A',
   });
 });
@@ -439,10 +440,12 @@ test('formatHelp includes the main usage line', () => {
     defaultSearchEngine: 'auto',
     defaultMaxResults: 6,
     defaultMaxTotalResults: 18,
+    defaultResearchProvider: 'openrouter',
   });
 
   assert.match(helpText, /npm run research -- "<wind farm name>" \[options\]/);
   assert.match(helpText, /Search engine \(default: auto\)/);
+  assert.match(helpText, /Research provider: openrouter\|codex/);
 });
 
 test('parseResearchDatabaseArgs supports filters and force refresh', () => {
@@ -458,6 +461,8 @@ test('parseResearchDatabaseArgs supports filters and force refresh', () => {
     '--skip-existing-reports',
     '--publish',
     '--force-refresh',
+    '--provider',
+    'codex',
   ]);
 
   assert.deepEqual(result, {
@@ -468,6 +473,7 @@ test('parseResearchDatabaseArgs supports filters and force refresh', () => {
     publish: true,
     forceRefresh: true,
     operationalRefresh: false,
+    provider: 'codex',
   });
 });
 
@@ -486,6 +492,7 @@ test('parseResearchDatabaseArgs supports operational refresh mode', () => {
     publish: false,
     forceRefresh: false,
     operationalRefresh: true,
+    provider: null,
   });
 });
 

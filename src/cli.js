@@ -4,7 +4,7 @@ import { createInterface } from 'node:readline/promises';
 import dotenv from 'dotenv';
 import { formatHelp, parseCliArgs } from './lib/args.js';
 import { buildOfficialSourceContext } from './lib/official-source-hints.js';
-import { requestResearchReport } from './lib/openrouter.js';
+import { requestResearchReportWithProvider } from './lib/research-provider.js';
 import { buildResearchPrompt, loadPromptTemplate } from './lib/prompt.js';
 import {
   DEFAULT_MAX_RESULTS,
@@ -12,7 +12,9 @@ import {
   DEFAULT_MODEL,
   DEFAULT_PROMPT_PATH,
   DEFAULT_SEARCH_ENGINE,
-  requireValue,
+  DEFAULT_RESEARCH_PROVIDER,
+  getResearchProvider,
+  getApiKeyForProvider,
 } from './lib/runtime-config.js';
 import { saveReport as saveReportToFile } from './lib/report-output.js';
 
@@ -29,12 +31,14 @@ async function main() {
         defaultSearchEngine: DEFAULT_SEARCH_ENGINE,
         defaultMaxResults: DEFAULT_MAX_RESULTS,
         defaultMaxTotalResults: DEFAULT_MAX_TOTAL_RESULTS,
+        defaultResearchProvider: DEFAULT_RESEARCH_PROVIDER,
       }),
     );
     return;
   }
 
-  const apiKey = requireValue(process.env.OPENROUTER_API_KEY, 'OPENROUTER_API_KEY');
+  const provider = getResearchProvider(args.provider || DEFAULT_RESEARCH_PROVIDER);
+  const apiKey = getApiKeyForProvider(provider);
   const windFarmName = await resolveWindFarmName(args.windFarmName);
   const promptPath = path.resolve(process.cwd(), args.promptPath || DEFAULT_PROMPT_PATH);
   const promptTemplate = await loadPromptTemplate(promptPath);
@@ -46,9 +50,11 @@ async function main() {
   const model = args.model || DEFAULT_MODEL;
   const searchEngine = args.engine || DEFAULT_SEARCH_ENGINE;
 
-  console.error(`Using OpenRouter model: ${model}`);
+  console.error(`Using research provider: ${provider}`);
+  console.error(`Using model: ${model}`);
 
-  const report = await requestResearchReport({
+  const report = await requestResearchReportWithProvider({
+    provider,
     apiKey,
     model,
     prompt: finalPrompt,

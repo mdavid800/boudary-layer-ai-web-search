@@ -17,6 +17,10 @@ export const DEFAULT_MAX_TOTAL_RESULTS = getPositiveInteger(
   24,
   'OPENROUTER_MAX_TOTAL_RESULTS',
 );
+export const DEFAULT_RESEARCH_PROVIDER = getResearchProvider(
+  readEnvValue('RESEARCH_PROVIDER') || 'openrouter',
+  'RESEARCH_PROVIDER',
+);
 
 export function requireValue(value, name, message) {
   if (value?.trim()) {
@@ -42,4 +46,24 @@ export function getPositiveInteger(value, fallbackValue, variableName) {
 
 function readEnvValue(name) {
   return process.env[name]?.trim();
+}
+
+export function getResearchProvider(value, variableName = 'provider') {
+  const normalized = (value || '').trim().toLowerCase();
+  const allowed = new Set(['openrouter', 'codex']);
+
+  if (!allowed.has(normalized)) {
+    throw new Error(`${variableName} must be one of: openrouter, codex.`);
+  }
+
+  return normalized;
+}
+
+export function getApiKeyForProvider(provider) {
+  if (provider === 'codex') {
+    const codexApiKey = process.env.CODEX_API_KEY || process.env.OPENAI_API_KEY;
+    return requireValue(codexApiKey, 'CODEX_API_KEY', 'Missing CODEX_API_KEY (or OPENAI_API_KEY) for codex provider.');
+  }
+
+  return requireValue(process.env.OPENROUTER_API_KEY, 'OPENROUTER_API_KEY');
 }

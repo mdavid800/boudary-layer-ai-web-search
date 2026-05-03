@@ -8,7 +8,9 @@ import {
   DEFAULT_MODEL,
   DEFAULT_PROMPT_PATH,
   DEFAULT_SEARCH_ENGINE,
-  requireValue,
+  DEFAULT_RESEARCH_PROVIDER,
+  getResearchProvider,
+  getApiKeyForProvider,
 } from './lib/runtime-config.js';
 import { createDatabaseClient } from './lib/database.js';
 import {
@@ -19,7 +21,7 @@ import {
   getWindFarmSourceTableName,
   listWindFarmRows,
 } from './lib/windfarm-database.js';
-import { requestResearchReport } from './lib/openrouter.js';
+import { requestResearchReportWithProvider } from './lib/research-provider.js';
 import { buildOfficialSourceContext } from './lib/official-source-hints.js';
 import {
   buildOperationalRefreshContext,
@@ -58,6 +60,7 @@ export function parseResearchDatabaseArgs(argv) {
   let publish = false;
   let forceRefresh = false;
   let operationalRefresh = false;
+  let provider = null;
 
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--ids' && argv[i + 1]) {
@@ -88,6 +91,10 @@ export function parseResearchDatabaseArgs(argv) {
     if (argv[i] === '--operational-refresh') {
       operationalRefresh = true;
     }
+    if (argv[i] === '--provider' && argv[i + 1]) {
+      provider = argv[i + 1].trim();
+      i += 1;
+    }
   }
 
   return {
@@ -98,6 +105,7 @@ export function parseResearchDatabaseArgs(argv) {
     publish,
     forceRefresh,
     operationalRefresh,
+    provider,
   };
 }
 
@@ -113,7 +121,7 @@ export async function runDatabaseResearch({
   argv = process.argv,
   createClient = createDatabaseClient,
   loadPromptTemplateFn = loadPromptTemplate,
-  requestResearchReportFn = requestResearchReport,
+  requestResearchReportFn = requestResearchReportWithProvider,
   getPublishedResearchRunStateFn = getPublishedResearchRunState,
   listWindFarmRowsFn = listWindFarmRows,
   getLinkedTurbineMetadataFn = getLinkedTurbineMetadata,
@@ -127,7 +135,6 @@ export async function runDatabaseResearch({
   saveReportFn = saveReport,
   storeResearchReportFn = storeResearchReport,
 } = {}) {
-  const apiKey = requireValue(process.env.OPENROUTER_API_KEY, 'OPENROUTER_API_KEY');
   const sourceTableName = getWindFarmSourceTableName();
   const reportsDirectory = path.join(getWindFarmReportsDirectory(), sourceTableName);
   const promptTraceEnabled = isPromptTraceEnabled();
@@ -140,7 +147,10 @@ export async function runDatabaseResearch({
     publish,
     forceRefresh,
     operationalRefresh,
+    provider: providerArg,
   } = parseResearchDatabaseArgs(argv);
+  const provider = getResearchProvider(providerArg || DEFAULT_RESEARCH_PROVIDER);
+  const apiKey = getApiKeyForProvider(provider);
 
   if (operationalRefresh && publish) {
     throw new Error('Operational refresh mode creates a draft for review and does not support --publish.');
@@ -174,7 +184,8 @@ export async function runDatabaseResearch({
     const failedRows = [];
 
     console.error(`Starting database-backed research run for ${windFarmRows.length} rows.`);
-    console.error(`Using OpenRouter model: ${DEFAULT_MODEL}`);
+    console.error(`Using research provider: ${provider}`);
+    console.error(`Using model: ${DEFAULT_MODEL}`);
     if (ids) console.error(`Filtering by IDs: ${ids.join(', ')}`);
     if (country) console.error(`Filtering by country: ${country}`);
     if (windFarmType) console.error(`Filtering by wind farm type: ${windFarmType}`);
@@ -282,6 +293,7 @@ export async function runDatabaseResearch({
         }
 
         const report = await requestResearchReportFn({
+          provider,
           apiKey,
           model: DEFAULT_MODEL,
           prompt: finalPrompt,

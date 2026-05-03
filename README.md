@@ -65,6 +65,12 @@ Use a different model for a single run:
 npm run research -- "East Anglia Three" --model openai/gpt-5.4-mini
 ```
 
+Use Codex as the research provider for a single run:
+
+```powershell
+npm run research -- "East Anglia Three" --provider codex
+```
+
 Show CLI help:
 
 ```powershell
@@ -94,6 +100,7 @@ That workflow reads directly from the processing-owned core tables:
 | `OPENROUTER_SEARCH_ENGINE` | `auto` | Web search engine passed to `openrouter:web_search` |
 | `OPENROUTER_MAX_RESULTS` | `8` | Maximum results per search call |
 | `OPENROUTER_MAX_TOTAL_RESULTS` | `24` | Maximum total results across the full request |
+| `RESEARCH_PROVIDER` | `openrouter` | Research provider switch: `openrouter` or `codex` |
 | `OPENROUTER_SITE_URL` | empty | Optional `HTTP-Referer` header for OpenRouter |
 | `OPENROUTER_SITE_NAME` | `boundary-layer-ai-web-search` | Optional `X-Title` header for OpenRouter |
 | `DATABASE_URL` | - | Required for `npm run research-db`; Supabase Postgres connection string |

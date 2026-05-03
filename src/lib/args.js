@@ -3,6 +3,7 @@ const VALUE_FLAGS = new Set([
   '--max-results',
   '--max-total-results',
   '--model',
+  '--provider',
   '--output',
   '--prompt',
 ]);
@@ -16,6 +17,7 @@ export function parseCliArgs(argv) {
     model: null,
     outputPath: null,
     promptPath: null,
+    provider: null,
     windFarmName: '',
   };
   const nameParts = [];
@@ -68,6 +70,7 @@ export function formatHelp({
   defaultSearchEngine,
   defaultMaxResults,
   defaultMaxTotalResults,
+  defaultResearchProvider,
 }) {
   return [
     'Usage:',
@@ -79,6 +82,7 @@ export function formatHelp({
     `  --engine <engine>             Search engine (default: ${defaultSearchEngine})`,
     `  --max-results <number>        Max results per search call (default: ${defaultMaxResults})`,
     `  --max-total-results <number>  Max total results across the request (default: ${defaultMaxTotalResults})`,
+    `  --provider <provider>         Research provider: openrouter|codex (default: ${defaultResearchProvider})`,
     '  --output, -o <path>          Save the markdown report to a file',
     '  --help, -h                   Show this help text',
   ].join('\n');
@@ -114,6 +118,9 @@ function assignValue(options, flag, rawValue) {
       return;
     case '--engine':
       options.engine = rawValue;
+      return;
+    case '--provider':
+      options.provider = rawValue;
       return;
     case '--output':
       options.outputPath = rawValue;
