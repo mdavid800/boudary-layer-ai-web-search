@@ -8,6 +8,7 @@ export const CANONICAL_WIND_FARM_STATUSES = [
   'Lease Awarded, Pre-Planning',
   'Development Zone / lease area',
   'Concept',
+  'Archive',
 ];
 
 const STATUS_ALIASES = new Map([
@@ -45,6 +46,12 @@ const STATUS_ALIASES = new Map([
   ['test site', 'Concept'],
   ['test-site', 'Concept'],
   ['testsite', 'Concept'],
+  ['archive', 'Archive'],
+  ['archived', 'Archive'],
+  ['cancelled', 'Archive'],
+  ['canceled', 'Archive'],
+  ['cancelled project', 'Archive'],
+  ['canceled project', 'Archive'],
 ]);
 
 function shouldUseDevelopmentZoneStatus(windFarmName, normalizedStatus) {

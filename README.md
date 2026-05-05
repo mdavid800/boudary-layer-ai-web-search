@@ -91,6 +91,24 @@ Run research sequentially for every row in the configured wind farm source table
 npm run research-db
 ```
 
+Verify draft reports without publishing them:
+
+```powershell
+npm run verify-reports -- --ids 208,209,210
+```
+
+Print the blocker summary as JSON for scripting or review:
+
+```powershell
+npm run verify-reports -- --ids 208,209,210 --json
+```
+
+Attempt automatic repair of blocked rows, keep the reports as drafts, and then re-verify them:
+
+```powershell
+npm run verify-reports -- --ids 208,209,210 --repair
+```
+
 Operational note: `openai/gpt-5.4` can take materially longer than `openai/gpt-5.4-mini` before any visible payload arrives. In local investigation against the production Beatrice prompt, OpenRouter returned `200` quickly but streamed whitespace keepalive chunks for about 59 seconds before the first real GPT-5.4 payload, versus about 23 seconds for GPT-5.4-mini.
 
 That workflow reads directly from the processing-owned core tables:
@@ -143,6 +161,8 @@ npm run research-db -- --country "United Kingdom" --wind-farm-type "Offshore win
 
 The prompt still asks the model to validate everything with current web sources and supporting links. The database values are treated as moderately confident validation inputs, not final truth.
 
+`npm run verify-reports` is the safe draft-report verification workflow. By default it only reports blockers. With `--repair`, it uses the same blocked-row repair path as publish, saves repaired markdown back into the draft report, and re-runs verification, but it still does not publish reports or activate facts.
+
 ### Request timing note
 
 When `OPENROUTER_MODEL=openai/gpt-5.4`, some research runs can look hung even when they are still active. The current OpenRouter endpoint behavior observed in this repo is:
@@ -169,6 +189,9 @@ For the project `Status` field, the research output should use Boundary Layer's 
 - `Lease Awarded, Pre-Planning`
 - `Development Zone / lease area`
 - `Concept`
+- `Archive`
+
+Use `Archive` when current evidence shows the record should not remain a live standalone project, for example cancelled projects, superseded legacy identities, or duplicates. The report should state the reason clearly in the research summary.
 
 If you want to inspect the exact rendered prompt for debugging, set `PROMPT_TRACE_ENABLED=true`. Each run will save prompt traces under `prompt-traces\<source-table>\`.
 

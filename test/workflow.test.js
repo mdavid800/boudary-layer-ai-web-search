@@ -44,6 +44,11 @@ import { pruneObsoleteDraftReports } from '../src/lib/report-storage.js';
 import { EUROWINDWAKES_ZENODO_RECORD_URL } from '../src/lib/source-of-record.js';
 import { verifyEvidenceRecord, verifyReportEvidence } from '../src/lib/evidence-verifier.js';
 import { publishDraftReports } from '../src/publish-reports.js';
+import {
+  formatVerifyReportsHelp,
+  parseVerifyReportsArgs,
+  verifyDraftReports,
+} from '../src/verify-reports.js';
 
 function createSourceOfRecord(overrides = {}) {
   return {
@@ -381,6 +386,8 @@ test('normalizeCanonicalWindFarmStatus maps legacy and planning aliases into can
   );
   assert.equal(normalizeCanonicalWindFarmStatus('planned'), 'Concept');
   assert.equal(normalizeCanonicalWindFarmStatus('lease area'), 'Development Zone / lease area');
+  assert.equal(normalizeCanonicalWindFarmStatus('cancelled'), 'Archive');
+  assert.equal(normalizeCanonicalWindFarmStatus('archived'), 'Archive');
   assert.equal(normalizeCanonicalWindFarmStatus('unsupported'), null);
 });
 
@@ -496,6 +503,37 @@ test('parseResearchDatabaseArgs supports operational refresh mode', () => {
     operationalRefresh: true,
     provider: null,
   });
+});
+
+test('parseVerifyReportsArgs supports ids and json output', () => {
+  const result = parseVerifyReportsArgs([
+    '--ids',
+    '208,209,208',
+    '--json',
+    '--repair',
+  ]);
+
+  assert.deepEqual(result, {
+    help: false,
+    ids: [208, 209],
+    json: true,
+    repair: true,
+  });
+});
+
+test('parseVerifyReportsArgs rejects invalid ids', () => {
+  assert.throws(
+    () => parseVerifyReportsArgs(['--ids', '208,nope']),
+    /--ids must be a comma-separated list of positive integers/,
+  );
+});
+
+test('formatVerifyReportsHelp includes the verify-reports usage line', () => {
+  const helpText = formatVerifyReportsHelp();
+
+  assert.match(helpText, /npm run verify-reports -- \[options\]/);
+  assert.match(helpText, /Verify only the selected draft report ids/);
+  assert.match(helpText, /Repair blocked draft rows and re-verify without publishing/);
 });
 
 test('buildOperationalRefreshContext summarizes current ownership and recent developments', () => {
@@ -2690,6 +2728,159 @@ test('verifyReportEvidence does not block reachable not-confirmed rows', async (
   assert.equal(result.blockedRows.length, 0);
   assert.equal(updates.length, 1);
   assert.equal(updates[0][5], 'value_not_confirmed');
+});
+
+test('verifyDraftReports filters requested draft ids and reports blockers without publishing', async () => {
+  const logLines = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes("WHERE review_status = 'draft'") && text.includes('id = ANY')) {
+        assert.deepEqual(values, [[208, 209, 210]]);
+
+        return {
+          rows: [
+            { id: 208, wind_farm_id: 6339, report_markdown: 'A', model_used: 'openai/gpt-5.4', name: 'Fanm Bugt' },
+            { id: 210, wind_farm_id: 6342, report_markdown: 'B', model_used: 'openai/gpt-5.4', name: 'Nordsoren II Vest' },
+          ],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await verifyDraftReports({
+    client: fakeClient,
+    reportIds: [208, 209, 210],
+    verifyReportEvidenceFn: async (_client, reportId) => {
+      if (reportId === 208) {
+        return {
+          passed: true,
+          blockedRows: [],
+        };
+      }
+
+      return {
+        passed: false,
+        blockedRows: [
+          {
+            id: 901,
+            status: 'failed',
+            error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+          },
+        ],
+      };
+    },
+    log: (line) => logLines.push(line),
+  });
+
+  assert.deepEqual(result, {
+    draftCount: 2,
+    passedReportIds: [208],
+    blockedReports: [
+      {
+        reportId: 210,
+        windFarmId: 6342,
+        blockedRows: [
+          {
+            id: 901,
+            status: 'failed',
+            error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+          },
+        ],
+      },
+    ],
+    repairedReportIds: [],
+    repairFailures: [],
+    matchedReportIds: [208, 210],
+    missingReportIds: [209],
+  });
+  assert.ok(logLines.some((line) => line.includes('Requested ids not found as draft reports: 209.')));
+  assert.ok(logLines.some((line) => line.includes('Blocked report #210 for wind farm 6342:')));
+});
+
+test('verifyDraftReports repairs blocked drafts and re-verifies without publishing', async () => {
+  const logLines = [];
+  let verifyCallCount = 0;
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes("WHERE review_status = 'draft'") && text.includes('id = ANY')) {
+        assert.deepEqual(values, [[208]]);
+
+        return {
+          rows: [
+            {
+              id: 208,
+              wind_farm_id: 6339,
+              report_markdown: 'Original markdown',
+              model_used: 'openai/gpt-5.4',
+              name: 'Fanm Bugt',
+            },
+          ],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await verifyDraftReports({
+    client: fakeClient,
+    reportIds: [208],
+    repair: true,
+    apiKey: 'test-key',
+    verifyReportEvidenceFn: async () => {
+      verifyCallCount += 1;
+
+      if (verifyCallCount === 1) {
+        return {
+          passed: false,
+          blockedRows: [
+            {
+              id: 901,
+              status: 'failed',
+              error: 'Source-of-record request returned HTTP 404.',
+            },
+          ],
+        };
+      }
+
+      return {
+        passed: true,
+        blockedRows: [],
+      };
+    },
+    requestBlockedRowRepairFn: async ({ reportMarkdown, blockedRows }) => {
+      assert.equal(reportMarkdown, 'Original markdown');
+      assert.equal(blockedRows.length, 1);
+      return 'Repaired markdown';
+    },
+    updateResearchReportFn: async (_client, payload) => {
+      assert.equal(payload.reportId, 208);
+      assert.equal(payload.windFarmId, 6339);
+      assert.equal(payload.reportMarkdown, 'Repaired markdown');
+      assert.equal(payload.reviewStatus, 'draft');
+      return { reportId: 208, factsInserted: 4 };
+    },
+    saveReportFn: async (outputPath, reportMarkdown) => {
+      assert.match(outputPath, /reports[\\/]core_wind_farms[\\/]6339-fanm-bugt\.md$/);
+      assert.equal(reportMarkdown, 'Repaired markdown');
+      return outputPath;
+    },
+    log: (line) => logLines.push(line),
+  });
+
+  assert.equal(verifyCallCount, 2);
+  assert.deepEqual(result, {
+    draftCount: 1,
+    passedReportIds: [208],
+    blockedReports: [],
+    repairedReportIds: [208],
+    repairFailures: [],
+    matchedReportIds: [208],
+    missingReportIds: [],
+  });
+  assert.ok(logLines.some((line) => line.includes('Attempting blocked-row repair for report #208')));
 });
 
 test('publishDraftReports repairs a blocked draft and publishes it when reverification passes', async () => {

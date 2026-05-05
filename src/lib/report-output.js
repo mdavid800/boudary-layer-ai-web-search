@@ -6,6 +6,14 @@ export async function saveReport(outputPath, report) {
   return saveTextFile(outputPath, report);
 }
 
+export function buildReportOutputPath({ sourceTableName, windFarmId, windFarmName }) {
+  return path.join(
+    'reports',
+    sourceTableName,
+    `${windFarmId}-${slugifyFileSegment(windFarmName || `windfarm-${windFarmId}`)}.md`,
+  );
+}
+
 export async function saveTextFile(outputPath, content) {
   const resolvedPath = path.resolve(process.cwd(), outputPath);
   await mkdir(path.dirname(resolvedPath), { recursive: true });

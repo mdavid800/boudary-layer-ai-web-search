@@ -102,6 +102,7 @@ Research and complete the following items:
        - `Lease Awarded, Pre-Planning` — lease or development zone awarded to a developer, but no project-specific planning / consent application has been submitted yet
        - `Development Zone / lease area` — lease or seabed zone proposed / issued, but the leasing process has not concluded yet
      - `Concept` — early-stage project with no formal application yet
+       - `Archive` — cancelled, superseded, duplicate, legacy subproject, or otherwise not a live standalone project; explain why in the research summary
    - when evidence is ambiguous, choose the closest exact label above and explain the nuance briefly in the research summary
 
 4. Capacity

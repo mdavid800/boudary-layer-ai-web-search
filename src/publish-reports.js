@@ -8,17 +8,9 @@ import {
 } from './lib/runtime-config.js';
 import { verifyReportEvidence } from './lib/evidence-verifier.js';
 import { requestBlockedRowRepair } from './lib/openrouter.js';
-import { saveReport, slugifyFileSegment } from './lib/report-output.js';
+import { buildReportOutputPath, saveReport } from './lib/report-output.js';
 import { pruneObsoleteDraftReports, updateResearchReport } from './lib/report-storage.js';
 import { getWindFarmSourceTableName } from './lib/windfarm-database.js';
-
-function buildReportOutputPath({ sourceTableName, windFarmId, windFarmName }) {
-  return path.join(
-    'reports',
-    sourceTableName,
-    `${windFarmId}-${slugifyFileSegment(windFarmName || `windfarm-${windFarmId}`)}.md`,
-  );
-}
 
 export async function publishDraftReports({
   client,
