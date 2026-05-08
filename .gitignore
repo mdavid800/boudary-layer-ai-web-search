@@ -1,2 +1,15 @@
 node_modules/
+<<<<<<< ours
+<<<<<<< ours
 .env
+=======
+=======
+>>>>>>> theirs
+dist/
+.DS_Store
+.env
+.env.*
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs

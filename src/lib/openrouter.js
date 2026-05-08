@@ -417,6 +417,7 @@ function buildRetryPrompt(prompt, qualityIssues = []) {
 export function buildBlockedRowRepairPrompt(reportMarkdown, blockedRows = []) {
   const blockedRowSummary = blockedRows.map((row) => ({
     id: row.id,
+    status: row.status ?? null,
     report_item_label: row.report_item_label ?? null,
     report_field_name: row.report_field_name ?? null,
     report_date: row.report_date ?? null,
@@ -424,6 +425,9 @@ export function buildBlockedRowRepairPrompt(reportMarkdown, blockedRows = []) {
     reported_value: row.reported_value ?? null,
     source_name: row.source_name ?? null,
     source_url: row.source_url ?? null,
+    source_type: row.source_type ?? null,
+    evidence_quote: row.evidence_quote ?? null,
+    http_status: row.http_status ?? null,
     error: row.error ?? null,
   }));
 
@@ -434,6 +438,11 @@ export function buildBlockedRowRepairPrompt(reportMarkdown, blockedRows = []) {
     'Only replace blocked rows and the matching provenance appendix entries unless a minimal adjacent edit is strictly required for internal consistency.',
     'For repaired rows, prefer openly accessible official, regulator, owner, operator, supplier, or open-dataset pages over PDFs or risky third-party pages when available.',
     'Never use TGS, 4C Offshore, or Windpower Monthly anywhere in the repaired report.',
+    'Keep the same row order, item labels, date labels, and overall markdown structure.',
+    'If a blocked row shows HTTP 401, 403, 404, 429, or an error indicating login, paywall, or bot blocking, do not reuse that URL as the new source_of_record.',
+    'If a blocked row failed because the page did not contain the expected evidence quote, first try to keep the same factual value and replace only the source_of_record evidence_quote with a short verbatim snippet from an accessible authoritative page.',
+    'If an accessible authoritative source cannot support the current value after searching, change that row to Not confirmed instead of preserving an unsupported fact.',
+    'When using Not confirmed, also update the research summary and provenance appendix so they clearly say the value is not confirmed and do not retain unsupported numeric or date claims.',
     'Use short verbatim machine-checkable evidence_quote fragments copied closely from the source page text.',
     'Prefer label-plus-value fragments such as "Installed capacity 588 MW", "114 turbines", "Final investment decision June 2018", or owner names with percentages.',
     'Do not paraphrase the evidence_quote.',

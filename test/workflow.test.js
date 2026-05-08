@@ -44,6 +44,7 @@ import { pruneObsoleteDraftReports } from '../src/lib/report-storage.js';
 import { EUROWINDWAKES_ZENODO_RECORD_URL } from '../src/lib/source-of-record.js';
 import { verifyEvidenceRecord, verifyReportEvidence } from '../src/lib/evidence-verifier.js';
 import { publishDraftReports } from '../src/publish-reports.js';
+import { suggestDraftResearchReportRepair } from '../src/lib/report-moderation.js';
 import {
   formatVerifyReportsHelp,
   parseVerifyReportsArgs,
@@ -710,6 +711,111 @@ test('runDatabaseResearch skips published operational reports unless forced', as
   );
   assert.equal(
     loggedMessages.some((message) => message.includes('1 saved, 1 skipped, 0 failed, 2 total')),
+    true,
+  );
+});
+
+test('runDatabaseResearch auto-verifies stored draft reports and logs ready-to-publish status', async () => {
+  const loggedMessages = [];
+  const originalConsoleError = console.error;
+  const originalApiKey = process.env.OPENROUTER_API_KEY;
+  const verifiedReportIds = [];
+
+  console.error = (message) => loggedMessages.push(String(message));
+  process.env.OPENROUTER_API_KEY = 'test-key';
+
+  const fakeClient = {
+    connect: async () => {},
+    end: async () => {},
+  };
+
+  try {
+    await runDatabaseResearch({
+      argv: ['node', 'src/research-from-database.js'],
+      createClient: () => fakeClient,
+      loadPromptTemplateFn: async () => 'Research this project:\n{PROJECT_CONTEXT}\n',
+      listWindFarmRowsFn: async () => ([
+        {
+          id: 7001,
+          name: 'Test Farm',
+          type: 'Offshore wind farm',
+          n_turbines: 10,
+          power_mw: 100,
+          status: 'Operational',
+        },
+      ]),
+      getPublishedResearchRunStateFn: async () => new Map(),
+      getLinkedTurbineMetadataFn: async () => null,
+      getTurbineCountValidationContextFn: async () => null,
+      buildOfficialSourceContextFn: async () => '',
+      requestResearchReportFn: async () => '# Report',
+      saveReportFn: async () => 'saved-path',
+      saveTextFileFn: async () => 'prompt-trace-path',
+      storeResearchReportFn: async () => ({ reportId: 321, factsInserted: 3 }),
+      verifyReportEvidenceFn: async (_client, reportId) => {
+        verifiedReportIds.push(reportId);
+        return { passed: true, blockedRows: [] };
+      },
+    });
+  } finally {
+    console.error = originalConsoleError;
+    process.env.OPENROUTER_API_KEY = originalApiKey;
+  }
+
+  assert.deepEqual(verifiedReportIds, [321]);
+  assert.equal(
+    loggedMessages.some((message) => message.includes('moderation queue status: Ready to publish')),
+    true,
+  );
+});
+
+test('runDatabaseResearch logs needs-review status when auto-verification cannot complete', async () => {
+  const loggedMessages = [];
+  const originalConsoleError = console.error;
+  const originalApiKey = process.env.OPENROUTER_API_KEY;
+
+  console.error = (message) => loggedMessages.push(String(message));
+  process.env.OPENROUTER_API_KEY = 'test-key';
+
+  const fakeClient = {
+    connect: async () => {},
+    end: async () => {},
+  };
+
+  try {
+    await runDatabaseResearch({
+      argv: ['node', 'src/research-from-database.js'],
+      createClient: () => fakeClient,
+      loadPromptTemplateFn: async () => 'Research this project:\n{PROJECT_CONTEXT}\n',
+      listWindFarmRowsFn: async () => ([
+        {
+          id: 7002,
+          name: 'Fallback Farm',
+          type: 'Offshore wind farm',
+          n_turbines: 10,
+          power_mw: 100,
+          status: 'Operational',
+        },
+      ]),
+      getPublishedResearchRunStateFn: async () => new Map(),
+      getLinkedTurbineMetadataFn: async () => null,
+      getTurbineCountValidationContextFn: async () => null,
+      buildOfficialSourceContextFn: async () => '',
+      requestResearchReportFn: async () => '# Report',
+      saveReportFn: async () => 'saved-path',
+      saveTextFileFn: async () => 'prompt-trace-path',
+      storeResearchReportFn: async () => ({ reportId: 654, factsInserted: 2 }),
+      verifyReportEvidenceFn: async () => {
+        throw new Error('network timeout');
+      },
+    });
+  } finally {
+    console.error = originalConsoleError;
+    process.env.OPENROUTER_API_KEY = originalApiKey;
+  }
+
+  assert.equal(
+    loggedMessages.some((message) => message.includes('moderation queue status: Needs review')),
     true,
   );
 });
@@ -1462,18 +1568,25 @@ test('buildBlockedRowRepairPrompt asks for minimal row-scoped repair and verifie
   const prompt = buildBlockedRowRepairPrompt('Current report markdown', [
     {
       id: 847,
+      status: 'failed',
       report_item_label: 'Capacity',
       report_field_name: 'capacity_mw',
       reported_value: '588 MW',
       source_name: 'SSE page',
       source_url: 'https://example.com/beatrice',
+      source_type: 'official project',
+      evidence_quote: 'Installed capacity about 600 MW',
+      http_status: 403,
       error: 'Fetched source-of-record page did not contain the expected evidence quote.',
     },
   ]);
 
   assert.match(prompt, /Preserve every table row, recent-development row, and appendix entry that is not listed as blocked below\./);
   assert.match(prompt, /Use short verbatim machine-checkable evidence_quote fragments/);
+  assert.match(prompt, /do not reuse that URL as the new source_of_record/);
+  assert.match(prompt, /change that row to Not confirmed instead of preserving an unsupported fact/);
   assert.match(prompt, /"Capacity"/);
+  assert.match(prompt, /"http_status": 403/);
   assert.match(prompt, /Current report markdown/);
 });
 
@@ -1575,6 +1688,63 @@ test('requestBlockedRowRepair returns the repaired report when quality checks pa
   });
 
   assert.match(result, /Installed capacity 588 MW/);
+});
+
+test('suggestDraftResearchReportRepair returns a non-destructive markdown proposal', async () => {
+  const queries = [];
+  const client = {
+    query: async (sql, params) => {
+      queries.push({ sql, params });
+      if (sql.includes('FROM research_wind_farm_reports')) {
+        return {
+          rows: [
+            {
+              id: 218,
+              wind_farm_id: 6431,
+              report_markdown: 'Current report markdown',
+              model_used: 'openai/gpt-5.4',
+            },
+          ],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${sql}`);
+    },
+  };
+
+  const result = await suggestDraftResearchReportRepair(client, {
+    reportId: 218,
+    apiKey: 'test-key',
+    verifyReportEvidenceFn: async () => ({
+      passed: false,
+      blockedRows: [
+        {
+          id: 847,
+          status: 'failed',
+          error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+          report_item_label: 'Capacity',
+          report_field_name: 'capacity_mw',
+          report_date: null,
+          report_development: null,
+          reported_value: '588 MW',
+          source_url: 'https://example.com/beatrice',
+          source_name: 'SSE page',
+        },
+      ],
+    }),
+    requestBlockedRowRepairFn: async ({ reportMarkdown, blockedRows }) => {
+      assert.equal(reportMarkdown, 'Current report markdown');
+      assert.equal(blockedRows.length, 1);
+      return 'Suggested repaired markdown';
+    },
+  });
+
+  assert.equal(result.reportId, 218);
+  assert.equal(result.windFarmId, 6431);
+  assert.equal(result.modelUsed, 'openai/gpt-5.4');
+  assert.equal(result.suggestedReportMarkdown, 'Suggested repaired markdown');
+  assert.equal(result.blockedRows.length, 1);
+  assert.equal(queries.length, 1);
 });
 
 test('buildDatabaseConnectionString adds a no-verify sslmode when missing', () => {

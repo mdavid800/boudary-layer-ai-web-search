@@ -14,6 +14,7 @@ import { getWindFarmSourceTableName } from './lib/windfarm-database.js';
 
 export async function publishDraftReports({
   client,
+  reportIds = [],
   apiKey = process.env.OPENROUTER_API_KEY,
   verifyReportEvidenceFn = verifyReportEvidence,
   requestBlockedRowRepairFn = requestBlockedRowRepair,
@@ -27,13 +28,23 @@ export async function publishDraftReports({
   referer = process.env.OPENROUTER_SITE_URL,
   title = process.env.OPENROUTER_SITE_NAME || 'boundary-layer-ai-web-search',
 } = {}) {
-  const draftResult = await client.query(
-    `SELECT r.id, r.wind_farm_id, r.report_markdown, r.model_used, w.name
-     FROM research_wind_farm_reports r
-     JOIN ${sourceTableName} w ON w.id = r.wind_farm_id
-     WHERE r.review_status = 'draft'
-     ORDER BY r.researched_at ASC`,
-  );
+  const draftResult = reportIds.length > 0
+    ? await client.query(
+      `SELECT r.id, r.wind_farm_id, r.report_markdown, r.model_used, w.name
+       FROM research_wind_farm_reports r
+       JOIN ${sourceTableName} w ON w.id = r.wind_farm_id
+       WHERE r.review_status = 'draft'
+         AND r.id = ANY($1::int[])
+       ORDER BY r.researched_at ASC`,
+      [reportIds],
+    )
+    : await client.query(
+      `SELECT r.id, r.wind_farm_id, r.report_markdown, r.model_used, w.name
+       FROM research_wind_farm_reports r
+       JOIN ${sourceTableName} w ON w.id = r.wind_farm_id
+       WHERE r.review_status = 'draft'
+       ORDER BY r.researched_at ASC`,
+    );
   const draftReports = draftResult.rows;
   const draftCount = draftReports.length;
 
