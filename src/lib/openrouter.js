@@ -1,3 +1,4 @@
+import './proxy.js';
 import { parseStructuredReport } from './report-structure.js';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
@@ -413,19 +414,131 @@ function buildRetryPrompt(prompt, qualityIssues = []) {
 
   return `${prompt.trim()}\n\n${retryNotes.join('\n')}`;
 }
+function getBlockedRowKey(row = {}) {
+  if (row.report_date && row.report_development) {
+    return `recent::${row.report_date}::${row.report_development}`;
+  }
+
+  return `profile::${row.report_item_label ?? ''}::${row.report_field_name ?? ''}`;
+}
+
+function buildBlockedRowProvenanceIndex(reportMarkdown) {
+  try {
+    const parsedReport = parseStructuredReport(reportMarkdown);
+    const index = new Map();
+
+    for (const row of parsedReport.profileRows ?? []) {
+      index.set(
+        `profile::${row.item_label ?? ''}::${row.field_name ?? ''}`,
+        {
+          sourceOfRecordUrl: row.provenance?.source_of_record?.url ?? null,
+          supportingContextUrls: Array.isArray(row.provenance?.supporting_context)
+            ? row.provenance.supporting_context.map((source) => source?.url).filter(Boolean)
+            : [],
+        },
+      );
+    }
+
+    for (const row of parsedReport.recentDevelopments ?? []) {
+      index.set(
+        `recent::${row.date ?? ''}::${row.development ?? ''}`,
+        {
+          sourceOfRecordUrl: row.provenance?.source_of_record?.url ?? null,
+          supportingContextUrls: Array.isArray(row.provenance?.supporting_context)
+            ? row.provenance.supporting_context.map((source) => source?.url).filter(Boolean)
+            : [],
+        },
+      );
+    }
+
+    return index;
+  } catch {
+    return new Map();
+  }
+}
+
+function isAccessBlockedRow(row = {}) {
+  const httpStatus = Number.isInteger(row.http_status) ? row.http_status : null;
+  const errorText = String(row.error ?? '').toLowerCase();
+
+  return httpStatus === 401
+    || httpStatus === 403
+    || httpStatus === 404
+    || httpStatus === 429
+    || errorText.includes('login')
+    || errorText.includes('paywall')
+    || errorText.includes('bot blocking')
+    || errorText.includes('bot-blocking');
+}
+
+function buildBlockedRowRepairContext(reportMarkdown, blockedRows = []) {
+  const provenanceIndex = buildBlockedRowProvenanceIndex(reportMarkdown);
+
+  const blockedRowSummary = blockedRows.map((row) => {
+    const provenance = provenanceIndex.get(getBlockedRowKey(row));
+    const candidateReplacementUrls = [...new Set(
+      (provenance?.supportingContextUrls ?? []).filter((url) => url && url !== row.source_url),
+    )];
+
+    return {
+      id: row.id,
+      status: row.status ?? null,
+      report_item_label: row.report_item_label ?? null,
+      report_field_name: row.report_field_name ?? null,
+      report_date: row.report_date ?? null,
+      report_development: row.report_development ?? null,
+      reported_value: row.reported_value ?? null,
+      source_name: row.source_name ?? null,
+      source_url: row.source_url ?? null,
+      source_type: row.source_type ?? null,
+      evidence_quote: row.evidence_quote ?? null,
+      http_status: row.http_status ?? null,
+      error: row.error ?? null,
+      candidate_replacement_urls: candidateReplacementUrls,
+    };
+  });
+
+  const deadSourceGroupsByUrl = new Map();
+
+  for (const row of blockedRowSummary) {
+    if (!row.source_url || !isAccessBlockedRow(row)) {
+      continue;
+    }
+
+    const existingGroup = deadSourceGroupsByUrl.get(row.source_url) ?? {
+      source_url: row.source_url,
+      source_name: row.source_name ?? null,
+      http_status: row.http_status ?? null,
+      error: row.error ?? null,
+      affected_rows: [],
+      candidate_replacement_urls: [],
+    };
+
+    existingGroup.affected_rows.push({
+      id: row.id,
+      report_item_label: row.report_item_label ?? null,
+      report_field_name: row.report_field_name ?? null,
+      report_date: row.report_date ?? null,
+      report_development: row.report_development ?? null,
+      reported_value: row.reported_value ?? null,
+    });
+
+    existingGroup.candidate_replacement_urls = [...new Set([
+      ...existingGroup.candidate_replacement_urls,
+      ...(row.candidate_replacement_urls ?? []),
+    ])];
+
+    deadSourceGroupsByUrl.set(row.source_url, existingGroup);
+  }
+
+  return {
+    blockedRowSummary,
+    deadSourceGroups: [...deadSourceGroupsByUrl.values()],
+  };
+}
 
 export function buildBlockedRowRepairPrompt(reportMarkdown, blockedRows = []) {
-  const blockedRowSummary = blockedRows.map((row) => ({
-    id: row.id,
-    report_item_label: row.report_item_label ?? null,
-    report_field_name: row.report_field_name ?? null,
-    report_date: row.report_date ?? null,
-    report_development: row.report_development ?? null,
-    reported_value: row.reported_value ?? null,
-    source_name: row.source_name ?? null,
-    source_url: row.source_url ?? null,
-    error: row.error ?? null,
-  }));
+  const { blockedRowSummary, deadSourceGroups } = buildBlockedRowRepairContext(reportMarkdown, blockedRows);
 
   return [
     'You are repairing an existing offshore wind research report that failed source-of-record verification on a small number of rows.',
@@ -434,11 +547,27 @@ export function buildBlockedRowRepairPrompt(reportMarkdown, blockedRows = []) {
     'Only replace blocked rows and the matching provenance appendix entries unless a minimal adjacent edit is strictly required for internal consistency.',
     'For repaired rows, prefer openly accessible official, regulator, owner, operator, supplier, or open-dataset pages over PDFs or risky third-party pages when available.',
     'Never use TGS, 4C Offshore, or Windpower Monthly anywhere in the repaired report.',
+    'Keep the same row order, item labels, date labels, and overall markdown structure.',
+    'If a blocked row shows HTTP 401, 403, 404, 429, or an error indicating login, paywall, or bot blocking, do not reuse that URL as the new source_of_record.',
+    'If multiple blocked rows share the same dead or blocked source_url, treat them as one source-replacement task and repair that shared source once for all affected rows.',
+    'If candidate_replacement_urls are provided below from the existing report provenance, check those URLs first before doing broader search.',
+    'If a blocked row failed because the page did not contain the expected evidence quote, first try to keep the same factual value and replace only the source_of_record evidence_quote with a short verbatim snippet from an accessible authoritative page.',
+    'If an accessible authoritative source cannot support the current value after searching, change that row to Not confirmed instead of preserving an unsupported fact.',
+    'When using Not confirmed, also update the research summary and provenance appendix so they clearly say the value is not confirmed and do not retain unsupported numeric or date claims.',
     'Use short verbatim machine-checkable evidence_quote fragments copied closely from the source page text.',
     'Prefer label-plus-value fragments such as "Installed capacity 588 MW", "114 turbines", "Final investment decision June 2018", or owner names with percentages.',
     'Do not paraphrase the evidence_quote.',
     'Return only the full repaired markdown report with the two tables and the Provenance appendix JSON block.',
     '',
+    ...(deadSourceGroups.length > 0
+      ? [
+          'Grouped dead-source issues to repair once per source_url:',
+          '```json',
+          JSON.stringify(deadSourceGroups, null, 2),
+          '```',
+          '',
+        ]
+      : []),
     'Blocked rows to repair:',
     '```json',
     JSON.stringify(blockedRowSummary, null, 2),

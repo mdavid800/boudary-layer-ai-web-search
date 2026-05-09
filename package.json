@@ -5,12 +5,14 @@
   "description": "CLI workflow for offshore wind research using OpenRouter web search server tools.",
   "type": "module",
   "scripts": {
+    "backfill-report-text-encoding": "node src/backfill-report-text-encoding.js",
     "backfill-report-structure": "node src/backfill-report-structure.js",
     "backfill-status-terminology": "node src/backfill-status-terminology.js",
     "hooks:install": "git config core.hooksPath .githooks",
     "lint": "node scripts/check-syntax.mjs",
     "research-db": "node src/research-from-database.js",
     "publish-reports": "node src/publish-reports-cli.js",
+    "verify-reports": "node src/verify-reports-cli.js",
     "research": "node src/cli.js",
     "start": "node src/cli.js",
     "test": "node --test"
@@ -21,6 +23,7 @@
   "dependencies": {
     "dotenv": "^16.5.0",
     "pdf-parse": "^2.4.5",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "undici": "^7.25.0"
   }
 }

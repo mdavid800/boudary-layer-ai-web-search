@@ -1,3 +1,4 @@
+import './proxy.js';
 import { PDFParse } from 'pdf-parse';
 import { canonicalizeSourceOfRecord, isEuroWindWakesSource } from './source-of-record.js';
 
@@ -461,8 +462,11 @@ export async function verifyReportEvidence(client, reportId, { fetchImpl = fetch
         report_date: row.report_date ?? null,
         report_development: row.report_development ?? null,
         reported_value: row.reported_value ?? null,
-        source_url: row.source_url ?? null,
-        source_name: row.source_name ?? null,
+        source_url: result.normalizedRecord?.source_url ?? row.source_url ?? null,
+        source_name: result.normalizedRecord?.source_name ?? row.source_name ?? null,
+        source_type: result.normalizedRecord?.source_type ?? row.source_type ?? null,
+        evidence_quote: row.evidence_quote ?? null,
+        http_status: result.httpStatus ?? null,
       });
     }
   }

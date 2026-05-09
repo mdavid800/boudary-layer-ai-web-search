@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { extractFactsFromReport } from './fact-extraction.js';
 import { buildReportEvidenceRows } from './report-evidence.js';
 import { parseStructuredReport } from './report-structure.js';
+import { normalizeResearchReportText } from './report-text-normalization.js';
 import { normalizeCanonicalWindFarmStatus } from './status.js';
 
 /**
@@ -269,6 +270,50 @@ async function syncResearchReportArtifacts(client, {
   return { factsInserted };
 }
 
+async function writeResearchReport(client, {
+  reportId,
+  windFarmId,
+  reportMarkdown,
+  modelUsed,
+  reviewStatus = 'draft',
+  preserveResearchedAt = false,
+}) {
+  const normalizedReportMarkdown = normalizeResearchReportText(reportMarkdown);
+
+  await client.query(
+    preserveResearchedAt
+      ? `UPDATE research_wind_farm_reports
+         SET report_markdown = $2,
+             model_used = $3,
+             review_status = $4,
+             updated_at = now()
+         WHERE id = $1`
+      : `UPDATE research_wind_farm_reports
+         SET report_markdown = $2,
+             model_used = $3,
+             researched_at = now(),
+             review_status = $4,
+             updated_at = now()
+         WHERE id = $1`,
+    [reportId, normalizedReportMarkdown, modelUsed, reviewStatus],
+  );
+
+  const { factsInserted } = await syncResearchReportArtifacts(client, {
+    reportId,
+    windFarmId,
+    reportMarkdown: normalizedReportMarkdown,
+    reviewStatus,
+  });
+
+  return {
+    reportId,
+    windFarmId,
+    reviewStatus,
+    factsInserted,
+    reportMarkdown: normalizedReportMarkdown,
+  };
+}
+
 /**
  * Store a research report and its extracted facts in the database.
  *
@@ -288,6 +333,7 @@ export async function storeResearchReport(client, {
   finalPrompt,
   reviewStatus = 'draft',
 }) {
+  const normalizedReportMarkdown = normalizeResearchReportText(reportMarkdown);
   const promptHash = sha256(finalPrompt);
 
   // Upsert report — on conflict update the markdown and metadata
@@ -305,7 +351,7 @@ export async function storeResearchReport(client, {
      RETURNING id`,
     [
       windFarmId,
-      reportMarkdown,
+      normalizedReportMarkdown,
       modelUsed,
       promptHash,
       reviewStatus,
@@ -317,7 +363,7 @@ export async function storeResearchReport(client, {
   const { factsInserted } = await syncResearchReportArtifacts(client, {
     reportId,
     windFarmId,
-    reportMarkdown,
+    reportMarkdown: normalizedReportMarkdown,
     reviewStatus,
   });
 
@@ -338,23 +384,61 @@ export async function updateResearchReport(client, {
   modelUsed,
   reviewStatus = 'draft',
 }) {
-  await client.query(
-    `UPDATE research_wind_farm_reports
-     SET report_markdown = $2,
-         model_used = $3,
-         researched_at = now(),
-         review_status = $4,
-         updated_at = now()
-     WHERE id = $1`,
-    [reportId, reportMarkdown, modelUsed, reviewStatus],
-  );
-
-  const { factsInserted } = await syncResearchReportArtifacts(client, {
+  const { factsInserted } = await writeResearchReport(client, {
     reportId,
     windFarmId,
     reportMarkdown,
+    modelUsed,
     reviewStatus,
   });
 
   return { reportId, factsInserted };
+}
+
+export async function normalizeStoredResearchReport(client, {
+  reportId,
+} = {}) {
+  if (!Number.isInteger(reportId)) {
+    throw new Error('reportId must be an integer.');
+  }
+
+  const result = await client.query(
+    `SELECT id, wind_farm_id, report_markdown, model_used, review_status
+     FROM research_wind_farm_reports
+     WHERE id = $1
+     LIMIT 1`,
+    [reportId],
+  );
+
+  const report = result.rows[0] ?? null;
+  if (!report) {
+    throw new Error(`Research report #${reportId} was not found.`);
+  }
+
+  const normalizedReportMarkdown = normalizeResearchReportText(report.report_markdown);
+
+  if (normalizedReportMarkdown === report.report_markdown) {
+    return {
+      reportId,
+      windFarmId: report.wind_farm_id,
+      reviewStatus: report.review_status,
+      factsInserted: 0,
+      changed: false,
+      reportMarkdown: report.report_markdown,
+    };
+  }
+
+  const normalizedReport = await writeResearchReport(client, {
+    reportId,
+    windFarmId: report.wind_farm_id,
+    reportMarkdown: normalizedReportMarkdown,
+    modelUsed: report.model_used,
+    reviewStatus: report.review_status,
+    preserveResearchedAt: true,
+  });
+
+  return {
+    ...normalizedReport,
+    changed: true,
+  };
 }

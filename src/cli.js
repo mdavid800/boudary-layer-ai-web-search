@@ -19,6 +19,7 @@ import {
   getApiKeyForProvider,
 } from './lib/runtime-config.js';
 import { saveReport as saveReportToFile } from './lib/report-output.js';
+import { formatErrorWithCause } from './lib/error-format.js';
 
 dotenv.config();
 
@@ -100,6 +101,6 @@ async function resolveWindFarmName(initialValue) {
 }
 
 main().catch((error) => {
-  console.error(error.message);
+  console.error(formatErrorWithCause(error));
   process.exitCode = 1;
 });

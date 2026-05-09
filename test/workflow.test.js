@@ -44,6 +44,16 @@ import { pruneObsoleteDraftReports } from '../src/lib/report-storage.js';
 import { EUROWINDWAKES_ZENODO_RECORD_URL } from '../src/lib/source-of-record.js';
 import { verifyEvidenceRecord, verifyReportEvidence } from '../src/lib/evidence-verifier.js';
 import { publishDraftReports } from '../src/publish-reports.js';
+import {
+  publishDraftResearchReport,
+  suggestDraftResearchReportRepair,
+  verifyDraftResearchReport,
+} from '../src/lib/report-moderation.js';
+import {
+  formatVerifyReportsHelp,
+  parseVerifyReportsArgs,
+  verifyDraftReports,
+} from '../src/verify-reports.js';
 
 function createSourceOfRecord(overrides = {}) {
   return {
@@ -381,6 +391,8 @@ test('normalizeCanonicalWindFarmStatus maps legacy and planning aliases into can
   );
   assert.equal(normalizeCanonicalWindFarmStatus('planned'), 'Concept');
   assert.equal(normalizeCanonicalWindFarmStatus('lease area'), 'Development Zone / lease area');
+  assert.equal(normalizeCanonicalWindFarmStatus('cancelled'), 'Archive');
+  assert.equal(normalizeCanonicalWindFarmStatus('archived'), 'Archive');
   assert.equal(normalizeCanonicalWindFarmStatus('unsupported'), null);
 });
 
@@ -496,6 +508,37 @@ test('parseResearchDatabaseArgs supports operational refresh mode', () => {
     operationalRefresh: true,
     provider: null,
   });
+});
+
+test('parseVerifyReportsArgs supports ids and json output', () => {
+  const result = parseVerifyReportsArgs([
+    '--ids',
+    '208,209,208',
+    '--json',
+    '--repair',
+  ]);
+
+  assert.deepEqual(result, {
+    help: false,
+    ids: [208, 209],
+    json: true,
+    repair: true,
+  });
+});
+
+test('parseVerifyReportsArgs rejects invalid ids', () => {
+  assert.throws(
+    () => parseVerifyReportsArgs(['--ids', '208,nope']),
+    /--ids must be a comma-separated list of positive integers/,
+  );
+});
+
+test('formatVerifyReportsHelp includes the verify-reports usage line', () => {
+  const helpText = formatVerifyReportsHelp();
+
+  assert.match(helpText, /npm run verify-reports -- \[options\]/);
+  assert.match(helpText, /Verify only the selected draft report ids/);
+  assert.match(helpText, /Repair blocked draft rows and re-verify without publishing/);
 });
 
 test('buildOperationalRefreshContext summarizes current ownership and recent developments', () => {
@@ -672,6 +715,111 @@ test('runDatabaseResearch skips published operational reports unless forced', as
   );
   assert.equal(
     loggedMessages.some((message) => message.includes('1 saved, 1 skipped, 0 failed, 2 total')),
+    true,
+  );
+});
+
+test('runDatabaseResearch auto-verifies stored draft reports and logs ready-to-publish status', async () => {
+  const loggedMessages = [];
+  const originalConsoleError = console.error;
+  const originalApiKey = process.env.OPENROUTER_API_KEY;
+  const verifiedReportIds = [];
+
+  console.error = (message) => loggedMessages.push(String(message));
+  process.env.OPENROUTER_API_KEY = 'test-key';
+
+  const fakeClient = {
+    connect: async () => {},
+    end: async () => {},
+  };
+
+  try {
+    await runDatabaseResearch({
+      argv: ['node', 'src/research-from-database.js'],
+      createClient: () => fakeClient,
+      loadPromptTemplateFn: async () => 'Research this project:\n{PROJECT_CONTEXT}\n',
+      listWindFarmRowsFn: async () => ([
+        {
+          id: 7001,
+          name: 'Test Farm',
+          type: 'Offshore wind farm',
+          n_turbines: 10,
+          power_mw: 100,
+          status: 'Operational',
+        },
+      ]),
+      getPublishedResearchRunStateFn: async () => new Map(),
+      getLinkedTurbineMetadataFn: async () => null,
+      getTurbineCountValidationContextFn: async () => null,
+      buildOfficialSourceContextFn: async () => '',
+      requestResearchReportFn: async () => '# Report',
+      saveReportFn: async () => 'saved-path',
+      saveTextFileFn: async () => 'prompt-trace-path',
+      storeResearchReportFn: async () => ({ reportId: 321, factsInserted: 3 }),
+      verifyReportEvidenceFn: async (_client, reportId) => {
+        verifiedReportIds.push(reportId);
+        return { passed: true, blockedRows: [] };
+      },
+    });
+  } finally {
+    console.error = originalConsoleError;
+    process.env.OPENROUTER_API_KEY = originalApiKey;
+  }
+
+  assert.deepEqual(verifiedReportIds, [321]);
+  assert.equal(
+    loggedMessages.some((message) => message.includes('moderation queue status: Ready to publish')),
+    true,
+  );
+});
+
+test('runDatabaseResearch logs needs-review status when auto-verification cannot complete', async () => {
+  const loggedMessages = [];
+  const originalConsoleError = console.error;
+  const originalApiKey = process.env.OPENROUTER_API_KEY;
+
+  console.error = (message) => loggedMessages.push(String(message));
+  process.env.OPENROUTER_API_KEY = 'test-key';
+
+  const fakeClient = {
+    connect: async () => {},
+    end: async () => {},
+  };
+
+  try {
+    await runDatabaseResearch({
+      argv: ['node', 'src/research-from-database.js'],
+      createClient: () => fakeClient,
+      loadPromptTemplateFn: async () => 'Research this project:\n{PROJECT_CONTEXT}\n',
+      listWindFarmRowsFn: async () => ([
+        {
+          id: 7002,
+          name: 'Fallback Farm',
+          type: 'Offshore wind farm',
+          n_turbines: 10,
+          power_mw: 100,
+          status: 'Operational',
+        },
+      ]),
+      getPublishedResearchRunStateFn: async () => new Map(),
+      getLinkedTurbineMetadataFn: async () => null,
+      getTurbineCountValidationContextFn: async () => null,
+      buildOfficialSourceContextFn: async () => '',
+      requestResearchReportFn: async () => '# Report',
+      saveReportFn: async () => 'saved-path',
+      saveTextFileFn: async () => 'prompt-trace-path',
+      storeResearchReportFn: async () => ({ reportId: 654, factsInserted: 2 }),
+      verifyReportEvidenceFn: async () => {
+        throw new Error('network timeout');
+      },
+    });
+  } finally {
+    console.error = originalConsoleError;
+    process.env.OPENROUTER_API_KEY = originalApiKey;
+  }
+
+  assert.equal(
+    loggedMessages.some((message) => message.includes('moderation queue status: Needs review')),
     true,
   );
 });
@@ -1421,22 +1569,62 @@ test('requestResearchReport retries when the first server-tool report lacks fres
 });
 
 test('buildBlockedRowRepairPrompt asks for minimal row-scoped repair and verifier-friendly evidence', () => {
-  const prompt = buildBlockedRowRepairPrompt('Current report markdown', [
-    {
-      id: 847,
-      report_item_label: 'Capacity',
-      report_field_name: 'capacity_mw',
-      reported_value: '588 MW',
-      source_name: 'SSE page',
-      source_url: 'https://example.com/beatrice',
-      error: 'Fetched source-of-record page did not contain the expected evidence quote.',
-    },
-  ]);
+  const prompt = buildBlockedRowRepairPrompt(
+    [
+      '| Item | Value | Research summary | Sources |',
+      '|---|---|---|---|',
+      '| Capacity | 588 MW | Current summary. | [Source 1](https://example.com/beatrice), [Source 2](https://example.com/fallback-capacity) |',
+      'Recent developments',
+      '',
+      '| Date | Development | Why it matters | Sources |',
+      '|---|---|---|---|',
+      '| 01/05/2024 | Milestone | Why it matters. | [Source 1](https://example.com/dev-1), [Source 2](https://example.com/dev-2) |',
+      createProvenanceAppendix({
+        profileRows: [
+          {
+            item_label: 'Capacity',
+            field_name: 'capacity_mw',
+            value: '588 MW',
+            provenance_mode: 'web_source',
+            source_of_record: createSourceOfRecord({
+              source_url: 'https://example.com/beatrice',
+              source_name: 'SSE page',
+              source_type: 'official project',
+              evidence_quote: 'Installed capacity about 600 MW',
+            }),
+            supporting_context: [{ label: 'Source 2', url: 'https://example.com/fallback-capacity' }],
+          },
+        ],
+      }),
+    ].join('\n'),
+    [
+      {
+        id: 847,
+        status: 'failed',
+        report_item_label: 'Capacity',
+        report_field_name: 'capacity_mw',
+        reported_value: '588 MW',
+        source_name: 'SSE page',
+        source_url: 'https://example.com/beatrice',
+        source_type: 'official project',
+        evidence_quote: 'Installed capacity about 600 MW',
+        http_status: 403,
+        error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+      },
+    ],
+  );
 
   assert.match(prompt, /Preserve every table row, recent-development row, and appendix entry that is not listed as blocked below\./);
   assert.match(prompt, /Use short verbatim machine-checkable evidence_quote fragments/);
+  assert.match(prompt, /do not reuse that URL as the new source_of_record/);
+  assert.match(prompt, /treat them as one source-replacement task/);
+  assert.match(prompt, /Grouped dead-source issues to repair once per source_url:/);
+  assert.match(prompt, /candidate_replacement_urls/);
+  assert.match(prompt, /fallback-capacity/);
+  assert.match(prompt, /change that row to Not confirmed instead of preserving an unsupported fact/);
   assert.match(prompt, /"Capacity"/);
-  assert.match(prompt, /Current report markdown/);
+  assert.match(prompt, /"http_status": 403/);
+  assert.match(prompt, /Current summary/);
 });
 
 test('requestBlockedRowRepair returns the repaired report when quality checks pass', async () => {
@@ -1537,6 +1725,186 @@ test('requestBlockedRowRepair returns the repaired report when quality checks pa
   });
 
   assert.match(result, /Installed capacity 588 MW/);
+});
+
+test('suggestDraftResearchReportRepair returns a non-destructive markdown proposal', async () => {
+  const queries = [];
+  const client = {
+    query: async (sql, params) => {
+      queries.push({ sql, params });
+      if (sql.includes('FROM research_wind_farm_reports')) {
+        return {
+          rows: [
+            {
+              id: 218,
+              wind_farm_id: 6431,
+              report_markdown: 'Current report markdown',
+              model_used: 'openai/gpt-5.4',
+            },
+          ],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${sql}`);
+    },
+  };
+
+  const result = await suggestDraftResearchReportRepair(client, {
+    reportId: 218,
+    apiKey: 'test-key',
+    verifyReportEvidenceFn: async () => ({
+      passed: false,
+      blockedRows: [
+        {
+          id: 847,
+          status: 'failed',
+          error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+          report_item_label: 'Capacity',
+          report_field_name: 'capacity_mw',
+          report_date: null,
+          report_development: null,
+          reported_value: '588 MW',
+          source_url: 'https://example.com/beatrice',
+          source_name: 'SSE page',
+        },
+      ],
+    }),
+    requestBlockedRowRepairFn: async ({ reportMarkdown, blockedRows }) => {
+      assert.equal(reportMarkdown, 'Current report markdown');
+      assert.equal(blockedRows.length, 1);
+      return 'Suggested repaired markdown';
+    },
+  });
+
+  assert.equal(result.reportId, 218);
+  assert.equal(result.windFarmId, 6431);
+  assert.equal(result.modelUsed, 'openai/gpt-5.4');
+  assert.equal(result.suggestedReportMarkdown, 'Suggested repaired markdown');
+  assert.equal(result.blockedRows.length, 1);
+  assert.equal(queries.length, 1);
+});
+
+test('verifyDraftResearchReport returns the moderation summary for one draft report', async () => {
+  const logLines = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes("WHERE review_status = 'draft'") && text.includes('id = ANY')) {
+        assert.deepEqual(values, [[218]]);
+
+        return {
+          rows: [
+            {
+              id: 218,
+              wind_farm_id: 6431,
+              report_markdown: 'Current report markdown',
+              model_used: 'openai/gpt-5.4',
+              name: 'Horns Rev II',
+            },
+          ],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await verifyDraftResearchReport(fakeClient, {
+    reportId: 218,
+    verifyReportEvidenceFn: async () => ({
+      passed: false,
+      blockedRows: [
+        {
+          id: 847,
+          status: 'failed',
+          error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+        },
+      ],
+    }),
+    log: (line) => logLines.push(line),
+  });
+
+  assert.deepEqual(result, {
+    draftCount: 1,
+    passedReportIds: [],
+    blockedReports: [
+      {
+        reportId: 218,
+        windFarmId: 6431,
+        blockedRows: [
+          {
+            id: 847,
+            status: 'failed',
+            error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+          },
+        ],
+      },
+    ],
+    repairedReportIds: [],
+    repairFailures: [],
+    matchedReportIds: [218],
+    missingReportIds: [],
+  });
+  assert.ok(logLines.some((line) => line.includes('Blocked report #218 for wind farm 6431:')));
+});
+
+test('publishDraftResearchReport publishes a single clean draft for moderation', async () => {
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes("WHERE review_status = 'draft'") && text.includes('id = ANY')) {
+        assert.deepEqual(values, [[50]]);
+
+        return {
+          rows: [
+            {
+              id: 50,
+              wind_farm_id: 6646,
+              report_markdown: 'Current report markdown',
+              model_used: 'openai/gpt-5.4',
+              name: 'Beatrice Offshore Wind Farm',
+            },
+          ],
+        };
+      }
+
+      if (text.includes("SET review_status = 'published'")) {
+        return {
+          rows: [{ id: 50, wind_farm_id: 6646 }],
+        };
+      }
+
+      if (text.includes("SET status = 'active'")) {
+        return { rowCount: 7 };
+      }
+
+      if (text.includes('published_reports')) {
+        return {
+          rows: [{
+            published_reports: 166,
+            remaining_drafts: 0,
+            active_research_facts: 1498,
+            draft_research_facts: 0,
+          }],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await publishDraftResearchReport(fakeClient, {
+    reportId: 50,
+    verifyReportEvidenceFn: async () => ({
+      passed: true,
+      blockedRows: [],
+    }),
+    pruneObsoleteDraftReportsFn: async () => [],
+    log: () => {},
+  });
+
+  assert.deepEqual(result, {
+    publishedReportIds: [50],
+    draftCount: 1,
+  });
 });
 
 test('buildDatabaseConnectionString adds a no-verify sslmode when missing', () => {
@@ -2690,6 +3058,159 @@ test('verifyReportEvidence does not block reachable not-confirmed rows', async (
   assert.equal(result.blockedRows.length, 0);
   assert.equal(updates.length, 1);
   assert.equal(updates[0][5], 'value_not_confirmed');
+});
+
+test('verifyDraftReports filters requested draft ids and reports blockers without publishing', async () => {
+  const logLines = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes("WHERE review_status = 'draft'") && text.includes('id = ANY')) {
+        assert.deepEqual(values, [[208, 209, 210]]);
+
+        return {
+          rows: [
+            { id: 208, wind_farm_id: 6339, report_markdown: 'A', model_used: 'openai/gpt-5.4', name: 'Fanm Bugt' },
+            { id: 210, wind_farm_id: 6342, report_markdown: 'B', model_used: 'openai/gpt-5.4', name: 'Nordsoren II Vest' },
+          ],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await verifyDraftReports({
+    client: fakeClient,
+    reportIds: [208, 209, 210],
+    verifyReportEvidenceFn: async (_client, reportId) => {
+      if (reportId === 208) {
+        return {
+          passed: true,
+          blockedRows: [],
+        };
+      }
+
+      return {
+        passed: false,
+        blockedRows: [
+          {
+            id: 901,
+            status: 'failed',
+            error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+          },
+        ],
+      };
+    },
+    log: (line) => logLines.push(line),
+  });
+
+  assert.deepEqual(result, {
+    draftCount: 2,
+    passedReportIds: [208],
+    blockedReports: [
+      {
+        reportId: 210,
+        windFarmId: 6342,
+        blockedRows: [
+          {
+            id: 901,
+            status: 'failed',
+            error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+          },
+        ],
+      },
+    ],
+    repairedReportIds: [],
+    repairFailures: [],
+    matchedReportIds: [208, 210],
+    missingReportIds: [209],
+  });
+  assert.ok(logLines.some((line) => line.includes('Requested ids not found as draft reports: 209.')));
+  assert.ok(logLines.some((line) => line.includes('Blocked report #210 for wind farm 6342:')));
+});
+
+test('verifyDraftReports repairs blocked drafts and re-verifies without publishing', async () => {
+  const logLines = [];
+  let verifyCallCount = 0;
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes("WHERE review_status = 'draft'") && text.includes('id = ANY')) {
+        assert.deepEqual(values, [[208]]);
+
+        return {
+          rows: [
+            {
+              id: 208,
+              wind_farm_id: 6339,
+              report_markdown: 'Original markdown',
+              model_used: 'openai/gpt-5.4',
+              name: 'Fanm Bugt',
+            },
+          ],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await verifyDraftReports({
+    client: fakeClient,
+    reportIds: [208],
+    repair: true,
+    apiKey: 'test-key',
+    verifyReportEvidenceFn: async () => {
+      verifyCallCount += 1;
+
+      if (verifyCallCount === 1) {
+        return {
+          passed: false,
+          blockedRows: [
+            {
+              id: 901,
+              status: 'failed',
+              error: 'Source-of-record request returned HTTP 404.',
+            },
+          ],
+        };
+      }
+
+      return {
+        passed: true,
+        blockedRows: [],
+      };
+    },
+    requestBlockedRowRepairFn: async ({ reportMarkdown, blockedRows }) => {
+      assert.equal(reportMarkdown, 'Original markdown');
+      assert.equal(blockedRows.length, 1);
+      return 'Repaired markdown';
+    },
+    updateResearchReportFn: async (_client, payload) => {
+      assert.equal(payload.reportId, 208);
+      assert.equal(payload.windFarmId, 6339);
+      assert.equal(payload.reportMarkdown, 'Repaired markdown');
+      assert.equal(payload.reviewStatus, 'draft');
+      return { reportId: 208, factsInserted: 4 };
+    },
+    saveReportFn: async (outputPath, reportMarkdown) => {
+      assert.match(outputPath, /reports[\\/]core_wind_farms[\\/]6339-fanm-bugt\.md$/);
+      assert.equal(reportMarkdown, 'Repaired markdown');
+      return outputPath;
+    },
+    log: (line) => logLines.push(line),
+  });
+
+  assert.equal(verifyCallCount, 2);
+  assert.deepEqual(result, {
+    draftCount: 1,
+    passedReportIds: [208],
+    blockedReports: [],
+    repairedReportIds: [208],
+    repairFailures: [],
+    matchedReportIds: [208],
+    missingReportIds: [],
+  });
+  assert.ok(logLines.some((line) => line.includes('Attempting blocked-row repair for report #208')));
 });
 
 test('publishDraftReports repairs a blocked draft and publishes it when reverification passes', async () => {

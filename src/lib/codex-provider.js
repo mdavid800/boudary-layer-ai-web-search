@@ -1,3 +1,4 @@
+import './proxy.js';
 const OPENAI_RESPONSES_URL = 'https://api.openai.com/v1/responses';
 
 export async function requestResearchReportCodex({

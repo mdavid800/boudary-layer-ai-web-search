@@ -1,3 +1,4 @@
+import './proxy.js';
 const OFFICIAL_SOURCE_HINTS = [
   {
     normalizedProjectNames: ['beatriceoffshorewindfarm', 'beatrice'],

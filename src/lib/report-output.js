@@ -1,9 +1,18 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { normalizeResearchReportText } from './report-text-normalization.js';
 
 export async function saveReport(outputPath, report) {
-  return saveTextFile(outputPath, report);
+  return saveTextFile(outputPath, normalizeResearchReportText(report));
+}
+
+export function buildReportOutputPath({ sourceTableName, windFarmId, windFarmName }) {
+  return path.join(
+    'reports',
+    sourceTableName,
+    `${windFarmId}-${slugifyFileSegment(windFarmName || `windfarm-${windFarmId}`)}.md`,
+  );
 }
 
 export async function saveTextFile(outputPath, content) {

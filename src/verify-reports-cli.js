@@ -1,13 +1,12 @@
 import process from 'node:process';
 import dotenv from 'dotenv';
 
-import { main } from './publish-reports.js';
-import { formatErrorWithCause } from './lib/error-format.js';
+import { main } from './verify-reports.js';
 
 dotenv.config();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 main().catch((error) => {
-  console.error(formatErrorWithCause(error));
+  console.error(error.message);
   process.exitCode = 1;
 });

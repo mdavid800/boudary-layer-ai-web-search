@@ -14,6 +14,7 @@ import {
   getApiKeyForProvider,
 } from './lib/runtime-config.js';
 import { createDatabaseClient } from './lib/database.js';
+import { formatErrorWithCause } from './lib/error-format.js';
 import {
   getTurbineCountValidationContext,
   getLinkedTurbineMetadata,
@@ -40,6 +41,7 @@ import {
   getLatestPublishedResearchReport,
   storeResearchReport,
 } from './lib/report-storage.js';
+import { verifyReportEvidence } from './lib/evidence-verifier.js';
 
 const OPERATIONAL_REFRESH_PROMPT_PATH = path.resolve(process.cwd(), 'prompt-operational-refresh.md');
 
@@ -135,6 +137,7 @@ export async function runDatabaseResearch({
   saveTextFileFn = saveTextFile,
   saveReportFn = saveReport,
   storeResearchReportFn = storeResearchReport,
+  verifyReportEvidenceFn = verifyReportEvidence,
 } = {}) {
   const sourceTableName = getWindFarmSourceTableName();
   const reportsDirectory = path.join(getWindFarmReportsDirectory(), sourceTableName);
@@ -333,15 +336,35 @@ export async function runDatabaseResearch({
           `[${index + 1}/${windFarmRows.length}] Stored report #${reportId} with ${factsInserted} facts for ${windFarmRow.name}`,
         );
 
+        if (reviewStatus === 'draft') {
+          try {
+            const verification = await verifyReportEvidenceFn(client, reportId);
+
+            if (verification.passed) {
+              console.error(
+                `[${index + 1}/${windFarmRows.length}] Verified report #${reportId}; moderation queue status: Ready to publish`,
+              );
+            } else {
+              console.error(
+                `[${index + 1}/${windFarmRows.length}] Verified report #${reportId}; moderation queue status: Blocked (${verification.blockedRows.length} blocker(s))`,
+              );
+            }
+          } catch (error) {
+            console.error(
+              `[${index + 1}/${windFarmRows.length}] Auto-verification did not complete for report #${reportId}; moderation queue status: Needs review (${error.message})`,
+            );
+          }
+        }
+
         completedCount += 1;
       } catch (error) {
         failedRows.push({
           id: windFarmRow.id,
           name: windFarmRow.name,
-          message: error.message,
+          message: formatErrorWithCause(error),
         });
         console.error(
-          `[${index + 1}/${windFarmRows.length}] Failed ${windFarmRow.name} (ID ${windFarmRow.id}): ${error.message}`,
+          `[${index + 1}/${windFarmRows.length}] Failed ${windFarmRow.name} (ID ${windFarmRow.id}): ${formatErrorWithCause(error)}`,
         );
       }
     }
@@ -369,7 +392,7 @@ function isDirectExecution() {
 
 if (isDirectExecution()) {
   runDatabaseResearch().catch((error) => {
-    console.error(error.message);
+    console.error(formatErrorWithCause(error));
     process.exitCode = 1;
   });
 }
