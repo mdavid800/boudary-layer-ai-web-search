@@ -44,7 +44,11 @@ import { pruneObsoleteDraftReports } from '../src/lib/report-storage.js';
 import { EUROWINDWAKES_ZENODO_RECORD_URL } from '../src/lib/source-of-record.js';
 import { verifyEvidenceRecord, verifyReportEvidence } from '../src/lib/evidence-verifier.js';
 import { publishDraftReports } from '../src/publish-reports.js';
-import { suggestDraftResearchReportRepair } from '../src/lib/report-moderation.js';
+import {
+  publishDraftResearchReport,
+  suggestDraftResearchReportRepair,
+  verifyDraftResearchReport,
+} from '../src/lib/report-moderation.js';
 import {
   formatVerifyReportsHelp,
   parseVerifyReportsArgs,
@@ -1565,29 +1569,62 @@ test('requestResearchReport retries when the first server-tool report lacks fres
 });
 
 test('buildBlockedRowRepairPrompt asks for minimal row-scoped repair and verifier-friendly evidence', () => {
-  const prompt = buildBlockedRowRepairPrompt('Current report markdown', [
-    {
-      id: 847,
-      status: 'failed',
-      report_item_label: 'Capacity',
-      report_field_name: 'capacity_mw',
-      reported_value: '588 MW',
-      source_name: 'SSE page',
-      source_url: 'https://example.com/beatrice',
-      source_type: 'official project',
-      evidence_quote: 'Installed capacity about 600 MW',
-      http_status: 403,
-      error: 'Fetched source-of-record page did not contain the expected evidence quote.',
-    },
-  ]);
+  const prompt = buildBlockedRowRepairPrompt(
+    [
+      '| Item | Value | Research summary | Sources |',
+      '|---|---|---|---|',
+      '| Capacity | 588 MW | Current summary. | [Source 1](https://example.com/beatrice), [Source 2](https://example.com/fallback-capacity) |',
+      'Recent developments',
+      '',
+      '| Date | Development | Why it matters | Sources |',
+      '|---|---|---|---|',
+      '| 01/05/2024 | Milestone | Why it matters. | [Source 1](https://example.com/dev-1), [Source 2](https://example.com/dev-2) |',
+      createProvenanceAppendix({
+        profileRows: [
+          {
+            item_label: 'Capacity',
+            field_name: 'capacity_mw',
+            value: '588 MW',
+            provenance_mode: 'web_source',
+            source_of_record: createSourceOfRecord({
+              source_url: 'https://example.com/beatrice',
+              source_name: 'SSE page',
+              source_type: 'official project',
+              evidence_quote: 'Installed capacity about 600 MW',
+            }),
+            supporting_context: [{ label: 'Source 2', url: 'https://example.com/fallback-capacity' }],
+          },
+        ],
+      }),
+    ].join('\n'),
+    [
+      {
+        id: 847,
+        status: 'failed',
+        report_item_label: 'Capacity',
+        report_field_name: 'capacity_mw',
+        reported_value: '588 MW',
+        source_name: 'SSE page',
+        source_url: 'https://example.com/beatrice',
+        source_type: 'official project',
+        evidence_quote: 'Installed capacity about 600 MW',
+        http_status: 403,
+        error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+      },
+    ],
+  );
 
   assert.match(prompt, /Preserve every table row, recent-development row, and appendix entry that is not listed as blocked below\./);
   assert.match(prompt, /Use short verbatim machine-checkable evidence_quote fragments/);
   assert.match(prompt, /do not reuse that URL as the new source_of_record/);
+  assert.match(prompt, /treat them as one source-replacement task/);
+  assert.match(prompt, /Grouped dead-source issues to repair once per source_url:/);
+  assert.match(prompt, /candidate_replacement_urls/);
+  assert.match(prompt, /fallback-capacity/);
   assert.match(prompt, /change that row to Not confirmed instead of preserving an unsupported fact/);
   assert.match(prompt, /"Capacity"/);
   assert.match(prompt, /"http_status": 403/);
-  assert.match(prompt, /Current report markdown/);
+  assert.match(prompt, /Current summary/);
 });
 
 test('requestBlockedRowRepair returns the repaired report when quality checks pass', async () => {
@@ -1745,6 +1782,129 @@ test('suggestDraftResearchReportRepair returns a non-destructive markdown propos
   assert.equal(result.suggestedReportMarkdown, 'Suggested repaired markdown');
   assert.equal(result.blockedRows.length, 1);
   assert.equal(queries.length, 1);
+});
+
+test('verifyDraftResearchReport returns the moderation summary for one draft report', async () => {
+  const logLines = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes("WHERE review_status = 'draft'") && text.includes('id = ANY')) {
+        assert.deepEqual(values, [[218]]);
+
+        return {
+          rows: [
+            {
+              id: 218,
+              wind_farm_id: 6431,
+              report_markdown: 'Current report markdown',
+              model_used: 'openai/gpt-5.4',
+              name: 'Horns Rev II',
+            },
+          ],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await verifyDraftResearchReport(fakeClient, {
+    reportId: 218,
+    verifyReportEvidenceFn: async () => ({
+      passed: false,
+      blockedRows: [
+        {
+          id: 847,
+          status: 'failed',
+          error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+        },
+      ],
+    }),
+    log: (line) => logLines.push(line),
+  });
+
+  assert.deepEqual(result, {
+    draftCount: 1,
+    passedReportIds: [],
+    blockedReports: [
+      {
+        reportId: 218,
+        windFarmId: 6431,
+        blockedRows: [
+          {
+            id: 847,
+            status: 'failed',
+            error: 'Fetched source-of-record page did not contain the expected evidence quote.',
+          },
+        ],
+      },
+    ],
+    repairedReportIds: [],
+    repairFailures: [],
+    matchedReportIds: [218],
+    missingReportIds: [],
+  });
+  assert.ok(logLines.some((line) => line.includes('Blocked report #218 for wind farm 6431:')));
+});
+
+test('publishDraftResearchReport publishes a single clean draft for moderation', async () => {
+  const fakeClient = {
+    query: async (text, values = []) => {
+      if (text.includes("WHERE review_status = 'draft'") && text.includes('id = ANY')) {
+        assert.deepEqual(values, [[50]]);
+
+        return {
+          rows: [
+            {
+              id: 50,
+              wind_farm_id: 6646,
+              report_markdown: 'Current report markdown',
+              model_used: 'openai/gpt-5.4',
+              name: 'Beatrice Offshore Wind Farm',
+            },
+          ],
+        };
+      }
+
+      if (text.includes("SET review_status = 'published'")) {
+        return {
+          rows: [{ id: 50, wind_farm_id: 6646 }],
+        };
+      }
+
+      if (text.includes("SET status = 'active'")) {
+        return { rowCount: 7 };
+      }
+
+      if (text.includes('published_reports')) {
+        return {
+          rows: [{
+            published_reports: 166,
+            remaining_drafts: 0,
+            active_research_facts: 1498,
+            draft_research_facts: 0,
+          }],
+        };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await publishDraftResearchReport(fakeClient, {
+    reportId: 50,
+    verifyReportEvidenceFn: async () => ({
+      passed: true,
+      blockedRows: [],
+    }),
+    pruneObsoleteDraftReportsFn: async () => [],
+    log: () => {},
+  });
+
+  assert.deepEqual(result, {
+    publishedReportIds: [50],
+    draftCount: 1,
+  });
 });
 
 test('buildDatabaseConnectionString adds a no-verify sslmode when missing', () => {

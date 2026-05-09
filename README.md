@@ -285,11 +285,14 @@ On the draft review page in the app you can now:
 
 1. inspect the draft map and structured report fields
 2. see exactly which source-of-record rows are blocked and why
-3. save manual edits to the draft
-4. click `Re-verify` to refresh blocker state
+3. use `Save and verify` after manual edits so the draft and blocker state refresh together
+4. use the same primary action as `Re-verify` when there are no unsaved changes
 5. click `Suggest AI fix` to generate a non-destructive proposal
 6. review the AI proposal and explicitly apply it
-7. re-run verification after applying any proposal
+7. let the app auto-verify immediately after applying any AI proposal
+8. use `Approve and publish` only when the draft is `ready_to_publish`; publish stays disabled while there are unsaved changes
+
+The moderation workspace now also shows an explicit workflow-status summary so the next action is clearer: save changes, resolve blockers, or publish a clean draft.
 
 The queue meanings are:
 

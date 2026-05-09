@@ -81,6 +81,8 @@ async function main(argv = process.argv.slice(2)) {
         reportId: options.reportId,
         reportMarkdown: payload.reportMarkdown,
         modelUsed: payload.modelUsed ?? null,
+        autoVerify: payload.autoVerify === true,
+        autoRepair: payload.autoRepair === true,
       });
     } else if (options.action === 'verify') {
       result = await verifyDraftResearchReport(client, {
