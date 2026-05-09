@@ -5,6 +5,7 @@
   "description": "CLI workflow for offshore wind research using OpenRouter web search server tools.",
   "type": "module",
   "scripts": {
+    "backfill-report-text-encoding": "node src/backfill-report-text-encoding.js",
     "backfill-report-structure": "node src/backfill-report-structure.js",
     "backfill-status-terminology": "node src/backfill-status-terminology.js",
     "hooks:install": "git config core.hooksPath .githooks",
@@ -22,6 +23,7 @@
   "dependencies": {
     "dotenv": "^16.5.0",
     "pdf-parse": "^2.4.5",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "undici": "^7.25.0"
   }
 }

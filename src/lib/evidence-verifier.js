@@ -1,3 +1,4 @@
+import './proxy.js';
 import { PDFParse } from 'pdf-parse';
 import { canonicalizeSourceOfRecord, isEuroWindWakesSource } from './source-of-record.js';
 

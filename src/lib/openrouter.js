@@ -1,3 +1,4 @@
+import './proxy.js';
 import { parseStructuredReport } from './report-structure.js';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';

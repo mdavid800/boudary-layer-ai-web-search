@@ -14,6 +14,7 @@ import {
   getApiKeyForProvider,
 } from './lib/runtime-config.js';
 import { createDatabaseClient } from './lib/database.js';
+import { formatErrorWithCause } from './lib/error-format.js';
 import {
   getTurbineCountValidationContext,
   getLinkedTurbineMetadata,
@@ -360,10 +361,10 @@ export async function runDatabaseResearch({
         failedRows.push({
           id: windFarmRow.id,
           name: windFarmRow.name,
-          message: error.message,
+          message: formatErrorWithCause(error),
         });
         console.error(
-          `[${index + 1}/${windFarmRows.length}] Failed ${windFarmRow.name} (ID ${windFarmRow.id}): ${error.message}`,
+          `[${index + 1}/${windFarmRows.length}] Failed ${windFarmRow.name} (ID ${windFarmRow.id}): ${formatErrorWithCause(error)}`,
         );
       }
     }
@@ -391,7 +392,7 @@ function isDirectExecution() {
 
 if (isDirectExecution()) {
   runDatabaseResearch().catch((error) => {
-    console.error(error.message);
+    console.error(formatErrorWithCause(error));
     process.exitCode = 1;
   });
 }
