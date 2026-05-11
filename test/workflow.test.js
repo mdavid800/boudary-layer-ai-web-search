@@ -274,6 +274,24 @@ test('buildProjectContext describes authoritative regional primary rows without 
   assert.match(result, /Cleaned EMODnet values should be treated only as matched enrichment/);
 });
 
+test('buildProjectContext warns against silently substituting a similarly named project', () => {
+  const result = buildProjectContext({
+    sourceTableName: 'core_wind_farms',
+    windFarmMetadata: {
+      name: 'Hesselk',
+      type: 'Offshore wind farm',
+      nTurbines: 0,
+      powerMw: null,
+      status: 'Unknown',
+    },
+    turbineMetadata: null,
+  });
+
+  assert.match(result, /- Exact target project name from the core row: Hesselk/);
+  assert.match(result, /Do not silently rewrite, normalize, or substitute this project to a different wind farm/);
+  assert.match(result, /explicitly say there is an identity mismatch and keep unsupported fields as Not confirmed/);
+});
+
 test('buildProjectContext includes turbine-count validation and approved community signals when available', () => {
   const result = buildProjectContext({
     sourceTableName: 'core_wind_farms',
