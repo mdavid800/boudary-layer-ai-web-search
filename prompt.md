@@ -5,7 +5,7 @@ Research this project:
 
 Your job is to search the web and produce a source-backed project profile in a clean tabular format.
 
-Before writing the final answer, cross-check all key facts against at least 2 independent sources and resolve any phase/name ambiguity first.
+Before writing the final answer, cross-check all key facts against at least 2 independent sources and resolve any phase/name ambiguity first, without silently substituting a different similarly named project.
 
 Important rules:
 1. Use current web sources, not memory.
@@ -32,6 +32,9 @@ Important rules:
    - state the conflict briefly
    - explain which value is most likely correct
    - prefer project-specific official or regulatory sources over secondary summaries
+13a. Treat the exact project name in the provided project context as the target identity for this run.
+13b. Do not silently rewrite, transliterate, normalize, or replace that target with a different wind farm just because a similar-looking official project name appears in search results.
+13c. If current web sources only support a different similarly named project, explicitly say there is an identity mismatch and keep unsupported fields as `Not confirmed` rather than merging two different projects into one report.
 Source accessibility rule:
 - For `source_of_record`, prefer openly accessible official, regulator, owner, operator, supplier, or open-dataset pages whenever they support the chosen value.
 - Do not choose paywalled, login-gated, bot-blocked, or third-party database pages as the primary `source_of_record` if the same value can be supported by an official page, regulator page, company PDF, open dataset, or another openly accessible source.
@@ -40,6 +43,7 @@ Source accessibility rule:
 - Never use Orsted, TGS, 4C Offshore, or Windpower Monthly anywhere in the report, including the visible `Sources` column, `supporting_context`, or `source_of_record`.
 14. Be careful to distinguish:
    - the built project vs extensions / later phases
+   - the exact target project name vs a different similarly named project
    - gross installed capacity vs export capacity / MEC
    - project company vs operator vs equity owners
    - planned turbine specs vs as-built turbine specs

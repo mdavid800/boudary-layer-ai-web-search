@@ -70,6 +70,10 @@ export function buildProjectContext({
     `- Primary row source: ${primarySourceLabel}`,
     `- Geometry source: ${geometrySourceLabel}`,
     `- Source precedence policy: ${sourcePolicyKey}`,
+    `- Exact target project name from the core row: ${windFarmName}`,
+    '- Treat that exact core-row name as the target identity for this research pass.',
+    '- Do not silently rewrite, normalize, or substitute this project to a different wind farm just because a similar-looking official project name appears in search results.',
+    '- If current web sources only support a different similarly named project, explicitly say there is an identity mismatch and keep unsupported fields as Not confirmed rather than merging the two projects.',
     isAuthoritativePrimaryRow
       ? '- Cleaned EMODnet values should be treated only as matched enrichment for this row, not as the primary row identity or geometry source.'
       : '- This row currently falls back to cleaned EMODnet because no higher-precedence regional public source was selected.',
