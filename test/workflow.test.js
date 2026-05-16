@@ -2273,7 +2273,7 @@ test('parseStructuredReport extracts ordered profile rows and recent development
   assert.equal(result.profileRows.length, 3);
   assert.deepEqual(result.profileRows[0], {
     item_label: 'Project identity',
-    field_name: null,
+    field_name: 'project_identity',
     value: 'Seagreen Phase 1 Wind Farm',
     research_summary: 'Distinguishes Phase 1 from later concepts.',
     sources: [
