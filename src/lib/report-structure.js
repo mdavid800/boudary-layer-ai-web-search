@@ -16,6 +16,8 @@ const ITEM_TO_FIELD = new Map([
   ['full commissioning date', 'commissioning_date'],
   ['developer / owners', 'developer'],
   ['developer/owners', 'developer'],
+  ['ownership history', 'ownership_history'],
+  ['project identity', 'project_identity'],
   ['maximum export capacity (mec)', 'mec_mw'],
   ['mec', 'mec_mw'],
 ]);
