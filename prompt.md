@@ -96,18 +96,27 @@ Research and complete the following items:
 
 3. Status
    - current development stage
-   - classify using exactly one of these Boundary Layer statuses:
-     - `Operational`
-       - `Decommissioned` — asset permanently retired, dismantled, or otherwise removed from service
-     - `Under Construction`
-       - `Consented`
-     - `FID Taken, Pre-Construction` — consented and preparing for construction; FID taken and major contracts awarded
-       - `In Planning / Consent Application Submitted` — planning / consent application submitted and awaiting decision
-       - `Lease Awarded, Pre-Planning` — lease or development zone awarded to a developer, but no project-specific planning / consent application has been submitted yet
-       - `Development Zone / lease area` — lease or seabed zone proposed / issued, but the leasing process has not concluded yet
-     - `Concept` — early-stage project with no formal application yet
-       - `Archive` — cancelled, superseded, duplicate, legacy subproject, or otherwise not a live standalone project; explain why in the research summary
-   - when evidence is ambiguous, choose the closest exact label above and explain the nuance briefly in the research summary
+    - classify using exactly one of these Boundary Layer statuses
+    - always choose the current live stage of the exact target project identity, not a historical milestone and not a nearby parent phase, extension, lot, or successor project
+    - use these labels as follows:
+       - `Operational` — use when current sources show the project is operating, fully commissioned, in commercial operation, or otherwise actively generating as a live asset
+       - `Decommissioned` — use when current sources show the asset has been permanently retired, dismantled, removed from service, or is no longer operating as a live wind farm
+       - `Under Construction` — use when physical construction, installation, or commissioning is underway; do not use `Operational` just because first power has started if sources still describe the project as being under construction or commissioning
+      - `Consented` — use when the project has consent / permit approval but there is no clear evidence yet of FID or physical construction starting; this remains the correct label when sources only discuss future financing plans, future contract awards, or a target FID date that has not happened yet
+      - `FID Taken, Pre-Construction` — use only when FID or an equivalent final investment approval has already been explicitly announced or confirmed as completed, often with major contracts awarded or mobilisation under way, but there is still no clear evidence of physical construction starting
+       - `In Planning / Consent Application Submitted` — use when a project-specific planning or consent application has been formally submitted and is awaiting decision
+       - `Lease Awarded, Pre-Planning` — use when a developer has been awarded rights to a defined project area, but no project-specific planning or consent application has yet been submitted
+       - `Development Zone / lease area` — use when the row is best understood as a leasing zone, seabed lot, or development area rather than a fully defined project, or when the leasing / award process has not yet concluded into a project-specific development
+       - `Concept` — use for an early-stage proposed project that is publicly identified but has no formal planning / consent application yet and is not better described as a lease area or development zone
+       - `Archive` — use when current evidence shows the record should not remain a live standalone project, for example cancelled projects, superseded legacy identities, duplicates, or legacy subprojects; explain the reason clearly in the research summary
+    - status choice rules:
+       - prefer the most advanced current stage supported by the freshest reliable evidence
+      - do not use `Consented` if FID is clearly taken
+      - do not use `FID Taken, Pre-Construction` when a source says the developer plans, targets, expects, could reach, or aims to take FID in the future; future-tense FID language is evidence that FID has not yet been taken
+      - if a developer has won a lease, tender, or bid but is still moving through planning, consenting, environmental review, grid definition, or other pre-approval steps, keep the status in the pre-FID stage supported by the evidence, usually `Lease Awarded, Pre-Planning`, `In Planning / Consent Application Submitted`, or `Consented`
+       - do not use `Concept` for a lease lot or development zone that is better captured by `Lease Awarded, Pre-Planning` or `Development Zone / lease area`
+       - do not use `Operational` for projects that are retired, cancelled, duplicated, or only partly energised while still described as under construction
+    - when evidence is ambiguous, choose the closest exact label above and explain the nuance briefly in the research summary, including which later-stage or earlier-stage labels you rejected and why when that distinction matters
 
 4. Capacity
    - total installed or planned capacity in MW

@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { createDatabaseClient } from './lib/database.js';
 import {
   publishDraftResearchReport,
+  rejectDraftResearchReport,
   saveDraftResearchReport,
   suggestDraftResearchReportRepair,
   verifyDraftResearchReport,
@@ -16,7 +17,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const DEFAULT_PORT = 3001;
 const DEFAULT_HOST = '0.0.0.0';
 const MAX_BODY_BYTES = 1024 * 1024;
-const REPORT_ACTIONS = new Set(['save', 'verify', 'suggest-fix', 'publish']);
+const REPORT_ACTIONS = new Set(['save', 'verify', 'suggest-fix', 'publish', 'reject']);
 
 class HttpError extends Error {
   constructor(statusCode, message) {
@@ -93,7 +94,7 @@ function validateModerationRequest(body) {
   }
 
   if (!REPORT_ACTIONS.has(body.action)) {
-    throw new HttpError(400, 'action must be one of save, verify, suggest-fix, or publish.');
+    throw new HttpError(400, 'action must be one of save, verify, suggest-fix, publish, or reject.');
   }
 
   if (!Number.isInteger(body.reportId)) {
@@ -142,6 +143,12 @@ async function runModerationAction({ action, reportId, payload, repair }) {
 
     if (action === 'publish') {
       return await publishDraftResearchReport(client, {
+        reportId,
+      });
+    }
+
+    if (action === 'reject') {
+      return await rejectDraftResearchReport(client, {
         reportId,
       });
     }

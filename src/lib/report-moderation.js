@@ -484,6 +484,157 @@ export async function verifyDraftResearchReport(client, {
   });
 }
 
+export async function rejectDraftResearchReport(client, {
+  reportId,
+  log = console.error,
+} = {}) {
+  if (!Number.isInteger(reportId)) {
+    throw new Error('reportId must be an integer.');
+  }
+
+  const report = await getDraftReportRow(client, reportId);
+  if (!report) {
+    throw new Error(`Draft report #${reportId} was not found.`);
+  }
+
+  await client.query('BEGIN');
+
+  try {
+    const factResult = await client.query(
+      `SELECT id
+       FROM wind_farm_facts
+       WHERE report_id = $1
+         AND source_type = 'research'`,
+      [reportId],
+    );
+    const factIds = factResult.rows.map((row) => row.id);
+
+    const replacementReportResult = await client.query(
+      `SELECT id, review_status
+       FROM research_wind_farm_reports
+       WHERE wind_farm_id = $1
+         AND id <> $2
+         AND review_status IN ('draft', 'published')
+       ORDER BY
+         CASE WHEN review_status = 'published' THEN 0 ELSE 1 END,
+         researched_at DESC,
+         id DESC
+       LIMIT 1`,
+      [report.wind_farm_id, reportId],
+    );
+    const replacementReportId = replacementReportResult.rows[0]?.id ?? null;
+    const replacementStatus = replacementReportResult.rows[0]?.review_status ?? null;
+
+    let detachedNoteCount = 0;
+    let detachedPromotedNoteCount = 0;
+    let deletedConfirmationCount = 0;
+
+    const evidenceResult = await client.query(
+      `DELETE FROM research_report_evidence
+       WHERE report_id = $1`,
+      [reportId],
+    );
+
+    if (factIds.length > 0 && replacementReportId != null) {
+      await client.query(
+        `UPDATE wind_farm_facts
+         SET report_id = $2,
+             status = CASE
+               WHEN source_type = 'research' AND $3 = 'published' THEN 'active'
+               ELSE status
+             END
+         WHERE id = ANY($1::int[])
+           AND EXISTS (
+             SELECT 1
+             FROM research_report_evidence
+             WHERE fact_id = wind_farm_facts.id
+           )`,
+        [factIds, replacementReportId, replacementStatus],
+      );
+    }
+
+    let deletedFactCount = 0;
+
+    if (factIds.length > 0) {
+      const orphanedFactResult = await client.query(
+        `SELECT id
+         FROM wind_farm_facts
+         WHERE id = ANY($1::int[])
+           AND source_type = 'research'
+           AND NOT EXISTS (
+             SELECT 1
+             FROM research_report_evidence
+             WHERE fact_id = wind_farm_facts.id
+           )`,
+        [factIds],
+      );
+      const orphanedFactIds = orphanedFactResult.rows.map((row) => row.id);
+
+      if (orphanedFactIds.length > 0) {
+        const noteResult = await client.query(
+          `UPDATE wind_farm_community_notes
+           SET fact_id = NULL
+           WHERE fact_id = ANY($1::int[])`,
+          [orphanedFactIds],
+        );
+        detachedNoteCount = noteResult.rowCount ?? 0;
+
+        const promotedNoteResult = await client.query(
+          `UPDATE wind_farm_community_notes
+           SET promoted_to_fact_id = NULL
+           WHERE promoted_to_fact_id = ANY($1::int[])`,
+          [orphanedFactIds],
+        );
+        detachedPromotedNoteCount = promotedNoteResult.rowCount ?? 0;
+
+        const confirmationResult = await client.query(
+          `DELETE FROM wind_farm_fact_confirmations
+           WHERE fact_id = ANY($1::int[])`,
+          [orphanedFactIds],
+        );
+        deletedConfirmationCount = confirmationResult.rowCount ?? 0;
+
+        const deletedFactsResult = await client.query(
+          `DELETE FROM wind_farm_facts
+           WHERE id = ANY($1::int[])
+             AND source_type = 'research'`,
+          [orphanedFactIds],
+        );
+        deletedFactCount = deletedFactsResult.rowCount ?? 0;
+      }
+    }
+
+    const reportDeleteResult = await client.query(
+      `DELETE FROM research_wind_farm_reports
+       WHERE id = $1
+         AND review_status = 'draft'
+       RETURNING id`,
+      [reportId],
+    );
+
+    if ((reportDeleteResult.rowCount ?? 0) === 0) {
+      throw new Error(`Draft report #${reportId} was not found.`);
+    }
+
+    await client.query('COMMIT');
+
+    log(`Rejected draft report #${reportId} for wind farm ${report.wind_farm_id}.`);
+
+    return {
+      reportId,
+      windFarmId: report.wind_farm_id,
+      deletedEvidenceCount: evidenceResult.rowCount ?? 0,
+      deletedFactCount,
+      detachedNoteCount,
+      detachedPromotedNoteCount,
+      deletedConfirmationCount,
+    };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  }
+}
+
 export async function suggestDraftResearchReportRepair(client, {
   reportId,
   apiKey = process.env.OPENROUTER_API_KEY,

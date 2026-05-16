@@ -46,6 +46,7 @@ import { verifyEvidenceRecord, verifyReportEvidence } from '../src/lib/evidence-
 import { publishDraftReports } from '../src/publish-reports.js';
 import {
   publishDraftResearchReport,
+  rejectDraftResearchReport,
   suggestDraftResearchReportRepair,
   verifyDraftResearchReport,
 } from '../src/lib/report-moderation.js';
@@ -1923,6 +1924,193 @@ test('publishDraftResearchReport publishes a single clean draft for moderation',
     publishedReportIds: [50],
     draftCount: 1,
   });
+});
+
+test('rejectDraftResearchReport removes draft artifacts and keeps cleanup localized to the rejected draft', async () => {
+  const queries = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      queries.push({ text, values });
+
+      if (text.includes('SELECT id, wind_farm_id, report_markdown, model_used')) {
+        assert.deepEqual(values, [220]);
+
+        return {
+          rows: [
+            {
+              id: 220,
+              wind_farm_id: 6646,
+              report_markdown: 'Current report markdown',
+              model_used: 'openai/gpt-5.4',
+            },
+          ],
+        };
+      }
+
+      if (text === 'BEGIN' || text === 'COMMIT') {
+        return { rowCount: null, rows: [] };
+      }
+
+      if (text.includes('SELECT id') && text.includes('FROM wind_farm_facts') && text.includes('WHERE report_id = $1')) {
+        assert.deepEqual(values, [220]);
+        return { rows: [{ id: 901 }, { id: 902 }] };
+      }
+
+      if (text.includes('FROM research_wind_farm_reports') && text.includes('id <> $2')) {
+        assert.deepEqual(values, [6646, 220]);
+        return { rows: [] };
+      }
+
+      if (text.includes('SELECT id') && text.includes('AND NOT EXISTS')) {
+        assert.deepEqual(values, [[901, 902]]);
+        return { rows: [{ id: 901 }, { id: 902 }] };
+      }
+
+      if (text.includes('UPDATE wind_farm_community_notes') && text.includes('SET fact_id = NULL')) {
+        assert.deepEqual(values, [[901, 902]]);
+        return { rowCount: 1, rows: [] };
+      }
+
+      if (text.includes('UPDATE wind_farm_community_notes') && text.includes('SET promoted_to_fact_id = NULL')) {
+        assert.deepEqual(values, [[901, 902]]);
+        return { rowCount: 0, rows: [] };
+      }
+
+      if (text.includes('DELETE FROM wind_farm_fact_confirmations')) {
+        assert.deepEqual(values, [[901, 902]]);
+        return { rowCount: 2, rows: [] };
+      }
+
+      if (text.includes('DELETE FROM research_report_evidence')) {
+        assert.deepEqual(values, [220]);
+        return { rowCount: 8, rows: [] };
+      }
+
+      if (text.includes('DELETE FROM wind_farm_facts')) {
+        assert.deepEqual(values, [[901, 902]]);
+        return { rowCount: 2, rows: [] };
+      }
+
+      if (text.includes('DELETE FROM research_wind_farm_reports')) {
+        assert.deepEqual(values, [220]);
+        return { rowCount: 1, rows: [{ id: 220 }] };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await rejectDraftResearchReport(fakeClient, {
+    reportId: 220,
+    log: () => {},
+  });
+
+  assert.deepEqual(result, {
+    reportId: 220,
+    windFarmId: 6646,
+    deletedEvidenceCount: 8,
+    deletedFactCount: 2,
+    detachedNoteCount: 1,
+    detachedPromotedNoteCount: 0,
+    deletedConfirmationCount: 2,
+  });
+  assert.equal(queries[1].text, 'BEGIN');
+  assert.equal(queries.at(-1)?.text, 'COMMIT');
+});
+
+test('rejectDraftResearchReport restores shared facts to the published baseline before deleting orphaned draft facts', async () => {
+  const queries = [];
+  const fakeClient = {
+    query: async (text, values = []) => {
+      queries.push({ text, values });
+
+      if (text.includes('SELECT id, wind_farm_id, report_markdown, model_used')) {
+        assert.deepEqual(values, [271]);
+        return {
+          rows: [
+            {
+              id: 271,
+              wind_farm_id: 6646,
+              report_markdown: 'Replacement candidate',
+              model_used: 'openai/gpt-5.4',
+            },
+          ],
+        };
+      }
+
+      if (text === 'BEGIN' || text === 'COMMIT') {
+        return { rowCount: null, rows: [] };
+      }
+
+      if (text.includes('SELECT id') && text.includes('FROM wind_farm_facts') && text.includes('WHERE report_id = $1')) {
+        assert.deepEqual(values, [271]);
+        return { rows: [{ id: 33818 }, { id: 33819 }] };
+      }
+
+      if (text.includes('FROM research_wind_farm_reports') && text.includes('id <> $2')) {
+        assert.deepEqual(values, [6646, 271]);
+        return { rows: [{ id: 190, review_status: 'published' }] };
+      }
+
+      if (text.includes('DELETE FROM research_report_evidence')) {
+        assert.deepEqual(values, [271]);
+        return { rowCount: 9, rows: [] };
+      }
+
+      if (text.includes('UPDATE wind_farm_facts') && text.includes('SET report_id = $2')) {
+        assert.deepEqual(values, [[33818, 33819], 190, 'published']);
+        return { rowCount: 1, rows: [] };
+      }
+
+      if (text.includes('SELECT id') && text.includes('AND NOT EXISTS')) {
+        assert.deepEqual(values, [[33818, 33819]]);
+        return { rows: [{ id: 33819 }] };
+      }
+
+      if (text.includes('UPDATE wind_farm_community_notes') && text.includes('SET fact_id = NULL')) {
+        assert.deepEqual(values, [[33819]]);
+        return { rowCount: 0, rows: [] };
+      }
+
+      if (text.includes('UPDATE wind_farm_community_notes') && text.includes('SET promoted_to_fact_id = NULL')) {
+        assert.deepEqual(values, [[33819]]);
+        return { rowCount: 0, rows: [] };
+      }
+
+      if (text.includes('DELETE FROM wind_farm_fact_confirmations')) {
+        assert.deepEqual(values, [[33819]]);
+        return { rowCount: 1, rows: [] };
+      }
+
+      if (text.includes('DELETE FROM wind_farm_facts')) {
+        assert.deepEqual(values, [[33819]]);
+        return { rowCount: 1, rows: [] };
+      }
+
+      if (text.includes('DELETE FROM research_wind_farm_reports')) {
+        assert.deepEqual(values, [271]);
+        return { rowCount: 1, rows: [{ id: 271 }] };
+      }
+
+      throw new Error(`Unexpected query: ${text}`);
+    },
+  };
+
+  const result = await rejectDraftResearchReport(fakeClient, {
+    reportId: 271,
+    log: () => {},
+  });
+
+  assert.deepEqual(result, {
+    reportId: 271,
+    windFarmId: 6646,
+    deletedEvidenceCount: 9,
+    deletedFactCount: 1,
+    detachedNoteCount: 0,
+    detachedPromotedNoteCount: 0,
+    deletedConfirmationCount: 1,
+  });
+  assert.ok(queries.some((call) => call.text.includes('SET report_id = $2')));
 });
 
 test('buildDatabaseConnectionString adds a no-verify sslmode when missing', () => {
