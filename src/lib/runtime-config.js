@@ -1,12 +1,13 @@
 import dotenv from 'dotenv';
 import path from 'node:path';
 import process from 'node:process';
+import { resolveCodexAccess } from './codex-auth.js';
 
 dotenv.config();
 
 export const DEFAULT_PROMPT_PATH = path.resolve(process.cwd(), 'prompt.md');
 export const DEFAULT_MODEL = readEnvValue('OPENROUTER_MODEL') || 'openai/gpt-5.4';
-export const DEFAULT_CODEX_MODEL = readEnvValue('CODEX_MODEL') || readEnvValue('OPENAI_MODEL') || 'gpt-5.4-2026-03-05';
+export const DEFAULT_CODEX_MODEL = readEnvValue('CODEX_MODEL') || readEnvValue('OPENAI_MODEL') || 'gpt-5.5';
 export const DEFAULT_SEARCH_ENGINE = readEnvValue('OPENROUTER_SEARCH_ENGINE') || 'auto';
 export const DEFAULT_MAX_RESULTS = getPositiveInteger(
   readEnvValue('OPENROUTER_MAX_RESULTS'),
@@ -64,11 +65,23 @@ export function getDefaultModelForProvider(provider) {
   return provider === 'codex' ? DEFAULT_CODEX_MODEL : DEFAULT_MODEL;
 }
 
-export function getApiKeyForProvider(provider) {
+export function getProviderRuntime(provider) {
   if (provider === 'codex') {
-    const codexApiKey = process.env.CODEX_API_KEY || process.env.OPENAI_API_KEY;
-    return requireValue(codexApiKey, 'CODEX_API_KEY', 'Missing CODEX_API_KEY (or OPENAI_API_KEY) for codex provider.');
+    return resolveCodexAccess();
   }
 
-  return requireValue(process.env.OPENROUTER_API_KEY, 'OPENROUTER_API_KEY');
+  return {
+    apiKey: requireValue(process.env.OPENROUTER_API_KEY, 'OPENROUTER_API_KEY'),
+    authMode: 'api_key',
+    authSource: 'OPENROUTER_API_KEY',
+    baseUrl: null,
+  };
+}
+
+export function getApiKeyForProvider(provider) {
+  return getProviderRuntime(provider).apiKey;
+}
+
+export function getBaseUrlForProvider(provider) {
+  return getProviderRuntime(provider).baseUrl;
 }
