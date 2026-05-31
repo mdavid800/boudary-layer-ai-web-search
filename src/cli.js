@@ -16,7 +16,7 @@ import {
   DEFAULT_RESEARCH_PROVIDER,
   getDefaultModelForProvider,
   getResearchProvider,
-  getApiKeyForProvider,
+  getProviderRuntime,
 } from './lib/runtime-config.js';
 import { saveReport as saveReportToFile } from './lib/report-output.js';
 import { formatErrorWithCause } from './lib/error-format.js';
@@ -42,7 +42,8 @@ async function main() {
   }
 
   const provider = getResearchProvider(args.provider || DEFAULT_RESEARCH_PROVIDER);
-  const apiKey = getApiKeyForProvider(provider);
+  const providerRuntime = getProviderRuntime(provider);
+  const apiKey = providerRuntime.apiKey;
   const windFarmName = await resolveWindFarmName(args.windFarmName);
   const promptPath = path.resolve(process.cwd(), args.promptPath || DEFAULT_PROMPT_PATH);
   const promptTemplate = await loadPromptTemplate(promptPath);
@@ -56,10 +57,14 @@ async function main() {
 
   console.error(`Using research provider: ${provider}`);
   console.error(`Using model: ${model}`);
+  if (provider === 'codex') {
+    console.error(`Codex auth mode: ${providerRuntime.authMode} (${providerRuntime.authSource})`);
+  }
 
   const report = await requestResearchReportWithProvider({
     provider,
     apiKey,
+    baseUrl: providerRuntime.baseUrl,
     model,
     prompt: finalPrompt,
     searchEngine,

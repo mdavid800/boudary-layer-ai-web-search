@@ -11,7 +11,7 @@ import {
   DEFAULT_RESEARCH_PROVIDER,
   getDefaultModelForProvider,
   getResearchProvider,
-  getApiKeyForProvider,
+  getProviderRuntime,
 } from './lib/runtime-config.js';
 import { createDatabaseClient } from './lib/database.js';
 import { formatErrorWithCause } from './lib/error-format.js';
@@ -154,7 +154,8 @@ export async function runDatabaseResearch({
     provider: providerArg,
   } = parseResearchDatabaseArgs(argv);
   const provider = getResearchProvider(providerArg || DEFAULT_RESEARCH_PROVIDER);
-  const apiKey = getApiKeyForProvider(provider);
+  const providerRuntime = getProviderRuntime(provider);
+  const apiKey = providerRuntime.apiKey;
 
   if (operationalRefresh && publish) {
     throw new Error('Operational refresh mode creates a draft for review and does not support --publish.');
@@ -191,6 +192,9 @@ export async function runDatabaseResearch({
     console.error(`Starting database-backed research run for ${windFarmRows.length} rows.`);
     console.error(`Using research provider: ${provider}`);
     console.error(`Using model: ${model}`);
+    if (provider === 'codex') {
+      console.error(`Codex auth mode: ${providerRuntime.authMode} (${providerRuntime.authSource})`);
+    }
     if (ids) console.error(`Filtering by IDs: ${ids.join(', ')}`);
     if (country) console.error(`Filtering by country: ${country}`);
     if (windFarmType) console.error(`Filtering by wind farm type: ${windFarmType}`);
@@ -300,6 +304,7 @@ export async function runDatabaseResearch({
         const report = await requestResearchReportFn({
           provider,
           apiKey,
+          baseUrl: providerRuntime.baseUrl,
           model,
           prompt: finalPrompt,
           searchEngine: DEFAULT_SEARCH_ENGINE,

@@ -27,8 +27,13 @@ When you run the database-backed workflow, the repository now also:
 ## Prerequisites
 
 1. Node.js 20+
-2. An OpenRouter API key
-3. OpenRouter server tools enabled for your account
+2. An OpenRouter API key for the OpenRouter provider path
+3. One Codex auth path for the Codex provider path:
+   - `OPENAI_API_KEY`, or
+   - `CODEX_API_KEY`, or
+   - Hermes OAuth via `hermes login --provider openai-codex`, or
+   - Codex CLI OAuth via `codex login`
+4. OpenRouter server tools enabled for your account when you use the OpenRouter provider
 
 For OpenRouter web search server tools, use the official setup described here:
 
@@ -49,10 +54,22 @@ Then edit `.env` and set at least:
 OPENROUTER_API_KEY=your_openrouter_key
 ```
 
-For Codex / OpenAI web search runs, also set:
+For Codex / OpenAI research runs, pick one auth path:
 
 ```dotenv
+# Option 1: regular OpenAI API key
 OPENAI_API_KEY=your_open_ai_key
+
+# Option 2: dedicated Codex key if you use one
+CODEX_API_KEY=your_codex_key
+```
+
+If you want Codex via OAuth instead of an API key, leave both values blank and log in once on this machine:
+
+```bash
+hermes login --provider openai-codex
+# or
+codex login
 ```
 
 The default runtime now uses:
@@ -87,7 +104,12 @@ Use Codex as the research provider for a single run:
 npm run research -- "East Anglia Three" --provider codex
 ```
 
-That codex path now defaults to `gpt-5.4-2026-03-05`. Override it with `--model` or `CODEX_MODEL` if you want a different OpenAI model.
+That codex path now defaults to `gpt-5.5`. Override it with `--model` or `CODEX_MODEL` if you want a different OpenAI model. Authentication precedence for `--provider codex` is:
+
+1. `CODEX_API_KEY`
+2. `OPENAI_API_KEY`
+3. Hermes OAuth token from `~/.hermes/auth.json`
+4. Codex CLI OAuth token from `~/.codex/auth.json`
 
 Show CLI help:
 
@@ -153,8 +175,9 @@ That workflow reads directly from the processing-owned core tables:
 |---|---|---|
 | `OPENROUTER_API_KEY` | - | Required API key for OpenRouter |
 | `OPENROUTER_MODEL` | `openai/gpt-5.4` | Model used to synthesize the report |
-| `OPENAI_API_KEY` | - | Required for `--provider codex` when `CODEX_API_KEY` is not set |
-| `CODEX_MODEL` | `gpt-5.4-2026-03-05` | Default OpenAI model used when `RESEARCH_PROVIDER=codex` or `--provider codex` |
+| `OPENAI_API_KEY` | - | Optional first-party OpenAI API key for `--provider codex` |
+| `CODEX_API_KEY` | - | Optional dedicated Codex API key for `--provider codex`; checked before `OPENAI_API_KEY` |
+| `CODEX_MODEL` | `gpt-5.5` | Default OpenAI model used when `RESEARCH_PROVIDER=codex` or `--provider codex` |
 | `OPENROUTER_SEARCH_ENGINE` | `auto` | Web search engine passed to `openrouter:web_search` |
 | `OPENROUTER_MAX_RESULTS` | `8` | Maximum results per search call |
 | `OPENROUTER_MAX_TOTAL_RESULTS` | `24` | Maximum total results across the full request |

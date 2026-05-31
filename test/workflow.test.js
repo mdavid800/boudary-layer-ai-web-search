@@ -29,6 +29,8 @@ import {
   requestBlockedRowRepair,
   requestResearchReport,
 } from '../src/lib/openrouter.js';
+import { requestResearchReportCodex } from '../src/lib/codex-provider.js';
+import { resolveCodexAccess } from '../src/lib/codex-auth.js';
 import { buildProjectContext, buildResearchPrompt } from '../src/lib/prompt.js';
 import {
   parseResearchDatabaseArgs,
@@ -1126,7 +1128,7 @@ test('runtime-config loads OPENROUTER_MODEL from .env before exporting defaults'
   assert.equal(output.trim(), 'openai/gpt-5.4');
 });
 
-test('runtime-config uses gpt-5.4-2026-03-05 as the default codex model when unset', () => {
+test('runtime-config uses gpt-5.5 as the default codex model when unset', () => {
   const childEnv = { ...process.env };
   childEnv.CODEX_MODEL = '';
   childEnv.OPENAI_MODEL = '';
@@ -1145,7 +1147,124 @@ test('runtime-config uses gpt-5.4-2026-03-05 as the default codex model when uns
     },
   );
 
-  assert.equal(output.trim(), 'gpt-5.4-2026-03-05');
+  assert.equal(output.trim(), 'gpt-5.5');
+});
+
+test('resolveCodexAccess prefers Hermes OAuth when API keys are unset', () => {
+  const hermesAuth = JSON.stringify({
+    version: 1,
+    providers: {
+      'openai-codex': {
+        tokens: {
+          access_token: 'eyJhbGciOiJIUzI1NiJ9.' + Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url') + '.sig',
+        },
+      },
+    },
+  });
+
+  const runtime = resolveCodexAccess({
+    env: {
+      CODEX_API_KEY: '',
+      OPENAI_API_KEY: '',
+      HERMES_HOME: '/tmp/hermes-home',
+    },
+    homeDir: '/tmp/home',
+    readFileSync: (authPath) => {
+      if (authPath === '/tmp/hermes-home/auth.json') {
+        return hermesAuth;
+      }
+      throw new Error(`unexpected path: ${authPath}`);
+    },
+  });
+
+  assert.equal(runtime.authMode, 'oauth');
+  assert.equal(runtime.authSource, 'hermes-openai-codex-oauth');
+  assert.equal(runtime.baseUrl, 'https://chatgpt.com/backend-api/codex');
+});
+
+test('resolveCodexAccess prefers explicit API keys over OAuth stores', () => {
+  const runtime = resolveCodexAccess({
+    env: {
+      CODEX_API_KEY: 'codex-key',
+      OPENAI_API_KEY: 'openai-key',
+      HERMES_HOME: '/tmp/hermes-home',
+    },
+    homeDir: '/tmp/home',
+    readFileSync: () => {
+      throw new Error('should not read auth stores when API key is present');
+    },
+  });
+
+  assert.equal(runtime.authMode, 'api_key');
+  assert.equal(runtime.authSource, 'CODEX_API_KEY');
+  assert.equal(runtime.baseUrl, 'https://api.openai.com/v1');
+  assert.equal(runtime.apiKey, 'codex-key');
+});
+
+test('resolveCodexAccess skips OpenRouter-shaped keys and falls back to OAuth', () => {
+  const codexCliAuth = JSON.stringify({
+    tokens: {
+      access_token: 'eyJhbGciOiJIUzI1NiJ9.' + Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url') + '.sig',
+    },
+  });
+
+  const runtime = resolveCodexAccess({
+    env: {
+      CODEX_API_KEY: 'sk-or-v1-not-a-codex-key',
+      OPENAI_API_KEY: 'sk-or-v1-not-an-openai-key',
+      HERMES_HOME: '/tmp/hermes-home',
+    },
+    homeDir: '/tmp/home',
+    readFileSync: (authPath) => {
+      if (authPath === '/tmp/hermes-home/auth.json') {
+        throw new Error('missing Hermes auth');
+      }
+      if (authPath === '/tmp/home/.codex/auth.json') {
+        return codexCliAuth;
+      }
+      throw new Error(`unexpected path: ${authPath}`);
+    },
+  });
+
+  assert.equal(runtime.authMode, 'oauth');
+  assert.equal(runtime.authSource, 'codex-cli-oauth');
+  assert.equal(runtime.baseUrl, 'https://chatgpt.com/backend-api/codex');
+});
+
+test('requestResearchReportCodex targets the OAuth backend when baseUrl is provided', async () => {
+  const calls = [];
+  const fetchImpl = async (url, options) => {
+    calls.push({ url, body: JSON.parse(options.body) });
+    return {
+      ok: true,
+      text: async () => [
+        'data: {"type":"response.output_text.delta","delta":"| Item | Value | Research summary | Sources |\\n"}',
+        '',
+        'data: {"type":"response.output_text.delta","delta":"| Date | Development | Why it matters | Sources |"}',
+        '',
+        'data: {"type":"response.completed","response":{"output_text":"| Item | Value | Research summary | Sources |\\n| Date | Development | Why it matters | Sources |"}}',
+        '',
+        'data: [DONE]',
+        '',
+      ].join('\n'),
+    };
+  };
+
+  const report = await requestResearchReportCodex({
+    apiKey: 'oauth-token',
+    baseUrl: 'https://chatgpt.com/backend-api/codex',
+    model: 'gpt-5.4',
+    prompt: 'Prompt',
+    fetchImpl,
+    referer: '',
+    title: '',
+  });
+
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, 'https://chatgpt.com/backend-api/codex/responses');
+  assert.equal(calls[0].body.tools[0].type, 'web_search');
+  assert.equal(calls[0].body.stream, true);
+  assert.match(report, /\| Item \| Value \|/);
 });
 
 test('runtime-config defaults to auto engine with server-tool mode when unset', () => {
