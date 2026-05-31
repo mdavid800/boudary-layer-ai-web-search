@@ -1267,6 +1267,33 @@ test('requestResearchReportCodex targets the OAuth backend when baseUrl is provi
   assert.match(report, /\| Item \| Value \|/);
 });
 
+test('requestResearchReportCodex parses CRLF-delimited SSE streams from the OAuth backend', async () => {
+  const report = await requestResearchReportCodex({
+    apiKey: 'oauth-token',
+    baseUrl: 'https://chatgpt.com/backend-api/codex',
+    model: 'gpt-5.4',
+    prompt: 'Prompt',
+    fetchImpl: async () => ({
+      ok: true,
+      text: async () => [
+        'data: {"type":"response.output_text.delta","delta":"| Item | Value | Research summary | Sources |\\n"}',
+        '',
+        'data: {"type":"response.output_text.delta","delta":"| Date | Development | Why it matters | Sources |"}',
+        '',
+        'data: {"type":"response.completed","response":{"output_text":"| Item | Value | Research summary | Sources |\\n| Date | Development | Why it matters | Sources |"}}',
+        '',
+        'data: [DONE]',
+        '',
+      ].join('\r\n'),
+    }),
+    referer: '',
+    title: '',
+  });
+
+  assert.match(report, /\| Item \| Value \|/);
+  assert.match(report, /\| Date \| Development \|/);
+});
+
 test('runtime-config defaults to auto engine with server-tool mode when unset', () => {
   const childEnv = { ...process.env };
   childEnv.OPENROUTER_SEARCH_ENGINE = '';

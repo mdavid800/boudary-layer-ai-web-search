@@ -11,10 +11,10 @@ export function resolveCodexAccess({
   homeDir = os.homedir(),
   readFileSync = fs.readFileSync,
 } = {}) {
-  const codeApiKey = readEnvValue(env, 'CODEX_API_KEY');
-  if (codeApiKey && !looksLikeOpenRouterKey(codeApiKey)) {
+  const codexApiKey = readEnvValue(env, 'CODEX_API_KEY');
+  if (codexApiKey && !looksLikeOpenRouterKey(codexApiKey)) {
     return {
-      apiKey: codeApiKey,
+      apiKey: codexApiKey,
       authMode: 'api_key',
       authSource: 'CODEX_API_KEY',
       baseUrl: DEFAULT_CODEX_API_BASE_URL,
@@ -64,7 +64,7 @@ export function resolveCodexAccess({
 }
 
 function looksLikeOpenRouterKey(value) {
-  return typeof value === 'string' && value.trim().startsWith('sk-or-v1-');
+  return typeof value === 'string' && value.trim().startsWith('sk-or-');
 }
 
 function readEnvValue(env, name) {

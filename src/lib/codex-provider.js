@@ -103,12 +103,12 @@ async function parseStreamingCodexResponse(response) {
 
 function parseServerSentEvents(rawText) {
   return rawText
-    .split(/\n\n+/)
+    .split(/\r?\n\r?\n+/)
     .map((chunk) => chunk.trim())
     .filter(Boolean)
     .map((chunk) => {
       const dataLines = chunk
-        .split('\n')
+        .split(/\r?\n/)
         .filter((line) => line.startsWith('data:'))
         .map((line) => line.slice(5).trim())
         .filter(Boolean);
