@@ -35,18 +35,18 @@ export function resolveCodexAccess({
   const authCandidates = [
     {
       authPath: path.join(hermesHome, 'auth.json'),
-      tokenPath: ['providers', 'openai-codex', 'tokens', 'access_token'],
       authSource: 'hermes-openai-codex-oauth',
+      extractToken: extractHermesCodexAccessToken,
     },
     {
       authPath: path.join(homeDir, '.codex', 'auth.json'),
-      tokenPath: ['tokens', 'access_token'],
       authSource: 'codex-cli-oauth',
+      extractToken: (payload) => readNestedString(payload, ['tokens', 'access_token']),
     },
   ];
 
   for (const candidate of authCandidates) {
-    const token = readAccessToken(candidate.authPath, candidate.tokenPath, readFileSync);
+    const token = readAccessToken(candidate.authPath, candidate.extractToken, readFileSync);
     if (token && !isExpiredJwt(token)) {
       return {
         apiKey: token,
@@ -72,11 +72,40 @@ function readEnvValue(env, name) {
   return typeof value === 'string' && value.trim() ? value.trim() : '';
 }
 
-function readAccessToken(authPath, tokenPath, readFileSync) {
+function readNestedString(value, pathSegments) {
+  const nestedValue = pathSegments.reduce((currentValue, key) => currentValue?.[key], value);
+  return typeof nestedValue === 'string' && nestedValue.trim() ? nestedValue.trim() : '';
+}
+
+function extractHermesCodexAccessToken(payload) {
+  const legacyToken = readNestedString(payload, ['providers', 'openai-codex', 'tokens', 'access_token']);
+  if (legacyToken && !isExpiredJwt(legacyToken)) {
+    return legacyToken;
+  }
+
+  const credentialPool = payload?.credential_pool?.['openai-codex'];
+  if (!Array.isArray(credentialPool)) {
+    return '';
+  }
+
+  for (const credential of credentialPool) {
+    if (credential?.auth_type !== 'oauth') {
+      continue;
+    }
+
+    const token = readNestedString(credential, ['access_token']);
+    if (token) {
+      return token;
+    }
+  }
+
+  return '';
+}
+
+function readAccessToken(authPath, extractToken, readFileSync) {
   try {
     const payload = JSON.parse(readFileSync(authPath, 'utf8'));
-    const token = tokenPath.reduce((value, key) => value?.[key], payload);
-    return typeof token === 'string' && token.trim() ? token.trim() : '';
+    return extractToken(payload);
   } catch {
     return '';
   }

@@ -58,6 +58,14 @@ import {
   verifyDraftReports,
 } from '../src/verify-reports.js';
 
+function buildJwtWithExpiration(expirationSeconds) {
+  return [
+    Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url'),
+    Buffer.from(JSON.stringify({ exp: expirationSeconds })).toString('base64url'),
+    'sig',
+  ].join('.');
+}
+
 function createSourceOfRecord(overrides = {}) {
   return {
     source_url: 'https://example.com/source-of-record',
@@ -1156,9 +1164,86 @@ test('resolveCodexAccess prefers Hermes OAuth when API keys are unset', () => {
     providers: {
       'openai-codex': {
         tokens: {
-          access_token: 'eyJhbGciOiJIUzI1NiJ9.' + Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url') + '.sig',
+          access_token: buildJwtWithExpiration(Math.floor(Date.now() / 1000) + 3600),
         },
       },
+    },
+  });
+
+  const runtime = resolveCodexAccess({
+    env: {
+      CODEX_API_KEY: '',
+      OPENAI_API_KEY: '',
+      HERMES_HOME: '/tmp/hermes-home',
+    },
+    homeDir: '/tmp/home',
+    readFileSync: (authPath) => {
+      if (authPath === '/tmp/hermes-home/auth.json') {
+        return hermesAuth;
+      }
+      throw new Error(`unexpected path: ${authPath}`);
+    },
+  });
+
+  assert.equal(runtime.authMode, 'oauth');
+  assert.equal(runtime.authSource, 'hermes-openai-codex-oauth');
+  assert.equal(runtime.baseUrl, 'https://chatgpt.com/backend-api/codex');
+});
+
+test('resolveCodexAccess prefers Hermes credential_pool OAuth when API keys are unset', () => {
+  const hermesAuth = JSON.stringify({
+    version: 1,
+    credential_pool: {
+      'openai-codex': [
+        {
+          auth_type: 'api_key',
+          access_token: 'should-not-be-used',
+        },
+        {
+          auth_type: 'oauth',
+          access_token: buildJwtWithExpiration(Math.floor(Date.now() / 1000) + 3600),
+        },
+      ],
+    },
+  });
+
+  const runtime = resolveCodexAccess({
+    env: {
+      CODEX_API_KEY: '',
+      OPENAI_API_KEY: '',
+      HERMES_HOME: '/tmp/hermes-home',
+    },
+    homeDir: '/tmp/home',
+    readFileSync: (authPath) => {
+      if (authPath === '/tmp/hermes-home/auth.json') {
+        return hermesAuth;
+      }
+      throw new Error(`unexpected path: ${authPath}`);
+    },
+  });
+
+  assert.equal(runtime.authMode, 'oauth');
+  assert.equal(runtime.authSource, 'hermes-openai-codex-oauth');
+  assert.equal(runtime.baseUrl, 'https://chatgpt.com/backend-api/codex');
+});
+
+test('resolveCodexAccess skips expired Hermes legacy OAuth when credential_pool has a fresh token', () => {
+  const hermesAuth = JSON.stringify({
+    version: 1,
+    providers: {
+      'openai-codex': {
+        tokens: {
+          access_token: buildJwtWithExpiration(Math.floor(Date.now() / 1000) - 3600),
+        },
+      },
+    },
+    credential_pool: {
+      'openai-codex': [
+        {
+          auth_type: 'oauth',
+          access_token: buildJwtWithExpiration(Math.floor(Date.now() / 1000) + 3600),
+        },
+      ],
     },
   });
 
@@ -1204,7 +1289,7 @@ test('resolveCodexAccess prefers explicit API keys over OAuth stores', () => {
 test('resolveCodexAccess skips OpenRouter-shaped keys and falls back to OAuth', () => {
   const codexCliAuth = JSON.stringify({
     tokens: {
-      access_token: 'eyJhbGciOiJIUzI1NiJ9.' + Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url') + '.sig',
+      access_token: buildJwtWithExpiration(Math.floor(Date.now() / 1000) + 3600),
     },
   });
 
