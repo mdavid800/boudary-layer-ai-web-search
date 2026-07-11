@@ -79,7 +79,7 @@ function readNestedString(value, pathSegments) {
 
 function extractHermesCodexAccessToken(payload) {
   const legacyToken = readNestedString(payload, ['providers', 'openai-codex', 'tokens', 'access_token']);
-  if (legacyToken) {
+  if (legacyToken && !isExpiredJwt(legacyToken)) {
     return legacyToken;
   }
 
