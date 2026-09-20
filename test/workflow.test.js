@@ -1133,7 +1133,7 @@ test('runtime-config loads OPENROUTER_MODEL from .env before exporting defaults'
     },
   );
 
-  assert.equal(output.trim(), 'openai/gpt-5.4');
+  assert.equal(output.trim(), 'openai/gpt-5.6-luna');
 });
 
 test('runtime-config uses gpt-5.5 as the default codex model when unset', () => {

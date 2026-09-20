@@ -6,7 +6,7 @@ import { resolveCodexAccess } from './codex-auth.js';
 dotenv.config();
 
 export const DEFAULT_PROMPT_PATH = path.resolve(process.cwd(), 'prompt.md');
-export const DEFAULT_MODEL = readEnvValue('OPENROUTER_MODEL') || 'openai/gpt-5.4';
+export const DEFAULT_MODEL = readEnvValue('OPENROUTER_MODEL') || 'openai/gpt-5.6-luna';
 export const DEFAULT_CODEX_MODEL = readEnvValue('CODEX_MODEL') || readEnvValue('OPENAI_MODEL') || 'gpt-5.5';
 export const DEFAULT_SEARCH_ENGINE = readEnvValue('OPENROUTER_SEARCH_ENGINE') || 'auto';
 export const DEFAULT_MAX_RESULTS = getPositiveInteger(
