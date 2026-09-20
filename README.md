@@ -174,7 +174,7 @@ That workflow reads directly from the processing-owned core tables:
 | Variable | Default | Purpose |
 |---|---|---|
 | `OPENROUTER_API_KEY` | - | Required API key for OpenRouter |
-| `OPENROUTER_MODEL` | `openai/gpt-5.4` | Model used to synthesize the report |
+| `OPENROUTER_MODEL` | `openai/gpt-5.6-luna` | Model used to synthesize the report |
 | `OPENAI_API_KEY` | - | Optional first-party OpenAI API key for `--provider codex` |
 | `CODEX_API_KEY` | - | Optional dedicated Codex API key for `--provider codex`; checked before `OPENAI_API_KEY` |
 | `CODEX_MODEL` | `gpt-5.5` | Default OpenAI model used when `RESEARCH_PROVIDER=codex` or `--provider codex` |
@@ -428,7 +428,7 @@ Use `Archive` when current evidence shows the record should not remain a live st
 
 If you want to inspect the exact rendered prompt for debugging, set `PROMPT_TRACE_ENABLED=true`. Each run will save prompt traces under `prompt-traces\<source-table>\`.
 
-Current limitation: the request path does not yet set an explicit OpenRouter timeout, and it waits for the full response body before surfacing progress. If GPT-5.4 remains on the default path, adding timeout and timing logs is the next hardening step.
+Current limitation: the request path does not yet set an explicit OpenRouter timeout, and it waits for the full response body before surfacing progress. If the default model remains on this path, adding timeout and timing logs is the next hardening step.
 
 ## Official source hints
 
